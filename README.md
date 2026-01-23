@@ -1,6 +1,6 @@
-# Nadeshiko SDK (TypeScript)
+# Nadeshiko SDK
 
-TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co) - Search Japanese sentences across anime, J-Drama, and audiobooks.
+TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co)
 
 ## Quick Start
 
