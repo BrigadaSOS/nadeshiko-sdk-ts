@@ -1,0 +1,166 @@
+name: Publish SDK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'openapi-spec/openapi.yaml'
+      - '.github/workflows/publish-sdk.yml'
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type (patch, minor, major)'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Regenerate SDK
+        run: bun run generate
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Detect version bump type
+        id: detect_version
+        run: |
+          # Default to patch if manual trigger with no input
+          BUMP_TYPE="${{ github.event.inputs.version_bump }}"
+
+          if [ -z "$BUMP_TYPE" ]; then
+            # Auto-detect from commit messages or default to patch
+            # TODO: Implement breaking change detection from OpenAPI diff
+            BUMP_TYPE="patch"
+          fi
+
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          echo "Detected version bump: $BUMP_TYPE"
+
+      - name: Bump version
+        id: bump_version
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          # Bump version using npm version
+          NEW_VERSION=$(npm version ${{ steps.detect_version.outputs.bump_type }} --no-git-tag-version)
+
+          echo "old_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Bumped version from $CURRENT_VERSION to $NEW_VERSION"
+
+      - name: Update CHANGELOG
+        run: |
+          VERSION="${{ steps.bump_version.outputs.new_version }}"
+          DATE=$(date +%Y-%m-%d)
+
+          # Create new changelog entry
+          cat > /tmp/changelog_entry.md << EOF
+          ## [$VERSION] - $DATE
+
+          ### Changed
+          - Updated SDK from latest OpenAPI specification
+
+          EOF
+
+          # Prepend to CHANGELOG.md (after the # Changelog header)
+          if [ -f CHANGELOG.md ]; then
+            sed -i "2r /tmp/changelog_entry.md" CHANGELOG.md
+          fi
+
+      - name: Commit version bump
+        run: |
+          git add package.json CHANGELOG.md
+          git commit -m "chore: bump version to ${{ steps.bump_version.outputs.new_version }}"
+
+      - name: Build SDK
+        run: bun run build
+
+      - name: Run tests
+        run: |
+          # TODO: Add tests when available
+          echo "No tests configured yet"
+        continue-on-error: true
+
+      - name: Check if major version
+        id: check_major
+        run: |
+          BUMP_TYPE="${{ steps.detect_version.outputs.bump_type }}"
+          if [ "$BUMP_TYPE" = "major" ]; then
+            echo "is_major=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_major=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to npm (auto for patch/minor)
+        if: steps.check_major.outputs.is_major != 'true'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create draft release (manual approval for major)
+        if: steps.check_major.outputs.is_major == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.bump_version.outputs.new_version }}
+          name: ${{ steps.bump_version.outputs.new_version }}
+          draft: true
+          generate_release_notes: true
+          body: |
+            ## ⚠️ Major Version Release - Manual Review Required
+
+            This is a **major version** release with potential breaking changes.
+            Please review the changes and publish to npm manually when ready.
+
+            ### Publishing Instructions
+            ```bash
+            npm publish --provenance --access public
+            ```
+
+      - name: Create GitHub Release (auto for patch/minor)
+        if: steps.check_major.outputs.is_major != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.bump_version.outputs.new_version }}
+          name: ${{ steps.bump_version.outputs.new_version }}
+          generate_release_notes: true
+          body: |
+            ## Changes
+            Updated SDK from latest OpenAPI specification.
+
+            ### Installation
+            ```bash
+            npm install nadeshiko-sdk-ts@${{ steps.bump_version.outputs.new_version }}
+            ```
+
+      - name: Push changes
+        run: |
+          git tag ${{ steps.bump_version.outputs.new_version }}
+          git push origin main --tags
