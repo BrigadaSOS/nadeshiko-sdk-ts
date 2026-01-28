@@ -1,3 +1,5 @@
+> This repository is still in WIP and not ready for production use
+
 # Nadeshiko SDK
 
 TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co)
