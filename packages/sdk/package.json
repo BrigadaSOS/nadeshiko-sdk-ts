@@ -1,0 +1,56 @@
+{
+  "name": "@brigadasos/nadeshiko-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for Nadeshiko API (public endpoints only)",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "BrigadaSOS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BrigadaSOS/nadeshiko-sdk-ts.git"
+  },
+  "homepage": "https://nadeshiko.co",
+  "bugs": {
+    "url": "https://github.com/BrigadaSOS/nadeshiko-sdk-ts/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "nadeshiko",
+    "japanese",
+    "anime",
+    "sentences",
+    "search",
+    "api",
+    "sdk",
+    "typescript",
+    "openapi"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "generate": "bun run ../../scripts/generate.ts",
+    "generate:local": "OPENAPI_SPEC_PATH=../../Nadeshiko/backend/docs/generated/openapi.yaml bun run ../../scripts/generate.ts",
+    "build:cjs": "bun build ./src/index.ts --outdir ./dist --format cjs --target node --sourcemap && mv ./dist/index.js ./dist/index.cjs && mv ./dist/index.js.map ./dist/index.cjs.map",
+    "build:esm": "bun build ./src/index.ts --outdir ./dist --format esm --target node --sourcemap",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "build": "bun run clean && bun run build:cjs && bun run build:esm && bun run build:types"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
+}

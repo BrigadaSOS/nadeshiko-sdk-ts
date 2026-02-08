@@ -5,6 +5,7 @@ node_modules
 out
 dist
 *.tgz
+openapi-ts-error-*.log
 
 # code coverage
 coverage

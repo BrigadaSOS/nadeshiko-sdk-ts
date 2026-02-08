@@ -1,0 +1,220 @@
+name: Release From Backend
+
+on:
+  repository_dispatch:
+    types:
+      - backend_release
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "SDK/package version (semver, no leading v)"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag (e.g. v1.2.3). Defaults to v<version> if empty"
+        required: false
+        type: string
+      prerelease:
+        description: "Mark release as prerelease"
+        required: false
+        type: boolean
+        default: false
+      spec_url:
+        description: "OpenAPI spec URL pinned to backend release artifact"
+        required: true
+        type: string
+      backend_sha:
+        description: "Backend commit SHA used for this release"
+        required: true
+        type: string
+      backend_repo:
+        description: "Backend repo name, e.g. BrigadaSOS/Nadeshiko"
+        required: true
+        type: string
+      force:
+        description: "Force release even if version already exists on npm"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sdk-release-${{ github.event.client_payload.release_tag || inputs.release_tag || inputs.version || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      BASE_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate release payload
+        id: payload
+        run: bun run scripts/release/validate-payload.ts
+
+      - name: Check npm for existing version
+        id: npm_check
+        run: bun run scripts/release/check-npm-version.ts @brigadasos/nadeshiko-sdk "${{ steps.payload.outputs.version }}"
+
+      - name: Decide whether to skip release
+        id: skip
+        run: |
+          set -euo pipefail
+          SKIP="false"
+          if [[ "${{ steps.npm_check.outputs.exists }}" == "true" && "${{ steps.payload.outputs.force }}" != "true" ]]; then
+            SKIP="true"
+          fi
+          echo "skip=${SKIP}" >> "$GITHUB_OUTPUT"
+
+      - name: Skip summary
+        if: steps.skip.outputs.skip == 'true'
+        run: |
+          {
+            echo "## SDK Release Skipped"
+            echo ""
+            echo "- Reason: npm already contains \`@brigadasos/nadeshiko-sdk@${{ steps.payload.outputs.version }}\`"
+            echo "- Use manual dispatch with \`force=true\` to override."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate SDK from backend release spec
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          OPENAPI_SPEC_PATH: ${{ steps.payload.outputs.spec_url }}
+        run: |
+          bun run generate
+          bun run generate:internal
+
+      - name: Validate boundaries
+        if: steps.skip.outputs.skip != 'true'
+        run: bun run check:boundaries
+
+      - name: Build packages
+        if: steps.skip.outputs.skip != 'true'
+        run: bun run build
+
+      - name: Smoke test ESM/CJS outputs
+        if: steps.skip.outputs.skip != 'true'
+        run: |
+          node -e "import('./packages/sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
+          node -e "import('./packages/internal-sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
+          node -e "const m=require('./packages/sdk/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
+          node -e "const m=require('./packages/internal-sdk/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
+
+      - name: Set package versions
+        if: steps.skip.outputs.skip != 'true'
+        run: bun run scripts/release/set-version.ts "${{ steps.payload.outputs.version }}"
+
+      - name: Commit and push release changes
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          VERSION: ${{ steps.payload.outputs.version }}
+          BACKEND_SHA: ${{ steps.payload.outputs.backend_sha }}
+          BACKEND_REPO: ${{ steps.payload.outputs.backend_repo }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            packages/sdk/package.json \
+            packages/internal-sdk/package.json \
+            packages/sdk/src/generated \
+            packages/internal-sdk/src/generated
+
+          if git diff --cached --quiet; then
+            echo "No version or generated changes detected; skipping commit."
+          else
+            git commit -m "chore(release): SDK ${VERSION} for ${BACKEND_REPO}@${BACKEND_SHA}"
+            git push origin "HEAD:${BASE_BRANCH}"
+          fi
+
+      - name: Publish public SDK to npm
+        if: steps.skip.outputs.skip != 'true'
+        working-directory: packages/sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${NODE_AUTH_TOKEN:-}" ]]; then
+            echo "NPM_TOKEN is missing."
+            exit 1
+          fi
+          npm publish --access public --tag "${{ steps.payload.outputs.dist_tag }}"
+
+      - name: Ensure release tag exists
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          RELEASE_TAG: ${{ steps.payload.outputs.release_tag }}
+          VERSION: ${{ steps.payload.outputs.version }}
+          BACKEND_SHA: ${{ steps.payload.outputs.backend_sha }}
+        run: |
+          set -euo pipefail
+          if git ls-remote --tags origin "refs/tags/${RELEASE_TAG}" | grep -q .; then
+            echo "Tag ${RELEASE_TAG} already exists."
+          else
+            git tag -a "${RELEASE_TAG}" -m "SDK release ${RELEASE_TAG} (backend ${BACKEND_SHA})"
+            git push origin "refs/tags/${RELEASE_TAG}"
+          fi
+
+      - name: Build release artifacts
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          VERSION: ${{ steps.payload.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          tar -czf "artifacts/nadeshiko-sdk-dist-${VERSION}.tar.gz" -C packages/sdk dist
+          tar -czf "artifacts/nadeshiko-internal-sdk-dist-${VERSION}.tar.gz" -C packages/internal-sdk dist
+          (cd packages/sdk && npm pack --pack-destination ../../artifacts)
+          (cd packages/internal-sdk && npm pack --pack-destination ../../artifacts)
+
+      - name: Create or update GitHub release
+        if: steps.skip.outputs.skip != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.payload.outputs.release_tag }}
+          name: SDK ${{ steps.payload.outputs.release_tag }}
+          prerelease: ${{ steps.payload.outputs.prerelease == 'true' }}
+          generate_release_notes: true
+          files: artifacts/*
+          body: |
+            Backend-driven SDK release.
+
+            - Backend: `${{ steps.payload.outputs.backend_repo }}`
+            - Backend SHA: `${{ steps.payload.outputs.backend_sha }}`
+            - OpenAPI spec: `${{ steps.payload.outputs.spec_url }}`
+            - npm package: `@brigadasos/nadeshiko-sdk@${{ steps.payload.outputs.version }}`
+            - npm dist-tag: `${{ steps.payload.outputs.dist_tag }}`
+
+      - name: Publish summary
+        if: steps.skip.outputs.skip != 'true'
+        run: |
+          {
+            echo "## SDK Release Published"
+            echo ""
+            echo "- Version: \`${{ steps.payload.outputs.version }}\`"
+            echo "- Tag: \`${{ steps.payload.outputs.release_tag }}\`"
+            echo "- Dist-tag: \`${{ steps.payload.outputs.dist_tag }}\`"
+            echo "- Backend: \`${{ steps.payload.outputs.backend_repo }}@${{ steps.payload.outputs.backend_sha }}\`"
+            echo "- Spec URL: \`${{ steps.payload.outputs.spec_url }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

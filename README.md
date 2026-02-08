@@ -1,75 +1,143 @@
 > This repository is still in WIP and not ready for production use
 
-# Nadeshiko SDK
+ # Nadeshiko SDK
 
-TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co)
+TypeScript SDKs for the [Nadeshiko API](https://nadeshiko.co) - split into public and internal packages.
+
+## Structure
+
+```
+nadeshiko-sdk-ts/
+├── packages/
+│   ├── sdk/              # Public SDK (@brigadasos/nadeshiko-sdk)
+│   └── internal-sdk/     # Internal SDK (@brigadasos/nadeshiko-internal-sdk)
+├── scripts/
+│   └── generate.ts       # Shared generation script
+└── package.json          # Root workspace config
+```
 
 ## Quick Start
 
+SDK clients send API keys via `Authorization: Bearer <apiKey>`.
+
+**Frontend (Public SDK):**
 ```typescript
-import Nadeshiko from 'nadeshiko-sdk-ts';
+import { createClient, search } from '@brigadasos/nadeshiko-sdk';
 
-// Configure your client once at app startup
-Nadeshiko.configure({
-  apiKey: 'your-api-key-here',
-  baseUrl: 'PRODUCTION', // or 'LOCAL', 'DEVELOPMENT', or custom URL
+const client = createClient({
+  apiKey: 'your-api-key',
+  baseUrl: 'PRODUCTION'
 });
 
-// Use the namespaced methods (names match OpenAPI operationIds)
-const result = await Nadeshiko.search({
-  body: {
-    query: '彼女',
-    limit: 10,
-  },
-});
-
-if (result.error) {
-  console.error(result.error.code, result.error.detail);
-} else {
-  console.log(result.data.sentences);
-}
+const result = await search({ client, body: { query: '彼女' } });
 ```
 
-## API Methods
+**JavaScript (CommonJS):**
+```javascript
+const { createClient, search } = require('@brigadasos/nadeshiko-sdk');
 
-All methods are namespaced under `Nadeshiko` and match the OpenAPI operationIds exactly:
+const client = createClient({
+  apiKey: process.env.NADESHIKO_API_KEY,
+  baseUrl: 'PRODUCTION'
+});
 
-You can check the full specification from the [OpenAPI spec page](https://nadeshiko.co/api/v1/docs).
+search({ client, body: { query: '彼女' } }).then(console.log);
+```
 
+**Internal Service (Internal SDK):**
+```typescript
+import { createClient, reindexElasticsearch } from '@brigadasos/nadeshiko-internal-sdk';
+
+const client = createClient({
+  apiKey: process.env.INTERNAL_API_KEY!,
+  baseUrl: 'LOCAL'
+});
+
+await reindexElasticsearch({ client, body: { mediaIds: [123] } });
+
+// Optional grouped namespace
+import { admin } from '@brigadasos/nadeshiko-internal-sdk';
+await admin.reindexElasticsearch({ client, body: { mediaIds: [123] } });
+```
+
+## Development
+
+### Generate SDKs
+
+```bash
+# Generate public SDK (from GitHub - once backend is pushed)
+bun run generate
+
+# Generate internal SDK (from GitHub)
+bun run generate:internal
+
+# Generate public SDK (from local backend)
+bun run generate:local
+
+# Generate internal SDK (from local backend)
+bun run generate:local:internal
+```
+
+### Build
+
+```bash
+# Build all packages
+bun run build
+
+# Build public SDK only
+bun run build:public
+
+# Build internal SDK only
+bun run build:internal
+```
+
+Both SDK packages emit:
+- `dist/index.js` (ESM)
+- `dist/index.cjs` (CommonJS)
+- `dist/index.d.ts` + generated declarations
+
+### Boundary Check
+
+```bash
+bun run check:boundaries
+```
+
+### Non-npm Distribution
+
+`dist/` is not committed to git. To use SDK outputs without adding an npm dependency:
+
+1. Download package tarballs from npm (`@brigadasos/nadeshiko-sdk`) and extract `dist/`.
+2. Download `sdk-dist` artifacts from CI runs (contains both package `dist/` folders).
+3. For internal usage, build locally and copy from `packages/internal-sdk/dist`.
+
+### Automated Releases
+
+This repo supports backend-driven SDK releases via `.github/workflows/release-from-backend.yml`.
+
+Flow:
+1. Backend publishes a GitHub release with a pinned OpenAPI spec asset URL.
+2. Backend dispatches `backend_release` event to this repo.
+3. SDK workflow generates, validates, builds, versions, publishes npm package, and creates matching GitHub release assets.
+
+Event payload fields:
+- `version` (semver without `v`)
+- `release_tag` (with `v`)
+- `prerelease` (`true` or `false`)
+- `spec_url` (for now using `main-v2` OpenAPI URL)
+- `backend_sha`
+- `backend_repo`
+
+Backend dispatch example is available at `docs/backend-dispatch-example.md`.
+
+### Clean
+
+```bash
+bun run clean
+```
 
 ## Error Handling
 
-All methods return `{ data?, error? }`. Choose your style:
-
-**Option 1: Check for errors**
-```typescript
-const result = await Nadeshiko.search({ body: { query: '彼女' } });
-
-if (result.error) {
-  // Error type is fully generated from OpenAPI spec
-  console.error(result.error.code);    // e.g., 'RATE_LIMIT_EXCEEDED'
-  console.error(result.error.title);   // e.g., 'Rate Limit Exceeded'
-  console.error(result.error.detail);  // Detailed message
-  console.error(result.error.status);  // HTTP status code
-} else {
-  console.log(result.data.sentences);
-}
-```
-
-**Option 2: Let it throw**
-```typescript
-try {
-  const result = await Nadeshiko.search({
-    body: { query: '彼女' },
-    throwOnError: true,
-  });
-  console.log(result.data.sentences);
-} catch (error) {
-  console.error(error);
-}
-```
-
-In general, all SDK methods return typed errors generated from the OpenAPI spec:
+All SDK methods return typed errors generated from the OpenAPI spec:
 
 ```typescript
 type Error = {
@@ -83,62 +151,7 @@ type Error = {
 };
 ```
 
-Handle each error independently based on the error code returned by the API.
-
-```typescript
-import Nadeshiko from 'nadeshiko-sdk-ts';
-
-const result = await Nadeshiko.search({ body: { query: '彼女' } });
-
-if (result.error) {
-  // All error fields are typed
-  switch (result.error.code) {
-    case 'RATE_LIMIT_EXCEEDED':
-      console.log('Wait before retrying');
-      break;
-    case 'AUTH_CREDENTIALS_INVALID':
-      console.log('Check your API key');
-      break;
-    case 'VALIDATION_FAILED':
-      console.log('Field errors:', result.error.errors);
-      break;
-    default:
-      console.log(result.error.detail);
-  }
-}
-```
-
-You can check the full list of errors codes for each endpoint from the [OpenAPI spec page](https://nadeshiko.co/api/v1/docs).
-
-## TypeScript Support
-
-All types are auto-generated from the OpenAPI spec.
-
-```typescript
-import type {
-  SearchRequest,
-  SearchResponse,
-  Sentence,
-  MediaInfoData,
-} from 'nadeshiko-sdk-ts';
-
-const request: SearchRequest = {
-  query: '彼女',
-  limit: 10,
-};
-
-const sentence: Sentence = {
-  basic_info: { /* ... */ },
-  segment_info: { /* ... */ },
-  media_info: { /* ... */ },
-};
-```
-
-## Examples
-
-See `examples/example.ts` for more usage examples.
-
 ## References
 
 - [Nadeshiko Website](https://nadeshiko.co)
-- [API Documentation](https://nadeshiko.co/settings/api)
+- [API Documentation](https://nadeshiko.co/api/v1/docs)

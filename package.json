@@ -1,55 +1,34 @@
 {
-  "name": "@brigadasos/nadeshiko-sdk",
+  "name": "@brigadasos/nadeshiko-sdk-monorepo",
   "version": "1.0.0",
-  "description": "TypeScript SDK for Nadeshiko API",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "type": "module",
-  "private": false,
+  "description": "Nadeshiko SDK Monorepo - TypeScript SDKs for Nadeshiko API",
+  "private": true,
   "license": "MIT",
   "author": "BrigadaSOS",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BrigadaSOS/nadeshiko-sdk-ts.git"
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
   },
-  "homepage": "https://nadeshiko.co",
-  "bugs": {
-    "url": "https://github.com/BrigadaSOS/nadeshiko-sdk-ts/issues"
-  },
-  "keywords": [
-    "nadeshiko",
-    "japanese",
-    "anime",
-    "sentences",
-    "search",
-    "api",
-    "sdk",
-    "typescript",
-    "openapi"
-  ],
   "scripts": {
-    "clean": "rm -rf dist",
-    "generate": "openapi-ts",
-    "build": "bun run clean && tsc -p tsconfig.build.json"
+    "generate": "bun run scripts/generate.ts",
+    "generate:public": "bun run scripts/generate.ts",
+    "generate:internal": "SDK_TYPE=internal bun run scripts/generate.ts",
+    "generate:local": "OPENAPI_SPEC_PATH=../Nadeshiko/backend/docs/generated/openapi.yaml bun run scripts/generate.ts",
+    "generate:local:internal": "SDK_TYPE=internal OPENAPI_SPEC_PATH=../Nadeshiko/backend/docs/generated/openapi.yaml bun run scripts/generate.ts",
+    "check:boundaries": "bun run scripts/check-public-boundary.ts",
+    "release:validate": "bun run scripts/release/validate-payload.ts",
+    "release:check-npm-version": "bun run scripts/release/check-npm-version.ts",
+    "release:set-version": "bun run scripts/release/set-version.ts",
+    "build": "bun run build:public && bun run build:internal",
+    "build:public": "bun run --filter './packages/sdk' build",
+    "build:internal": "bun run --filter './packages/internal-sdk' build",
+    "clean": "rm -rf packages/*/dist"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.90.9",
     "@types/bun": "latest",
-    "typescript": "^5"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5",
+    "yaml": "^2.8.2"
   }
 }
