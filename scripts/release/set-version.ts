@@ -9,8 +9,8 @@ type PackageJson = {
 };
 
 const PACKAGE_PATHS = [
-  'packages/sdk/package.json',
-  'packages/internal-sdk/package.json',
+  'sdk/package.json',
+  'sdk-internal/package.json',
 ];
 
 function fail(message: string): never {

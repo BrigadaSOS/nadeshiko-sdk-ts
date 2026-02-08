@@ -25,11 +25,8 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Generate public SDK
-        run: bun run generate
-
-      - name: Generate internal SDK
-        run: bun run generate:internal
+      - name: Generate SDKs
+        run: bun run generate:all
 
       - name: Validate boundaries
         run: bun run check:boundaries
@@ -39,24 +36,24 @@ jobs:
 
       - name: Smoke test ESM imports
         run: |
-          node -e "import('./packages/sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
-          node -e "import('./packages/internal-sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
+          node -e "import('./sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
+          node -e "import('./sdk-internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
 
       - name: Smoke test CommonJS requires
         run: |
-          node -e "const m=require('./packages/sdk/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
-          node -e "const m=require('./packages/internal-sdk/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
+          node -e "const m=require('./sdk/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
+          node -e "const m=require('./sdk-internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
 
       - name: Pack public SDK
-        run: cd packages/sdk && npm pack --dry-run
+        run: cd sdk && npm pack --dry-run
 
       - name: Pack internal SDK
-        run: cd packages/internal-sdk && npm pack --dry-run
+        run: cd sdk-internal && npm pack --dry-run
 
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sdk-dist
           path: |
-            packages/sdk/dist
-            packages/internal-sdk/dist
+            sdk/dist
+            sdk-internal/dist

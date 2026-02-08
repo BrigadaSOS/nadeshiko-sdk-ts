@@ -17,13 +17,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Determine which package we're building for based on SDK_TYPE
-// In a monorepo, we have:
-// - packages/sdk/ (public SDK)
-// - packages/internal-sdk/ (internal SDK)
+// In this monorepo, we have:
+// - sdk/ (public SDK)
+// - sdk-internal/ (internal SDK)
 const SDK_TYPE = process.env.SDK_TYPE || 'public';
 const PACKAGE_DIR = SDK_TYPE === 'internal'
-  ? join(__dirname, '../packages/internal-sdk')
-  : join(__dirname, '../packages/sdk');
+  ? join(__dirname, '../sdk-internal')
+  : join(__dirname, '../sdk');
 
 const GENERATED_DIR = join(PACKAGE_DIR, 'src/generated');
 

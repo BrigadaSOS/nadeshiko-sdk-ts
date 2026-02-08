@@ -32,13 +32,9 @@
     "openapi"
   ],
   "scripts": {
-    "clean": "rm -rf dist",
-    "generate": "bun run ../../scripts/generate.ts",
-    "generate:local": "OPENAPI_SPEC_PATH=../../Nadeshiko/backend/docs/generated/openapi.yaml bun run ../../scripts/generate.ts",
-    "build:cjs": "bun build ./src/index.ts --outdir ./dist --format cjs --target node --sourcemap && mv ./dist/index.js ./dist/index.cjs && mv ./dist/index.js.map ./dist/index.cjs.map",
-    "build:esm": "bun build ./src/index.ts --outdir ./dist --format esm --target node --sourcemap",
-    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "build": "bun run clean && bun run build:cjs && bun run build:esm && bun run build:types"
+    "build": "bun run ../scripts/build-package.ts .",
+    "prepack": "cp ../README.md ./README.md",
+    "postpack": "rm -f ./README.md"
   },
   "exports": {
     ".": {

@@ -28,7 +28,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  *
  */
 export const searchHealthCheck = <ThrowOnError extends boolean = false>(options?: Options<SearchHealthCheckData, ThrowOnError>) => (options?.client ?? client).get<SearchHealthCheckResponses, SearchHealthCheckErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search/health',
     ...options
 });
@@ -60,7 +60,7 @@ export const searchHealthCheck = <ThrowOnError extends boolean = false>(options?
  *
  */
 export const search = <ThrowOnError extends boolean = false>(options?: Options<SearchData, ThrowOnError>) => (options?.client ?? client).post<SearchResponses, SearchErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }, {
+    security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
@@ -90,7 +90,7 @@ export const search = <ThrowOnError extends boolean = false>(options?: Options<S
  *
  */
 export const searchMultiple = <ThrowOnError extends boolean = false>(options: Options<SearchMultipleData, ThrowOnError>) => (options.client ?? client).post<SearchMultipleResponses, SearchMultipleErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }, {
+    security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
@@ -114,7 +114,7 @@ export const searchMultiple = <ThrowOnError extends boolean = false>(options: Op
  *
  */
 export const fetchSentenceContext = <ThrowOnError extends boolean = false>(options: Options<FetchSentenceContextData, ThrowOnError>) => (options.client ?? client).post<FetchSentenceContextResponses, FetchSentenceContextErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }, {
+    security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
@@ -143,7 +143,7 @@ export const fetchSentenceContext = <ThrowOnError extends boolean = false>(optio
  *
  */
 export const fetchMediaInfo = <ThrowOnError extends boolean = false>(options?: Options<FetchMediaInfoData, ThrowOnError>) => (options?.client ?? client).get<FetchMediaInfoResponses, FetchMediaInfoErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }, {
+    security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
@@ -159,7 +159,7 @@ export const fetchMediaInfo = <ThrowOnError extends boolean = false>(options?: O
  *
  */
 export const mediaIndex = <ThrowOnError extends boolean = false>(options?: Options<MediaIndexData, ThrowOnError>) => (options?.client ?? client).get<MediaIndexResponses, MediaIndexErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media',
     ...options
 });
@@ -171,7 +171,7 @@ export const mediaIndex = <ThrowOnError extends boolean = false>(options?: Optio
  *
  */
 export const mediaShow = <ThrowOnError extends boolean = false>(options: Options<MediaShowData, ThrowOnError>) => (options.client ?? client).get<MediaShowResponses, MediaShowErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options
 });
@@ -183,7 +183,7 @@ export const mediaShow = <ThrowOnError extends boolean = false>(options: Options
  *
  */
 export const episodeIndex = <ThrowOnError extends boolean = false>(options: Options<EpisodeIndexData, ThrowOnError>) => (options.client ?? client).get<EpisodeIndexResponses, EpisodeIndexErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes',
     ...options
 });
@@ -195,7 +195,7 @@ export const episodeIndex = <ThrowOnError extends boolean = false>(options: Opti
  *
  */
 export const episodeShow = <ThrowOnError extends boolean = false>(options: Options<EpisodeShowData, ThrowOnError>) => (options.client ?? client).get<EpisodeShowResponses, EpisodeShowErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options
 });
@@ -207,7 +207,7 @@ export const episodeShow = <ThrowOnError extends boolean = false>(options: Optio
  *
  */
 export const segmentShow = <ThrowOnError extends boolean = false>(options: Options<SegmentShowData, ThrowOnError>) => (options.client ?? client).get<SegmentShowResponses, SegmentShowErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options
 });
@@ -219,7 +219,7 @@ export const segmentShow = <ThrowOnError extends boolean = false>(options: Optio
  *
  */
 export const segmentShowByUuid = <ThrowOnError extends boolean = false>(options: Options<SegmentShowByUuidData, ThrowOnError>) => (options.client ?? client).get<SegmentShowByUuidResponses, SegmentShowByUuidErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}',
     ...options
 });
@@ -231,7 +231,7 @@ export const segmentShowByUuid = <ThrowOnError extends boolean = false>(options:
  *
  */
 export const characterShow = <ThrowOnError extends boolean = false>(options: Options<CharacterShowData, ThrowOnError>) => (options.client ?? client).get<CharacterShowResponses, CharacterShowErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/characters/{id}',
     ...options
 });
@@ -243,7 +243,7 @@ export const characterShow = <ThrowOnError extends boolean = false>(options: Opt
  *
  */
 export const seiyuuShow = <ThrowOnError extends boolean = false>(options: Options<SeiyuuShowData, ThrowOnError>) => (options.client ?? client).get<SeiyuuShowResponses, SeiyuuShowErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/seiyuu/{id}',
     ...options
 });
@@ -255,7 +255,7 @@ export const seiyuuShow = <ThrowOnError extends boolean = false>(options: Option
  *
  */
 export const listIndex = <ThrowOnError extends boolean = false>(options?: Options<ListIndexData, ThrowOnError>) => (options?.client ?? client).get<ListIndexResponses, ListIndexErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/lists',
     ...options
 });
@@ -267,7 +267,7 @@ export const listIndex = <ThrowOnError extends boolean = false>(options?: Option
  *
  */
 export const listShow = <ThrowOnError extends boolean = false>(options: Options<ListShowData, ThrowOnError>) => (options.client ?? client).get<ListShowResponses, ListShowErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/lists/{id}',
     ...options
 });
@@ -288,7 +288,7 @@ export const listShow = <ThrowOnError extends boolean = false>(options: Options<
  *
  */
 export const reindexElasticsearch = <ThrowOnError extends boolean = false>(options?: Options<ReindexElasticsearchData, ThrowOnError>) => (options?.client ?? client).post<ReindexElasticsearchResponses, ReindexElasticsearchErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/reindex',
     ...options,
     headers: {
@@ -312,7 +312,7 @@ export const reindexElasticsearch = <ThrowOnError extends boolean = false>(optio
  *
  */
 export const getQueueStats = <ThrowOnError extends boolean = false>(options?: Options<GetQueueStatsData, ThrowOnError>) => (options?.client ?? client).get<GetQueueStatsResponses, GetQueueStatsErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/stats',
     ...options
 });
@@ -332,7 +332,7 @@ export const getQueueStats = <ThrowOnError extends boolean = false>(options?: Op
  *
  */
 export const getQueueDetails = <ThrowOnError extends boolean = false>(options: Options<GetQueueDetailsData, ThrowOnError>) => (options.client ?? client).get<GetQueueDetailsResponses, GetQueueDetailsErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}',
     ...options
 });
@@ -352,7 +352,7 @@ export const getQueueDetails = <ThrowOnError extends boolean = false>(options: O
  *
  */
 export const getFailedJobs = <ThrowOnError extends boolean = false>(options: Options<GetFailedJobsData, ThrowOnError>) => (options.client ?? client).get<GetFailedJobsResponses, GetFailedJobsErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/failed',
     ...options
 });
@@ -371,7 +371,7 @@ export const getFailedJobs = <ThrowOnError extends boolean = false>(options: Opt
  *
  */
 export const retryQueueJobs = <ThrowOnError extends boolean = false>(options: Options<RetryQueueJobsData, ThrowOnError>) => (options.client ?? client).post<RetryQueueJobsResponses, RetryQueueJobsErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/retry',
     ...options
 });
@@ -391,7 +391,7 @@ export const retryQueueJobs = <ThrowOnError extends boolean = false>(options: Op
  *
  */
 export const purgeFailedJobs = <ThrowOnError extends boolean = false>(options: Options<PurgeFailedJobsData, ThrowOnError>) => (options.client ?? client).delete<PurgeFailedJobsResponses, PurgeFailedJobsErrors, ThrowOnError>({
-    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/purge',
     ...options
 });

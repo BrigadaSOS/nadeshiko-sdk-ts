@@ -101,9 +101,7 @@ jobs:
         if: steps.skip.outputs.skip != 'true'
         env:
           OPENAPI_SPEC_PATH: ${{ steps.payload.outputs.spec_url }}
-        run: |
-          bun run generate
-          bun run generate:internal
+        run: bun run generate:all
 
       - name: Validate boundaries
         if: steps.skip.outputs.skip != 'true'
@@ -116,10 +114,10 @@ jobs:
       - name: Smoke test ESM/CJS outputs
         if: steps.skip.outputs.skip != 'true'
         run: |
-          node -e "import('./packages/sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
-          node -e "import('./packages/internal-sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
-          node -e "const m=require('./packages/sdk/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
-          node -e "const m=require('./packages/internal-sdk/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
+          node -e "import('./sdk/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
+          node -e "import('./sdk-internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
+          node -e "const m=require('./sdk/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
+          node -e "const m=require('./sdk-internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
 
       - name: Set package versions
         if: steps.skip.outputs.skip != 'true'
@@ -136,10 +134,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            packages/sdk/package.json \
-            packages/internal-sdk/package.json \
-            packages/sdk/src/generated \
-            packages/internal-sdk/src/generated
+            sdk/package.json \
+            sdk-internal/package.json \
+            sdk/src/generated \
+            sdk-internal/src/generated
 
           if git diff --cached --quiet; then
             echo "No version or generated changes detected; skipping commit."
@@ -150,7 +148,7 @@ jobs:
 
       - name: Publish public SDK to npm
         if: steps.skip.outputs.skip != 'true'
-        working-directory: packages/sdk
+        working-directory: sdk
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -183,10 +181,10 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts
-          tar -czf "artifacts/nadeshiko-sdk-dist-${VERSION}.tar.gz" -C packages/sdk dist
-          tar -czf "artifacts/nadeshiko-internal-sdk-dist-${VERSION}.tar.gz" -C packages/internal-sdk dist
-          (cd packages/sdk && npm pack --pack-destination ../../artifacts)
-          (cd packages/internal-sdk && npm pack --pack-destination ../../artifacts)
+          tar -czf "artifacts/nadeshiko-sdk-dist-${VERSION}.tar.gz" -C sdk dist
+          tar -czf "artifacts/nadeshiko-internal-sdk-dist-${VERSION}.tar.gz" -C sdk-internal dist
+          (cd sdk && npm pack --pack-destination ../artifacts)
+          (cd sdk-internal && npm pack --pack-destination ../artifacts)
 
       - name: Create or update GitHub release
         if: steps.skip.outputs.skip != 'true'

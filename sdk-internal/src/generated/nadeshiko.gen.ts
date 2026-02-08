@@ -49,7 +49,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
-    headers: { 'X-API-Key': config.apiKey },
+    headers: { Authorization: `Bearer ${config.apiKey}` },
   }));
 
   return {

@@ -8,9 +8,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
-const publicIndexPath = join(rootDir, 'packages/sdk/src/generated/index.ts');
-const internalGroupsDir = join(rootDir, 'packages/internal-sdk/src/generated/internal');
-const internalRootIndexPath = join(rootDir, 'packages/internal-sdk/src/index.ts');
+const publicIndexPath = join(rootDir, 'sdk/src/generated/index.ts');
+const internalGroupsDir = join(rootDir, 'sdk-internal/src/generated/internal');
+const internalRootIndexPath = join(rootDir, 'sdk-internal/src/index.ts');
 
 function parseNamedExports(source: string, fromPath: string): string[] {
   const normalized = source.replace(/\r\n/g, '\n');

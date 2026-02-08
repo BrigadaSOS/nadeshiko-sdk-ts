@@ -7,23 +7,23 @@
   "author": "BrigadaSOS",
   "workspaces": {
     "packages": [
-      "packages/*"
+      "sdk",
+      "sdk-internal"
     ]
   },
   "scripts": {
-    "generate": "bun run scripts/generate.ts",
-    "generate:public": "bun run scripts/generate.ts",
-    "generate:internal": "SDK_TYPE=internal bun run scripts/generate.ts",
-    "generate:local": "OPENAPI_SPEC_PATH=../Nadeshiko/backend/docs/generated/openapi.yaml bun run scripts/generate.ts",
-    "generate:local:internal": "SDK_TYPE=internal OPENAPI_SPEC_PATH=../Nadeshiko/backend/docs/generated/openapi.yaml bun run scripts/generate.ts",
+    "generate": "bun run scripts/generate-package.ts public",
+    "generate:internal": "bun run scripts/generate-package.ts internal",
+    "generate:all": "bun run scripts/generate-package.ts all",
+    "generate:local": "bun run scripts/generate-package.ts all ../Nadeshiko/backend/docs/generated/openapi.yaml",
     "check:boundaries": "bun run scripts/check-public-boundary.ts",
     "release:validate": "bun run scripts/release/validate-payload.ts",
     "release:check-npm-version": "bun run scripts/release/check-npm-version.ts",
     "release:set-version": "bun run scripts/release/set-version.ts",
     "build": "bun run build:public && bun run build:internal",
-    "build:public": "bun run --filter './packages/sdk' build",
-    "build:internal": "bun run --filter './packages/internal-sdk' build",
-    "clean": "rm -rf packages/*/dist"
+    "build:public": "bun run scripts/build-package.ts sdk",
+    "build:internal": "bun run scripts/build-package.ts sdk-internal",
+    "clean": "rm -rf sdk/dist sdk-internal/dist"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.90.9",
