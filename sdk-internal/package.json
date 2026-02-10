@@ -1,6 +1,6 @@
 {
   "name": "@brigadasos/nadeshiko-internal-sdk",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Internal TypeScript SDK for Nadeshiko API (includes all endpoints)",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

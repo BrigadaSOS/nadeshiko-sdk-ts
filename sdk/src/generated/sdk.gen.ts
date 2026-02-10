@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CharacterShowData, CharacterShowErrors, CharacterShowResponses, EpisodeIndexData, EpisodeIndexErrors, EpisodeIndexResponses, EpisodeShowData, EpisodeShowErrors, EpisodeShowResponses, FetchMediaInfoData, FetchMediaInfoErrors, FetchMediaInfoResponses, FetchSentenceContextData, FetchSentenceContextErrors, FetchSentenceContextResponses, GetFailedJobsData, GetFailedJobsErrors, GetFailedJobsResponses, GetQueueDetailsData, GetQueueDetailsErrors, GetQueueDetailsResponses, GetQueueStatsData, GetQueueStatsErrors, GetQueueStatsResponses, ListIndexData, ListIndexErrors, ListIndexResponses, ListShowData, ListShowErrors, ListShowResponses, MediaIndexData, MediaIndexErrors, MediaIndexResponses, MediaShowData, MediaShowErrors, MediaShowResponses, PurgeFailedJobsData, PurgeFailedJobsErrors, PurgeFailedJobsResponses, ReindexElasticsearchData, ReindexElasticsearchErrors, ReindexElasticsearchResponses, RetryQueueJobsData, RetryQueueJobsErrors, RetryQueueJobsResponses, SearchData, SearchErrors, SearchHealthCheckData, SearchHealthCheckErrors, SearchHealthCheckResponses, SearchMultipleData, SearchMultipleErrors, SearchMultipleResponses, SearchResponses, SegmentShowByUuidData, SegmentShowByUuidErrors, SegmentShowByUuidResponses, SegmentShowData, SegmentShowErrors, SegmentShowResponses, SeiyuuShowData, SeiyuuShowErrors, SeiyuuShowResponses } from './types.gen';
+import type { CharacterShowData, CharacterShowErrors, CharacterShowResponses, EpisodeIndexData, EpisodeIndexErrors, EpisodeIndexResponses, EpisodeShowData, EpisodeShowErrors, EpisodeShowResponses, FetchMediaInfoData, FetchMediaInfoErrors, FetchMediaInfoResponses, FetchSearchStatsData, FetchSearchStatsErrors, FetchSearchStatsResponses, FetchSentenceContextData, FetchSentenceContextErrors, FetchSentenceContextResponses, GetFailedJobsData, GetFailedJobsErrors, GetFailedJobsResponses, GetQueueDetailsData, GetQueueDetailsErrors, GetQueueDetailsResponses, GetQueueStatsData, GetQueueStatsErrors, GetQueueStatsResponses, ListIndexData, ListIndexErrors, ListIndexResponses, ListShowData, ListShowErrors, ListShowResponses, MediaIndexData, MediaIndexErrors, MediaIndexResponses, MediaShowData, MediaShowErrors, MediaShowResponses, PurgeFailedJobsData, PurgeFailedJobsErrors, PurgeFailedJobsResponses, ReindexElasticsearchData, ReindexElasticsearchErrors, ReindexElasticsearchResponses, RetryQueueJobsData, RetryQueueJobsErrors, RetryQueueJobsResponses, SearchData, SearchErrors, SearchHealthCheckData, SearchHealthCheckErrors, SearchHealthCheckResponses, SearchMultipleData, SearchMultipleErrors, SearchMultipleResponses, SearchResponses, SegmentShowByUuidData, SegmentShowByUuidErrors, SegmentShowByUuidResponses, SegmentShowData, SegmentShowErrors, SegmentShowResponses, SeiyuuShowData, SeiyuuShowErrors, SeiyuuShowResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -66,6 +66,35 @@ export const search = <ThrowOnError extends boolean = false>(options?: Options<S
             type: 'apiKey'
         }],
     url: '/v1/search/media/sentence',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+/**
+ * Fetch search stats
+ *
+ * Returns statistics for search filters and category tabs without fetching sentence rows.
+ *
+ * This endpoint is optimized for UI filter panels:
+ * - `mediaStatistics` powers the media dropdown on the right side.
+ * - `categoryStatistics` powers category tabs below the search bar.
+ *
+ * The stats are scoped by query and category filters, but are not narrowed by a selected media/episode.
+ *
+ * **Requirements**
+ * - API Key with `READ_MEDIA` permission
+ *
+ */
+export const fetchSearchStats = <ThrowOnError extends boolean = false>(options?: Options<FetchSearchStatsData, ThrowOnError>) => (options?.client ?? client).post<FetchSearchStatsResponses, FetchSearchStatsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/search/media/stats',
     ...options,
     headers: {
         'Content-Type': 'application/json',

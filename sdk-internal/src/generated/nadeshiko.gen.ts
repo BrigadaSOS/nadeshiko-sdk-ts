@@ -2,7 +2,7 @@
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
-import { searchHealthCheck, search, searchMultiple, fetchSentenceContext, fetchMediaInfo, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, listIndex, listShow, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs } from './sdk.gen';
+import { searchHealthCheck, search, fetchSearchStats, searchMultiple, fetchSentenceContext, fetchMediaInfo, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, listIndex, listShow, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs } from './sdk.gen';
 
 export interface NadeshikoConfig {
   apiKey: string;
@@ -19,6 +19,7 @@ export type NadeshikoClient = {
     client: Client;
     searchHealthCheck: typeof searchHealthCheck;
     search: typeof search;
+    fetchSearchStats: typeof fetchSearchStats;
     searchMultiple: typeof searchMultiple;
     fetchSentenceContext: typeof fetchSentenceContext;
     fetchMediaInfo: typeof fetchMediaInfo;
@@ -56,6 +57,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     client: clientInstance,
     searchHealthCheck: (options?: any) => searchHealthCheck({ ...options, client: clientInstance }),
     search: (options?: any) => search({ ...options, client: clientInstance }),
+    fetchSearchStats: (options?: any) => fetchSearchStats({ ...options, client: clientInstance }),
     searchMultiple: (options?: any) => searchMultiple({ ...options, client: clientInstance }),
     fetchSentenceContext: (options?: any) => fetchSentenceContext({ ...options, client: clientInstance }),
     fetchMediaInfo: (options?: any) => fetchMediaInfo({ ...options, client: clientInstance }),

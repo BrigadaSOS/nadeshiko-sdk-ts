@@ -10,52 +10,6 @@ export type ClientOptions = {
 export type Category = 'ANIME' | 'JDRAMA';
 
 /**
- * Search result statistics grouped by anime/media
- */
-export type Statistic = {
-    /**
-     * Unique identifier for the anime/media
-     */
-    animeId?: number;
-    category?: Category;
-    /**
-     * Romaji transliteration of the anime name
-     */
-    nameAnimeRomaji?: string;
-    /**
-     * English translation of the anime name
-     */
-    nameAnimeEn?: string;
-    /**
-     * Original Japanese name of the anime
-     */
-    nameAnimeJp?: string;
-    /**
-     * Total number of sentences found for this anime
-     */
-    amountSentencesFound?: number;
-    /**
-     * Nested object mapping seasons to episodes with hit counts
-     */
-    seasonWithEpisodeHits?: {
-        [key: string]: {
-            [key: string]: number;
-        };
-    };
-};
-
-/**
- * Statistics grouped by media category
- */
-export type CategoryStatistic = {
-    category?: Category;
-    /**
-     * Number of entries in this category
-     */
-    count?: number;
-};
-
-/**
  * Basic anime/media information included in search results
  */
 export type BasicInfo = {
@@ -87,10 +41,6 @@ export type BasicInfo = {
      * Episode number where the segment appears
      */
     episode: number;
-    /**
-     * Season number where the segment appears
-     */
-    season: number;
     category: Category;
 };
 
@@ -175,15 +125,15 @@ export type MediaInfoPath = {
     /**
      * URL to the subtitle image snapshot
      */
-    path_image?: string;
+    pathImage?: string;
     /**
      * URL to the audio clip for this segment
      */
-    path_audio?: string;
+    pathAudio?: string;
     /**
      * URL to the video clip for this segment
      */
-    path_video?: string;
+    pathVideo?: string;
 };
 
 /**
@@ -204,10 +154,31 @@ export type Sentence = {
     mediaInfo: MediaInfoPath;
 };
 
+/**
+ * Lightweight metadata for the current sentence search query
+ */
+export type QueryStats = {
+    /**
+     * Number of sentences returned in this page
+     */
+    returnedCount?: number;
+    /**
+     * Whether there are more sentence results after this page
+     */
+    hasMoreResults?: boolean;
+    /**
+     * Estimated total number of matching segments
+     */
+    estimatedTotalHits?: number;
+    /**
+     * Whether estimatedTotalHits is exact (`eq`) or a lower bound (`gte`)
+     */
+    estimatedTotalHitsRelation?: 'eq' | 'gte';
+};
+
 export type SearchHealthCheckResponse = {
-    statistics?: Array<Statistic>;
-    categoryStatistics?: Array<CategoryStatistic>;
     sentences?: Array<Sentence>;
+    queryStats?: QueryStats;
     /**
      * Cursor for pagination
      */
@@ -270,23 +241,19 @@ export type SearchRequest = {
     /**
      * Unique ID from media
      */
-    anime_id?: number;
-    /**
-     * Array of seasons to get
-     */
-    season?: Array<number>;
+    animeId?: number;
     /**
      * Array of episodes to get
      */
     episode?: Array<number>;
     /**
-     * A value from 0 to 1 for random sorting
+     * Non-negative integer seed for deterministic random sorting
      */
-    random_seed?: number;
+    randomSeed?: number;
     /**
      * Order by amount of characters
      */
-    content_sort?: 'asc' | 'desc' | 'none' | 'time_asc' | 'time_desc' | 'random';
+    contentSort?: 'asc' | 'desc' | 'none' | 'time_asc' | 'time_desc' | 'random';
     /**
      * Current page of search
      */
@@ -294,47 +261,122 @@ export type SearchRequest = {
     /**
      * Whether to use exact phrase matching
      */
-    exact_match?: boolean;
-    /**
-     * Include extra content
-     */
-    extra?: boolean;
+    exactMatch?: boolean;
     /**
      * Minimum content length
      */
-    min_length?: number;
+    minLength?: number;
     /**
      * Maximum content length
      */
-    max_length?: number;
+    maxLength?: number;
     /**
      * Anime IDs to exclude from results
      */
-    excluded_anime_ids?: Array<number>;
+    excludedAnimeIds?: Array<number>;
     /**
      * Segment status filter
      */
     status?: Array<number>;
     /**
-     * Media filter with seasons and episodes
+     * Media filter with episodes
      */
     media?: Array<{
-        media_id: string;
-        seasons: Array<{
-            season: number;
-            episodes: Array<number>;
-        }>;
+        mediaId: number;
+        /**
+         * Array of episode numbers
+         */
+        episodes: Array<number>;
     }>;
 };
 
 export type SearchResponse = {
-    statistics?: Array<Statistic>;
-    categoryStatistics?: Array<CategoryStatistic>;
     sentences?: Array<Sentence>;
+    queryStats?: QueryStats;
     /**
      * Cursor for pagination
      */
     cursor?: Array<number>;
+};
+
+export type SearchStatsRequest = {
+    /**
+     * Text or sentence to search
+     */
+    query?: string;
+    /**
+     * Media category filter
+     */
+    category?: Array<Category>;
+    /**
+     * Whether to use exact phrase matching
+     */
+    exactMatch?: boolean;
+    /**
+     * Minimum content length
+     */
+    minLength?: number;
+    /**
+     * Maximum content length
+     */
+    maxLength?: number;
+    /**
+     * Anime IDs to exclude from results
+     */
+    excludedAnimeIds?: Array<number>;
+    /**
+     * Segment status filter
+     */
+    status?: Array<number>;
+};
+
+/**
+ * Search result statistics grouped by anime/media
+ */
+export type Statistic = {
+    /**
+     * Unique identifier for the anime/media
+     */
+    animeId?: number;
+    category?: Category;
+    /**
+     * Romaji transliteration of the anime name
+     */
+    nameAnimeRomaji?: string;
+    /**
+     * English translation of the anime name
+     */
+    nameAnimeEn?: string;
+    /**
+     * Original Japanese name of the anime
+     */
+    nameAnimeJp?: string;
+    /**
+     * Total number of sentences found for this anime
+     */
+    amountSentencesFound?: number;
+    /**
+     * Mapping of episode numbers to sentence hit counts
+     */
+    episodeHits?: {
+        [key: string]: number;
+    };
+};
+
+/**
+ * Statistics grouped by media category
+ */
+export type CategoryStatistic = {
+    category?: Category;
+    /**
+     * Number of entries in this category
+     */
+    count?: number;
+};
+
+export type SearchStatsResponse = {
+    mediaStatistics?: Array<Statistic>;
+    categoryStatistics?: Array<CategoryStatistic>;
 };
 
 export type SearchMultipleRequest = {
@@ -345,7 +387,7 @@ export type SearchMultipleRequest = {
     /**
      * Whether to use exact matching
      */
-    exact_match?: boolean;
+    exactMatch?: boolean;
 };
 
 /**
@@ -355,19 +397,19 @@ export type WordMatchMedia = {
     /**
      * Unique identifier for the media
      */
-    media_id?: number;
+    mediaId?: number;
     /**
      * English translation of the media name
      */
-    english_name?: string;
+    englishName?: string;
     /**
      * Original Japanese name of the media
      */
-    japanese_name?: string;
+    japaneseName?: string;
     /**
      * Romaji transliteration of the media name
      */
-    romaji_name?: string;
+    romajiName?: string;
     /**
      * Number of times the word appears in this media
      */
@@ -385,11 +427,11 @@ export type WordMatch = {
     /**
      * Indicates whether the word was found in any segment
      */
-    is_match?: boolean;
+    isMatch?: boolean;
     /**
      * Total number of times this word appears across all media
      */
-    total_matches?: number;
+    totalMatches?: number;
     /**
      * List of media containing this word
      */
@@ -404,11 +446,7 @@ export type FetchSentenceContextRequest = {
     /**
      * Media ID
      */
-    media_id: number;
-    /**
-     * Season number
-     */
-    season: number;
+    mediaId: number;
     /**
      * Episode number
      */
@@ -416,7 +454,7 @@ export type FetchSentenceContextRequest = {
     /**
      * Segment position in the episode
      */
-    segment_position: number;
+    segmentPosition: number;
     /**
      * Number of surrounding segments to retrieve
      */
@@ -526,10 +564,6 @@ export type MediaInfoData = {
      * Total number of subtitle segments available
      */
     numSegments?: number;
-    /**
-     * Total number of seasons available
-     */
-    numSeasons?: number;
     /**
      * Total number of episodes available
      */
@@ -701,11 +735,11 @@ export type Media = {
      */
     studio: string;
     /**
-     * Season when the media aired (WINTER, SPRING, SUMMER, FALL)
+     * Airing season label for the media
      */
     seasonName: string;
     /**
-     * Year when the media aired
+     * Airing year for the media
      */
     seasonYear: number;
     /**
@@ -853,6 +887,10 @@ export type Segment = {
      * URL to segment audio file (generated from storage + hashedId)
      */
     audioUrl?: string;
+    /**
+     * URL to segment video file (generated from storage + hashedId)
+     */
+    videoUrl?: string;
     /**
      * Japanese voice actor name
      */
@@ -1132,6 +1170,47 @@ export type SearchResponses = {
 };
 
 export type SearchResponse2 = SearchResponses[keyof SearchResponses];
+
+export type FetchSearchStatsData = {
+    body?: SearchStatsRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/search/media/stats';
+};
+
+export type FetchSearchStatsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error;
+    /**
+     * Unauthorized
+     */
+    401: Error;
+    /**
+     * Forbidden
+     */
+    403: Error;
+    /**
+     * Too Many Requests
+     */
+    429: Error;
+    /**
+     * Internal Server Error
+     */
+    500: Error;
+};
+
+export type FetchSearchStatsError = FetchSearchStatsErrors[keyof FetchSearchStatsErrors];
+
+export type FetchSearchStatsResponses = {
+    /**
+     * OK
+     */
+    200: SearchStatsResponse;
+};
+
+export type FetchSearchStatsResponse = FetchSearchStatsResponses[keyof FetchSearchStatsResponses];
 
 export type SearchMultipleData = {
     body: SearchMultipleRequest;
