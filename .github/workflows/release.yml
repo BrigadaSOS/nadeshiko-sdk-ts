@@ -14,20 +14,8 @@ on:
           - stable
           - dev
         default: stable
-      release_tag:
-        description: "Release tag (defaults to v<spec info.version>, ignored for dev)"
-        required: false
-        type: string
-      spec_url:
-        description: "OpenAPI spec URL pinned to backend release artifact"
-        required: true
-        type: string
       backend_sha:
         description: "Backend commit SHA used for this release"
-        required: true
-        type: string
-      backend_repo:
-        description: "Backend repo name, e.g. BrigadaSOS/Nadeshiko"
         required: true
         type: string
 permissions:

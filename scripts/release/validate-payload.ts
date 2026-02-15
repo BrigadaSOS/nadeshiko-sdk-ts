@@ -8,11 +8,7 @@ type ReleaseChannel = 'dev' | 'stable';
 
 type RawPayload = {
   release_channel?: unknown;
-  release_tag?: unknown;
-  spec_url?: unknown;
   backend_sha?: unknown;
-  backend_repo?: unknown;
-
 };
 
 type DerivedVersions = {
@@ -21,6 +17,9 @@ type DerivedVersions = {
   internalVersion: string;
   internalOnly: boolean;
 };
+
+const BACKEND_REPO = 'BrigadaSOS/Nadeshiko';
+const SPEC_PATH = 'backend/docs/generated/openapi.yaml';
 
 const SEMVER_REGEX =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9A-Za-z-][0-9A-Za-z-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/;
@@ -63,11 +62,7 @@ function getPayload(): RawPayload {
   // Local fallback for manual script testing.
   return {
     release_channel: process.env.INPUT_RELEASE_CHANNEL,
-    release_tag: process.env.INPUT_RELEASE_TAG,
-    spec_url: process.env.INPUT_SPEC_URL,
     backend_sha: process.env.INPUT_BACKEND_SHA,
-    backend_repo: process.env.INPUT_BACKEND_REPO,
-
   };
 }
 
@@ -76,18 +71,6 @@ function resolveChannel(raw: unknown): ReleaseChannel {
   if (value === 'dev') return 'dev';
   if (value === 'stable' || !value) return 'stable';
   fail(`\`release_channel\` must be "dev" or "stable". Received: "${value}"`);
-}
-
-function normalizeReleaseTag(rawReleaseTag: string, specVersion: string): string {
-  let tag = rawReleaseTag.startsWith('refs/tags/')
-    ? rawReleaseTag.replace('refs/tags/', '')
-    : rawReleaseTag;
-
-  // Strip backend-specific prefix (e.g. "backend-v1.4.0" → "v1.4.0")
-  tag = tag.replace(/^backend-/, '');
-
-  const candidate = tag || `v${specVersion}`;
-  return candidate.startsWith('v') ? candidate : `v${candidate}`;
 }
 
 async function loadSpecVersion(specUrl: string): Promise<string> {
@@ -151,45 +134,19 @@ async function main(): Promise<void> {
 
   const channel = resolveChannel(rawPayload.release_channel);
 
-  const specUrl = toStringValue(rawPayload.spec_url);
-  if (!specUrl) fail('`spec_url` is required.');
-  try {
-    new URL(specUrl);
-  } catch {
-    fail(`\`spec_url\` must be a valid URL. Received: "${specUrl}"`);
-  }
-
   const backendSha = toStringValue(rawPayload.backend_sha);
   if (!backendSha) fail('`backend_sha` is required.');
 
-  const backendRepo = toStringValue(rawPayload.backend_repo);
-  if (!backendRepo) fail('`backend_repo` is required.');
+  const specUrl = `https://raw.githubusercontent.com/${BACKEND_REPO}/${backendSha}/${SPEC_PATH}`;
+  const backendRepo = BACKEND_REPO;
 
   const specVersion = await loadSpecVersion(specUrl);
   const derived = deriveVersions(specVersion, channel, backendSha);
 
-  // For stable releases, validate release tag
-  let releaseTag = '';
-  let prerelease = false;
-  let distTag = '';
-  let internalDistTag = '';
-
-  if (channel === 'stable') {
-    const releaseTagCandidate = toStringValue(rawPayload.release_tag);
-    releaseTag = normalizeReleaseTag(releaseTagCandidate, derived.specVersion);
-    if (releaseTag.replace(/^v/, '') !== derived.specVersion) {
-      fail(`release_tag (${releaseTag}) must match spec version (${derived.specVersion}).`);
-    }
-    distTag = 'latest';
-    internalDistTag = 'internal';
-    prerelease = false;
-  } else {
-    // Dev: no release tag needed
-    releaseTag = '';
-    distTag = 'dev';
-    internalDistTag = 'dev';
-    prerelease = true;
-  }
+  const releaseTag = channel === 'stable' ? `v${derived.specVersion}` : '';
+  const prerelease = channel === 'dev';
+  const distTag = channel === 'stable' ? 'latest' : 'dev';
+  const internalDistTag = channel === 'stable' ? 'internal' : 'dev';
 
   console.log(
     `Release payload OK: channel=${channel} from ${backendRepo}@${backendSha} (spec=${derived.specVersion})`,
@@ -197,17 +154,6 @@ async function main(): Promise<void> {
   console.log(
     `Publish plan: public=${derived.publicVersion} internal=${derived.internalVersion} internal_only=${derived.internalOnly}`,
   );
-
-  if (channel === 'stable' && (specUrl.startsWith('http://') || specUrl.startsWith('https://'))) {
-    const isReleasePinned =
-      specUrl.includes('/releases/download/') || specUrl.includes(`/${releaseTag}/`);
-
-    if (!isReleasePinned) {
-      console.log(
-        'Warning: spec_url does not look release-pinned. Prefer immutable release asset URLs.',
-      );
-    }
-  }
 
   writeOutput('release_channel', channel);
   writeOutput('spec_version', derived.specVersion);
