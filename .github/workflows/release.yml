@@ -193,28 +193,12 @@ jobs:
       - name: Publish public SDK
         if: steps.skip.outputs.skip != 'true' && steps.payload.outputs.release_channel == 'stable' && steps.npm_check.outputs.public_exists != 'true'
         working-directory: build/public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${NODE_AUTH_TOKEN:-}" ]]; then
-            echo "NPM_TOKEN is missing."
-            exit 1
-          fi
-          npm publish --access public --provenance --tag "${{ steps.payload.outputs.dist_tag }}"
+        run: npm publish --access public --provenance --tag "${{ steps.payload.outputs.dist_tag }}"
 
       - name: Publish internal SDK
         if: steps.skip.outputs.skip != 'true' && steps.npm_check.outputs.internal_exists != 'true'
         working-directory: build/internal
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${NODE_AUTH_TOKEN:-}" ]]; then
-            echo "NPM_TOKEN is missing."
-            exit 1
-          fi
-          npm publish --access public --provenance --tag "${{ steps.payload.outputs.internal_dist_tag }}"
+        run: npm publish --access public --provenance --tag "${{ steps.payload.outputs.internal_dist_tag }}"
 
       - name: Create tag
         if: steps.skip.outputs.skip != 'true' && steps.payload.outputs.release_channel == 'stable'
