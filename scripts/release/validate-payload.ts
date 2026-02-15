@@ -12,7 +12,7 @@ type RawPayload = {
   spec_url?: unknown;
   backend_sha?: unknown;
   backend_repo?: unknown;
-  force?: unknown;
+
 };
 
 type DerivedVersions = {
@@ -33,15 +33,6 @@ function fail(message: string): never {
 function toStringValue(value: unknown): string {
   if (value == null) return '';
   return String(value).trim();
-}
-
-function parseBoolean(value: unknown): boolean | undefined {
-  if (typeof value === 'boolean') return value;
-  const normalized = toStringValue(value).toLowerCase();
-  if (!normalized) return undefined;
-  if (normalized === 'true' || normalized === '1' || normalized === 'yes') return true;
-  if (normalized === 'false' || normalized === '0' || normalized === 'no') return false;
-  return undefined;
 }
 
 function writeOutput(name: string, value: string): void {
@@ -76,7 +67,7 @@ function getPayload(): RawPayload {
     spec_url: process.env.INPUT_SPEC_URL,
     backend_sha: process.env.INPUT_BACKEND_SHA,
     backend_repo: process.env.INPUT_BACKEND_REPO,
-    force: process.env.INPUT_FORCE,
+
   };
 }
 
@@ -174,8 +165,6 @@ async function main(): Promise<void> {
   const backendRepo = toStringValue(rawPayload.backend_repo);
   if (!backendRepo) fail('`backend_repo` is required.');
 
-  const force = parseBoolean(rawPayload.force) ?? false;
-
   const specVersion = await loadSpecVersion(specUrl);
   const derived = deriveVersions(specVersion, channel, backendSha);
 
@@ -232,7 +221,7 @@ async function main(): Promise<void> {
   writeOutput('spec_url', specUrl);
   writeOutput('backend_sha', backendSha);
   writeOutput('backend_repo', backendRepo);
-  writeOutput('force', String(force));
+
 }
 
 main().catch((error) => {

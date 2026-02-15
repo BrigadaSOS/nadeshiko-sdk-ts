@@ -39,11 +39,3 @@ jobs:
           node -e "import('./build/internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
           node -e "const m=require('./build/public/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
           node -e "const m=require('./build/internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: sdk-dist
-          path: |
-            build/public/dist
-            build/internal/dist

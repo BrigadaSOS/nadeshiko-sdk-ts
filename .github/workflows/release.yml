@@ -30,14 +30,9 @@ on:
         description: "Backend repo name, e.g. BrigadaSOS/Nadeshiko"
         required: true
         type: string
-      force:
-        description: "Force release even if target versions already exist on npm"
-        required: false
-        type: boolean
-        default: false
-
 permissions:
   contents: write
+  id-token: write
 
 concurrency:
   group: sdk-release-${{ inputs.release_channel || github.event.client_payload.release_channel || 'stable' }}
@@ -46,6 +41,7 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: npm
     env:
       BASE_BRANCH: ${{ github.event.repository.default_branch }}
     steps:
@@ -103,15 +99,14 @@ jobs:
           SKIP="false"
           SKIP_REASON=""
           CHANNEL="${{ steps.payload.outputs.release_channel }}"
-          FORCE="${{ steps.payload.outputs.force }}"
 
           if [[ "${CHANNEL}" == "dev" ]]; then
-            if [[ "${{ steps.npm_check.outputs.internal_exists }}" == "true" && "${FORCE}" != "true" ]]; then
+            if [[ "${{ steps.npm_check.outputs.internal_exists }}" == "true" ]]; then
               SKIP="true"
               SKIP_REASON="dev version already exists on npm"
             fi
           else
-            if [[ "${{ steps.npm_check.outputs.public_exists }}" == "true" && "${{ steps.npm_check.outputs.internal_exists }}" == "true" && "${FORCE}" != "true" ]]; then
+            if [[ "${{ steps.npm_check.outputs.public_exists }}" == "true" && "${{ steps.npm_check.outputs.internal_exists }}" == "true" ]]; then
               SKIP="true"
               SKIP_REASON="both public and internal versions already exist on npm"
             fi
@@ -130,7 +125,7 @@ jobs:
             echo "- Channel: \`${{ steps.payload.outputs.release_channel }}\`"
             echo "- Spec version: \`${{ steps.payload.outputs.spec_version }}\`"
             echo "- Internal version: \`@brigadasos/nadeshiko-sdk@${{ steps.payload.outputs.internal_version }}\`"
-            echo "- Use manual dispatch with \`force=true\` to override."
+            echo "- Bump the spec version to publish a new release."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Generate SDK
@@ -206,7 +201,7 @@ jobs:
             echo "NPM_TOKEN is missing."
             exit 1
           fi
-          npm publish --access public --tag "${{ steps.payload.outputs.dist_tag }}"
+          npm publish --access public --provenance --tag "${{ steps.payload.outputs.dist_tag }}"
 
       - name: Publish internal SDK
         if: steps.skip.outputs.skip != 'true' && steps.npm_check.outputs.internal_exists != 'true'
@@ -219,7 +214,7 @@ jobs:
             echo "NPM_TOKEN is missing."
             exit 1
           fi
-          npm publish --access public --tag "${{ steps.payload.outputs.internal_dist_tag }}"
+          npm publish --access public --provenance --tag "${{ steps.payload.outputs.internal_dist_tag }}"
 
       - name: Create tag
         if: steps.skip.outputs.skip != 'true' && steps.payload.outputs.release_channel == 'stable'
