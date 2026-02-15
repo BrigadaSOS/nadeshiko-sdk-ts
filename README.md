@@ -8,6 +8,12 @@ TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co).
 bun add @brigadasos/nadeshiko-sdk
 ```
 
+Install the internal build (includes internal endpoints) via the `internal` dist-tag:
+
+```bash
+bun add @brigadasos/nadeshiko-sdk@internal
+```
+
 ## Use the public SDK
 
 The client sends your API key as `Authorization: Bearer <apiKey>`.

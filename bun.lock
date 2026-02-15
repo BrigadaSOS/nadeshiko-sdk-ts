@@ -3,7 +3,8 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@brigadasos/nadeshiko-sdk-monorepo",
+      "name": "@brigadasos/nadeshiko-sdk-build",
+      "version": "1.4.0",
       "devDependencies": {
         "@hey-api/openapi-ts": "^0.90.9",
         "@types/bun": "latest",
@@ -11,20 +12,8 @@
         "yaml": "^2.8.2",
       },
     },
-    "sdk": {
-      "name": "@brigadasos/nadeshiko-sdk",
-      "version": "1.0.0",
-    },
-    "sdk-internal": {
-      "name": "@brigadasos/nadeshiko-internal-sdk",
-      "version": "1.0.0",
-    },
   },
   "packages": {
-    "@brigadasos/nadeshiko-internal-sdk": ["@brigadasos/nadeshiko-internal-sdk@workspace:sdk-internal"],
-
-    "@brigadasos/nadeshiko-sdk": ["@brigadasos/nadeshiko-sdk@workspace:sdk"],
-
     "@hey-api/codegen-core": ["@hey-api/codegen-core@0.5.5", "", { "dependencies": { "@hey-api/types": "0.1.2", "ansi-colors": "4.1.3", "c12": "3.3.3", "color-support": "1.1.3" }, "peerDependencies": { "typescript": ">=5.5.3" } }, "sha512-f2ZHucnA2wBGAY8ipB4wn/mrEYW+WUxU2huJmUvfDO6AE2vfILSHeF3wCO39Pz4wUYPoAWZByaauftLrOfC12Q=="],
 
     "@hey-api/json-schema-ref-parser": ["@hey-api/json-schema-ref-parser@1.2.2", "", { "dependencies": { "@jsdevtools/ono": "^7.1.3", "@types/json-schema": "^7.0.15", "js-yaml": "^4.1.1", "lodash": "^4.17.21" } }, "sha512-oS+5yAdwnK20lSeFO1d53Ku+yaGCsY8PcrmSq2GtSs3bsBfRnHAbpPKSVzQcaxAOrzj5NB+f34WhZglVrNayBA=="],

@@ -1,29 +1,37 @@
 {
-  "name": "@brigadasos/nadeshiko-sdk-monorepo",
-  "version": "1.0.0",
-  "description": "Nadeshiko SDK Monorepo - TypeScript SDKs for Nadeshiko API",
+  "name": "@brigadasos/nadeshiko-sdk-build",
+  "version": "1.4.0",
+  "description": "TypeScript SDK for Nadeshiko API",
   "private": true,
   "license": "MIT",
   "author": "BrigadaSOS",
-  "workspaces": {
-    "packages": [
-      "sdk",
-      "sdk-internal"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrigadaSOS/nadeshiko-sdk-ts.git"
   },
+  "homepage": "https://nadeshiko.co",
+  "bugs": {
+    "url": "https://github.com/BrigadaSOS/nadeshiko-sdk-ts/issues"
+  },
+  "keywords": [
+    "nadeshiko",
+    "japanese",
+    "anime",
+    "sentences",
+    "search",
+    "api",
+    "sdk",
+    "typescript",
+    "openapi"
+  ],
   "scripts": {
-    "generate": "bun run scripts/generate-package.ts public",
-    "generate:internal": "bun run scripts/generate-package.ts internal",
-    "generate:all": "bun run scripts/generate-package.ts all",
-    "generate:local": "bun run scripts/generate-package.ts all ../Nadeshiko/backend/docs/generated/openapi.yaml",
-    "check:boundaries": "bun run scripts/check-public-boundary.ts",
-    "release:validate": "bun run scripts/release/validate-payload.ts",
-    "release:check-npm-version": "bun run scripts/release/check-npm-version.ts",
-    "release:set-version": "bun run scripts/release/set-version.ts",
-    "build": "bun run build:public && bun run build:internal",
-    "build:public": "bun run scripts/build-package.ts sdk",
-    "build:internal": "bun run scripts/build-package.ts sdk-internal",
-    "clean": "rm -rf sdk/dist sdk-internal/dist"
+    "codegen": "bun run codegen:public && bun run codegen:internal",
+    "codegen:public": "SDK_TYPE=public bun run scripts/generate.ts",
+    "codegen:internal": "SDK_TYPE=internal bun run scripts/generate.ts",
+    "pack": "bun run pack:public && bun run pack:internal",
+    "pack:public": "bun run scripts/build-package.ts public",
+    "pack:internal": "bun run scripts/build-package.ts internal",
+    "clean": "rm -rf build generated"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.90.9",

@@ -2,7 +2,7 @@
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
-import { searchHealthCheck, search, fetchSearchStats, searchMultiple, fetchSentenceContext, fetchMediaInfo, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, listIndex, listShow, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs } from './sdk.gen';
+import { searchSegments, getSearchStats, searchWords, getSegmentContext, browseMedia, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, getUserQuota, createReport, getUserReports, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs, morphemeBackfill, getAdminReports, updateReport } from './sdk.gen';
 
 export interface NadeshikoConfig {
   apiKey: string;
@@ -17,12 +17,11 @@ const environments = {
 
 export type NadeshikoClient = {
     client: Client;
-    searchHealthCheck: typeof searchHealthCheck;
-    search: typeof search;
-    fetchSearchStats: typeof fetchSearchStats;
-    searchMultiple: typeof searchMultiple;
-    fetchSentenceContext: typeof fetchSentenceContext;
-    fetchMediaInfo: typeof fetchMediaInfo;
+    searchSegments: typeof searchSegments;
+    getSearchStats: typeof getSearchStats;
+    searchWords: typeof searchWords;
+    getSegmentContext: typeof getSegmentContext;
+    browseMedia: typeof browseMedia;
     mediaIndex: typeof mediaIndex;
     mediaShow: typeof mediaShow;
     episodeIndex: typeof episodeIndex;
@@ -31,14 +30,24 @@ export type NadeshikoClient = {
     segmentShowByUuid: typeof segmentShowByUuid;
     characterShow: typeof characterShow;
     seiyuuShow: typeof seiyuuShow;
+    getUserQuota: typeof getUserQuota;
+    createReport: typeof createReport;
+    getUserReports: typeof getUserReports;
     listIndex: typeof listIndex;
     listShow: typeof listShow;
+    listGetSegments: typeof listGetSegments;
+    listAddSegment: typeof listAddSegment;
+    listUpdateSegment: typeof listUpdateSegment;
+    listRemoveSegment: typeof listRemoveSegment;
     reindexElasticsearch: typeof reindexElasticsearch;
     getQueueStats: typeof getQueueStats;
     getQueueDetails: typeof getQueueDetails;
     getFailedJobs: typeof getFailedJobs;
     retryQueueJobs: typeof retryQueueJobs;
     purgeFailedJobs: typeof purgeFailedJobs;
+    morphemeBackfill: typeof morphemeBackfill;
+    getAdminReports: typeof getAdminReports;
+    updateReport: typeof updateReport;
   };
 
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
@@ -55,12 +64,11 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   return {
     client: clientInstance,
-    searchHealthCheck: (options?: any) => searchHealthCheck({ ...options, client: clientInstance }),
-    search: (options?: any) => search({ ...options, client: clientInstance }),
-    fetchSearchStats: (options?: any) => fetchSearchStats({ ...options, client: clientInstance }),
-    searchMultiple: (options?: any) => searchMultiple({ ...options, client: clientInstance }),
-    fetchSentenceContext: (options?: any) => fetchSentenceContext({ ...options, client: clientInstance }),
-    fetchMediaInfo: (options?: any) => fetchMediaInfo({ ...options, client: clientInstance }),
+    searchSegments: (options?: any) => searchSegments({ ...options, client: clientInstance }),
+    getSearchStats: (options?: any) => getSearchStats({ ...options, client: clientInstance }),
+    searchWords: (options?: any) => searchWords({ ...options, client: clientInstance }),
+    getSegmentContext: (options?: any) => getSegmentContext({ ...options, client: clientInstance }),
+    browseMedia: (options?: any) => browseMedia({ ...options, client: clientInstance }),
     mediaIndex: (options?: any) => mediaIndex({ ...options, client: clientInstance }),
     mediaShow: (options?: any) => mediaShow({ ...options, client: clientInstance }),
     episodeIndex: (options?: any) => episodeIndex({ ...options, client: clientInstance }),
@@ -69,14 +77,24 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     segmentShowByUuid: (options?: any) => segmentShowByUuid({ ...options, client: clientInstance }),
     characterShow: (options?: any) => characterShow({ ...options, client: clientInstance }),
     seiyuuShow: (options?: any) => seiyuuShow({ ...options, client: clientInstance }),
+    getUserQuota: (options?: any) => getUserQuota({ ...options, client: clientInstance }),
+    createReport: (options?: any) => createReport({ ...options, client: clientInstance }),
+    getUserReports: (options?: any) => getUserReports({ ...options, client: clientInstance }),
     listIndex: (options?: any) => listIndex({ ...options, client: clientInstance }),
     listShow: (options?: any) => listShow({ ...options, client: clientInstance }),
+    listGetSegments: (options?: any) => listGetSegments({ ...options, client: clientInstance }),
+    listAddSegment: (options?: any) => listAddSegment({ ...options, client: clientInstance }),
+    listUpdateSegment: (options?: any) => listUpdateSegment({ ...options, client: clientInstance }),
+    listRemoveSegment: (options?: any) => listRemoveSegment({ ...options, client: clientInstance }),
     reindexElasticsearch: (options?: any) => reindexElasticsearch({ ...options, client: clientInstance }),
     getQueueStats: (options?: any) => getQueueStats({ ...options, client: clientInstance }),
     getQueueDetails: (options?: any) => getQueueDetails({ ...options, client: clientInstance }),
     getFailedJobs: (options?: any) => getFailedJobs({ ...options, client: clientInstance }),
     retryQueueJobs: (options?: any) => retryQueueJobs({ ...options, client: clientInstance }),
     purgeFailedJobs: (options?: any) => purgeFailedJobs({ ...options, client: clientInstance }),
+    morphemeBackfill: (options?: any) => morphemeBackfill({ ...options, client: clientInstance }),
+    getAdminReports: (options?: any) => getAdminReports({ ...options, client: clientInstance }),
+    updateReport: (options?: any) => updateReport({ ...options, client: clientInstance }),
   };
 }
 

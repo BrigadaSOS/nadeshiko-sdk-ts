@@ -8,7 +8,7 @@
  * 3. Create internal namespace exports organized by tag group
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, rmSync } from 'fs';
 import { join, dirname } from 'path';
 import { parse } from 'yaml';
 import { fileURLToPath } from 'url';
@@ -16,37 +16,15 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Determine which package we're building for based on SDK_TYPE
-// In this monorepo, we have:
-// - sdk/ (public SDK)
-// - sdk-internal/ (internal SDK)
 const SDK_TYPE = process.env.SDK_TYPE || 'public';
-const PACKAGE_DIR = SDK_TYPE === 'internal'
-  ? join(__dirname, '../sdk-internal')
-  : join(__dirname, '../sdk');
+const ROOT_DIR = join(__dirname, '..');
+const GENERATED_DIR = join(ROOT_DIR, 'generated', SDK_TYPE);
 
-const GENERATED_DIR = join(PACKAGE_DIR, 'src/generated');
-
-// Support both local file paths and URLs via environment variable
-const OPENAPI_SPEC_SOURCE = process.env.OPENAPI_SPEC_PATH ||
-  'https://raw.githubusercontent.com/BrigadaSOS/Nadeshiko/main-v2/backend/docs/generated/openapi.yaml';
-
-// Endpoint classification
-const INTERNAL_TAGS = {
-  Auth: 'auth',
-  AuthJwt: 'auth',
-  User: 'user',
-  Admin: 'admin',
-} as const;
-
-const MIXED_TAGS = {
-  Media: 'media',
-  Lists: 'lists',
-} as const;
-
-const PUBLIC_TAGS = {
-  Search: 'search',
-} as const;
+const OPENAPI_SPEC_SOURCE = process.env.OPENAPI_SPEC_PATH;
+if (!OPENAPI_SPEC_SOURCE) {
+  console.error('OPENAPI_SPEC_PATH is required. Set it in .env or pass as env var.');
+  process.exit(1);
+}
 
 type EndpointInfo = {
   operationId: string;
@@ -66,37 +44,35 @@ function operationTypePrefix(operationId: string): string {
 /**
  * Build operation type exports for public/internal index files.
  */
-function getOperationTypeExports(operationIds: string[]): string[] {
+function getAvailableGeneratedTypeNames(): Set<string> {
+  const typesFilePath = join(GENERATED_DIR, 'types.gen.ts');
+  const source = readFileSync(typesFilePath, 'utf-8');
+  const names = new Set<string>();
+
+  for (const match of source.matchAll(/export\s+type\s+([A-Za-z0-9_]+)/g)) {
+    names.add(match[1]);
+  }
+  for (const match of source.matchAll(/export\s+interface\s+([A-Za-z0-9_]+)/g)) {
+    names.add(match[1]);
+  }
+
+  return names;
+}
+
+function getOperationTypeExports(operationIds: string[], availableTypeNames: Set<string>): string[] {
   const suffixes = ['Data', 'Errors', 'Error', 'Responses', 'Response'] as const;
   return operationIds.flatMap(operationId => {
     const prefix = operationTypePrefix(operationId);
-    return suffixes.map(suffix => `${prefix}${suffix}`);
+    return suffixes
+      .map(suffix => `${prefix}${suffix}`)
+      .filter(typeName => availableTypeNames.has(typeName));
   });
 }
 
 /**
- * Check if an endpoint is internal based on its tag and HTTP method
- * Default to true (deny by default) for unknown tags - security first
- */
-function isInternalEndpoint(tags: string[], method: string): boolean {
-  const tag = tags[0] || 'Search';
-  if (tag in INTERNAL_TAGS) return true;
-  if (tag in PUBLIC_TAGS) return false;
-  if (tag in MIXED_TAGS) {
-    // For mixed tags, only GET is public
-    return method.toLowerCase() !== 'get';
-  }
-  // Default: treat unknown tags as internal (security by default)
-  return true;
-}
-
-/**
- * Get the group name for a tag
+ * Get the group name for a tag (used for internal namespace organization)
  */
 function getGroupName(tag: string): string {
-  if (tag in INTERNAL_TAGS) return INTERNAL_TAGS[tag as keyof typeof INTERNAL_TAGS];
-  if (tag in MIXED_TAGS) return MIXED_TAGS[tag as keyof typeof MIXED_TAGS];
-  if (tag in PUBLIC_TAGS) return PUBLIC_TAGS[tag as keyof typeof PUBLIC_TAGS];
   return tag.toLowerCase();
 }
 
@@ -110,7 +86,7 @@ function getOpenApiSpecPath(): string {
   // Convert to absolute path
   return OPENAPI_SPEC_SOURCE.startsWith('/')
     ? OPENAPI_SPEC_SOURCE
-    : join(__dirname, '..', OPENAPI_SPEC_SOURCE);
+    : join(ROOT_DIR, OPENAPI_SPEC_SOURCE);
 }
 
 /**
@@ -154,7 +130,7 @@ async function parseOpenApiSpec(): Promise<{
 
       const tags = (operation as any).tags || ['Search'];
       const tag = tags[0] || 'Search';
-      const isInternal = isInternalEndpoint(tags, method);
+      const isInternal = Boolean((operation as any)['x-internal']);
       const groupName = getGroupName(tag);
 
       const endpointInfo: EndpointInfo = {
@@ -282,10 +258,10 @@ export { ${exports} } from '../sdk.gen';
  * Generate the public index file
  * NOTE: This is a public SDK for frontend use - internal endpoints are NOT exposed
  */
-function generatePublicIndex(publicEndpoints: EndpointInfo[]): string {
+function generatePublicIndex(publicEndpoints: EndpointInfo[], availableTypeNames: Set<string>): string {
   const publicOperationIds = publicEndpoints.map(e => e.operationId);
   const exports = publicOperationIds.join(', ');
-  const typeExports = getOperationTypeExports(publicOperationIds)
+  const typeExports = getOperationTypeExports(publicOperationIds, availableTypeNames)
     .map(name => `  ${name}`)
     .join(',\n');
 
@@ -341,8 +317,13 @@ export type { Client, Config } from './client';
 // Main execution
 async function main() {
   try {
+    if (SDK_TYPE !== 'public' && SDK_TYPE !== 'internal') {
+      throw new Error(`Invalid SDK_TYPE "${SDK_TYPE}". Expected "public" or "internal".`);
+    }
+
     // First run openapi-ts to generate all endpoints
     console.log(`Running openapi-ts for ${SDK_TYPE} SDK...`);
+    rmSync(GENERATED_DIR, { recursive: true, force: true });
     const { spawn } = await import('child_process');
     const specPath = getOpenApiSpecPath();
     await new Promise<void>((resolve, reject) => {
@@ -357,6 +338,7 @@ async function main() {
 
     console.log(`Found ${publicEndpoints.length} public endpoints, ${internalEndpoints.length} internal endpoints`);
     console.log(`SDK type: ${SDK_TYPE}`);
+    const availableTypeNames = getAvailableGeneratedTypeNames();
 
     if (SDK_TYPE === 'internal') {
       console.log(`Internal groups: ${Object.keys(internalByGroup).join(', ')}`);
@@ -397,7 +379,7 @@ async function main() {
       console.log(`✓ Generated nadeshiko.gen.ts with ${publicEndpoints.length} public endpoints`);
 
       // Generate public package index
-      const publicIndexContent = generatePublicIndex(publicEndpoints);
+      const publicIndexContent = generatePublicIndex(publicEndpoints, availableTypeNames);
       writeFileSync(join(GENERATED_DIR, 'index.ts'), publicIndexContent);
       console.log(`✓ Generated index.ts (public)`);
     }

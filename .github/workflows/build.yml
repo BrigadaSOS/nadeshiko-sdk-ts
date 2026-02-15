@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate SDKs
+        env:
+          OPENAPI_SPEC_PATH: https://raw.githubusercontent.com/BrigadaSOS/Nadeshiko/main-v2/backend/docs/generated/openapi.yaml
+        run: bun run codegen
+
+      - name: Build packages
+        run: bun run pack
+
+      - name: Smoke test imports
+        run: |
+          node -e "import('./build/public/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
+          node -e "import('./build/internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
+          node -e "const m=require('./build/public/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
+          node -e "const m=require('./build/internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-dist
+          path: |
+            build/public/dist
+            build/internal/dist

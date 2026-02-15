@@ -1,15 +1,25 @@
 #!/usr/bin/env bun
 
 import { appendFileSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { parse } from 'yaml';
+
+type ReleaseChannel = 'dev' | 'stable';
 
 type RawPayload = {
-  version?: unknown;
+  release_channel?: unknown;
   release_tag?: unknown;
-  prerelease?: unknown;
   spec_url?: unknown;
   backend_sha?: unknown;
   backend_repo?: unknown;
   force?: unknown;
+};
+
+type DerivedVersions = {
+  specVersion: string;
+  publicVersion: string;
+  internalVersion: string;
+  internalOnly: boolean;
 };
 
 const SEMVER_REGEX =
@@ -61,9 +71,8 @@ function getPayload(): RawPayload {
 
   // Local fallback for manual script testing.
   return {
-    version: process.env.INPUT_VERSION,
+    release_channel: process.env.INPUT_RELEASE_CHANNEL,
     release_tag: process.env.INPUT_RELEASE_TAG,
-    prerelease: process.env.INPUT_PRERELEASE,
     spec_url: process.env.INPUT_SPEC_URL,
     backend_sha: process.env.INPUT_BACKEND_SHA,
     backend_repo: process.env.INPUT_BACKEND_REPO,
@@ -71,47 +80,85 @@ function getPayload(): RawPayload {
   };
 }
 
-function normalizeReleaseTag(rawReleaseTag: string, version: string): string {
-  const fromRef = rawReleaseTag.startsWith('refs/tags/')
+function resolveChannel(raw: unknown): ReleaseChannel {
+  const value = toStringValue(raw).toLowerCase();
+  if (value === 'dev') return 'dev';
+  if (value === 'stable' || !value) return 'stable';
+  fail(`\`release_channel\` must be "dev" or "stable". Received: "${value}"`);
+}
+
+function normalizeReleaseTag(rawReleaseTag: string, specVersion: string): string {
+  let tag = rawReleaseTag.startsWith('refs/tags/')
     ? rawReleaseTag.replace('refs/tags/', '')
     : rawReleaseTag;
-  const candidate = fromRef || `v${version}`;
+
+  // Strip backend-specific prefix (e.g. "backend-v1.4.0" → "v1.4.0")
+  tag = tag.replace(/^backend-/, '');
+
+  const candidate = tag || `v${specVersion}`;
   return candidate.startsWith('v') ? candidate : `v${candidate}`;
 }
 
-function getPreReleaseIdentifier(version: string): string {
-  const prereleasePart = version.split('-')[1] ?? '';
-  const identifier = prereleasePart.split('.')[0]?.toLowerCase() ?? '';
-  return identifier;
-}
-
-function getDistTag(isPrerelease: boolean, version: string): string {
-  if (!isPrerelease) return 'latest';
-  const identifier = getPreReleaseIdentifier(version);
-  if (identifier === 'alpha' || identifier === 'beta' || identifier === 'rc') {
-    return identifier;
+async function loadSpecVersion(specUrl: string): Promise<string> {
+  let source = '';
+  if (specUrl.startsWith('file://')) {
+    const filePath = fileURLToPath(specUrl);
+    source = readFileSync(filePath, 'utf8');
+  } else {
+    const response = await fetch(specUrl);
+    if (!response.ok) {
+      fail(`Failed to fetch spec_url (${specUrl}): ${response.status} ${response.statusText}`);
+    }
+    source = await response.text();
   }
-  return 'next';
+
+  const spec = parse(source) as { info?: { version?: unknown } };
+  const specVersion = toStringValue(spec?.info?.version);
+  if (!specVersion) {
+    fail('OpenAPI spec is missing `info.version`.');
+  }
+  return specVersion;
 }
 
-function main(): void {
+function deriveVersions(specVersion: string, channel: ReleaseChannel, backendSha: string): DerivedVersions {
+  // Extract base X.Y.Z (strip any prerelease from spec)
+  const semverMatch = specVersion.match(SEMVER_REGEX);
+  if (!semverMatch) {
+    fail(`Spec info.version must be semver compatible. Received: "${specVersion}"`);
+  }
+
+  const buildMetadata = semverMatch?.[5] ?? '';
+  if (buildMetadata) {
+    fail(
+      `Spec info.version must not include build metadata (+...). Received: "${specVersion}"`,
+    );
+  }
+
+  const baseVersion = `${semverMatch[1]}.${semverMatch[2]}.${semverMatch[3]}`;
+
+  if (channel === 'dev') {
+    const shortSha = backendSha.slice(0, 7);
+    return {
+      specVersion,
+      publicVersion: baseVersion,
+      internalVersion: `${baseVersion}-dev.${shortSha}`,
+      internalOnly: true,
+    };
+  }
+
+  // Stable channel
+  return {
+    specVersion,
+    publicVersion: baseVersion,
+    internalVersion: `${baseVersion}-internal`,
+    internalOnly: false,
+  };
+}
+
+async function main(): Promise<void> {
   const rawPayload = getPayload();
 
-  let version = toStringValue(rawPayload.version);
-  const releaseTagCandidate = toStringValue(rawPayload.release_tag);
-  if (!version && releaseTagCandidate) {
-    version = releaseTagCandidate.replace(/^refs\/tags\//, '').replace(/^v/, '');
-  }
-  if (!version) fail('`version` is required.');
-
-  if (!SEMVER_REGEX.test(version)) {
-    fail(`\`version\` must be semver compatible. Received: "${version}"`);
-  }
-
-  const releaseTag = normalizeReleaseTag(releaseTagCandidate, version);
-  if (releaseTag.replace(/^v/, '') !== version) {
-    fail(`release_tag (${releaseTag}) must match version (${version}).`);
-  }
+  const channel = resolveChannel(rawPayload.release_channel);
 
   const specUrl = toStringValue(rawPayload.spec_url);
   if (!specUrl) fail('`spec_url` is required.');
@@ -127,41 +174,67 @@ function main(): void {
   const backendRepo = toStringValue(rawPayload.backend_repo);
   if (!backendRepo) fail('`backend_repo` is required.');
 
-  const prereleaseFromVersion = version.includes('-');
-  const prereleaseFromPayload = parseBoolean(rawPayload.prerelease);
-  if (prereleaseFromPayload != null && prereleaseFromPayload !== prereleaseFromVersion) {
-    fail(
-      `prerelease flag (${prereleaseFromPayload}) does not match version (${version}).`,
-    );
-  }
-  const prerelease = prereleaseFromPayload ?? prereleaseFromVersion;
-
   const force = parseBoolean(rawPayload.force) ?? false;
-  const distTag = getDistTag(prerelease, version);
-  const prereleaseIdentifier = prerelease ? getPreReleaseIdentifier(version) : '';
 
-  console.log(`Release payload OK: ${releaseTag} (${distTag}) from ${backendRepo}@${backendSha}`);
-  const isReleasePinned =
-    specUrl.includes('/releases/download/') || specUrl.includes(`/${releaseTag}/`);
-  const isTemporaryMainV2 =
-    specUrl ===
-    'https://raw.githubusercontent.com/BrigadaSOS/Nadeshiko/main-v2/backend/docs/generated/openapi.yaml';
+  const specVersion = await loadSpecVersion(specUrl);
+  const derived = deriveVersions(specVersion, channel, backendSha);
 
-  if (!isReleasePinned && !isTemporaryMainV2) {
-    console.log(
-      'Warning: spec_url does not look release-pinned. Prefer immutable release asset URLs.',
-    );
+  // For stable releases, validate release tag
+  let releaseTag = '';
+  let prerelease = false;
+  let distTag = '';
+  let internalDistTag = '';
+
+  if (channel === 'stable') {
+    const releaseTagCandidate = toStringValue(rawPayload.release_tag);
+    releaseTag = normalizeReleaseTag(releaseTagCandidate, derived.specVersion);
+    if (releaseTag.replace(/^v/, '') !== derived.specVersion) {
+      fail(`release_tag (${releaseTag}) must match spec version (${derived.specVersion}).`);
+    }
+    distTag = 'latest';
+    internalDistTag = 'internal';
+    prerelease = false;
+  } else {
+    // Dev: no release tag needed
+    releaseTag = '';
+    distTag = 'dev';
+    internalDistTag = 'dev';
+    prerelease = true;
   }
 
-  writeOutput('version', version);
+  console.log(
+    `Release payload OK: channel=${channel} from ${backendRepo}@${backendSha} (spec=${derived.specVersion})`,
+  );
+  console.log(
+    `Publish plan: public=${derived.publicVersion} internal=${derived.internalVersion} internal_only=${derived.internalOnly}`,
+  );
+
+  if (channel === 'stable' && (specUrl.startsWith('http://') || specUrl.startsWith('https://'))) {
+    const isReleasePinned =
+      specUrl.includes('/releases/download/') || specUrl.includes(`/${releaseTag}/`);
+
+    if (!isReleasePinned) {
+      console.log(
+        'Warning: spec_url does not look release-pinned. Prefer immutable release asset URLs.',
+      );
+    }
+  }
+
+  writeOutput('release_channel', channel);
+  writeOutput('spec_version', derived.specVersion);
+  writeOutput('public_version', derived.publicVersion);
+  writeOutput('internal_version', derived.internalVersion);
+  writeOutput('internal_only', String(derived.internalOnly));
   writeOutput('release_tag', releaseTag);
   writeOutput('prerelease', String(prerelease));
-  writeOutput('prerelease_identifier', prereleaseIdentifier);
   writeOutput('dist_tag', distTag);
+  writeOutput('internal_dist_tag', internalDistTag);
   writeOutput('spec_url', specUrl);
   writeOutput('backend_sha', backendSha);
   writeOutput('backend_repo', backendRepo);
   writeOutput('force', String(force));
 }
 
-main();
+main().catch((error) => {
+  fail(String(error));
+});
