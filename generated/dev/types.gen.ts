@@ -153,9 +153,9 @@ export type SearchResultSegment = {
      * Episode number where the segment appears
      */
     episodeNumber: number;
-    ja: JapaneseSearchContent;
-    en: TranslationSearchContent;
-    es: TranslationSearchContent;
+    textJa: JapaneseSearchContent;
+    textEn: TranslationSearchContent;
+    textEs: TranslationSearchContent;
     /**
      * Whether the segment contains NSFW content
      */
@@ -813,6 +813,10 @@ export type Media = {
      */
     seasonYear: number;
     /**
+     * Base path for R2/CDN storage (e.g. "media/21459")
+     */
+    storageBasePath?: string;
+    /**
      * Characters appearing in the media with their voice actors
      */
     characters?: Array<MediaCharacter>;
@@ -968,6 +972,10 @@ export type MediaCreateRequest = {
      */
     seasonYear: number;
     /**
+     * Base path for R2/CDN storage (e.g. "media/21459")
+     */
+    storageBasePath?: string;
+    /**
      * List of characters appearing in the media with their voice actors
      */
     characters?: Array<CharacterInput>;
@@ -1114,6 +1122,10 @@ export type MediaUpdateRequest = {
      * Airing year for the media
      */
     seasonYear?: number;
+    /**
+     * Base path for R2/CDN storage (e.g. "media/21459")
+     */
+    storageBasePath?: string;
     /**
      * List of characters appearing in the media with their voice actors
      */
@@ -1308,9 +1320,9 @@ export type Segment = {
      * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
      */
     endTime: string;
-    ja: JapaneseContent;
-    en: TranslationContent;
-    es: TranslationContent;
+    textJa: JapaneseContent;
+    textEn: TranslationContent;
+    textEs: TranslationContent;
     /**
      * Whether the segment contains NSFW content
      */
@@ -1381,13 +1393,13 @@ export type SegmentCreateRequest = {
      * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
      */
     endTime: string;
-    ja: {
+    textJa: {
         /**
          * Original Japanese content of the segment
          */
         content?: string;
     };
-    es?: {
+    textEs?: {
         /**
          * Spanish translation of the segment content
          */
@@ -1397,7 +1409,7 @@ export type SegmentCreateRequest = {
          */
         isMachineTranslated?: boolean;
     };
-    en?: {
+    textEn?: {
         /**
          * English translation of the segment content
          */
@@ -1441,13 +1453,13 @@ export type SegmentUpdateRequest = {
      * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
      */
     endTime?: string;
-    ja?: {
+    textJa?: {
         /**
          * Original Japanese content of the segment
          */
         content?: string;
     };
-    es?: {
+    textEs?: {
         /**
          * Spanish translation of the segment content
          */
@@ -1457,7 +1469,7 @@ export type SegmentUpdateRequest = {
          */
         isMachineTranslated?: boolean;
     };
-    en?: {
+    textEn?: {
         /**
          * English translation of the segment content
          */
