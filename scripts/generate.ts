@@ -317,8 +317,8 @@ export type { Client, Config } from './client';
 // Main execution
 async function main() {
   try {
-    if (SDK_TYPE !== 'public' && SDK_TYPE !== 'internal') {
-      throw new Error(`Invalid SDK_TYPE "${SDK_TYPE}". Expected "public" or "internal".`);
+    if (SDK_TYPE !== 'public' && SDK_TYPE !== 'internal' && SDK_TYPE !== 'dev') {
+      throw new Error(`Invalid SDK_TYPE "${SDK_TYPE}". Expected "public", "internal", or "dev".`);
     }
 
     // First run openapi-ts to generate all endpoints
@@ -340,7 +340,7 @@ async function main() {
     console.log(`SDK type: ${SDK_TYPE}`);
     const availableTypeNames = getAvailableGeneratedTypeNames();
 
-    if (SDK_TYPE === 'internal') {
+    if (SDK_TYPE === 'internal' || SDK_TYPE === 'dev') {
       console.log(`Internal groups: ${Object.keys(internalByGroup).join(', ')}`);
 
       // For internal SDK, include both public and internal endpoints

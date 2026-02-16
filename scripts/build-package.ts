@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-type BuildTarget = 'public' | 'internal';
+type BuildTarget = 'public' | 'internal' | 'dev';
 
 type RootPackageJson = {
   version: string;
@@ -41,8 +41,8 @@ function run(command: string, args: string[], cwd: string): void {
 
 function resolveTarget(): BuildTarget {
   const value = (process.argv[2] ?? '').trim().toLowerCase();
-  if (value !== 'public' && value !== 'internal') {
-    fail('Usage: bun run scripts/build-package.ts <public|internal>');
+  if (value !== 'public' && value !== 'internal' && value !== 'dev') {
+    fail('Usage: bun run scripts/build-package.ts <public|internal|dev>');
   }
   return value;
 }
@@ -66,7 +66,7 @@ function main(): void {
 
   const rootPackage = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')) as RootPackageJson;
   const baseVersion = process.env.SDK_VERSION?.trim() || rootPackage.version;
-  const publishVersion = target === 'internal'
+  const publishVersion = (target === 'internal' || target === 'dev')
     ? (process.env.INTERNAL_VERSION?.trim() || `${baseVersion}-internal`)
     : baseVersion;
 
@@ -130,14 +130,14 @@ function main(): void {
   copyFileSync(resolveLicenseSource(), join(packageDir, 'LICENSE'));
 
   const keywords = Array.isArray(rootPackage.keywords) ? [...rootPackage.keywords] : [];
-  if (target === 'internal' && !keywords.includes('internal')) {
+  if ((target === 'internal' || target === 'dev') && !keywords.includes('internal')) {
     keywords.push('internal');
   }
 
   const publishPackage = {
     name: '@brigadasos/nadeshiko-sdk',
     version: publishVersion,
-    description: target === 'internal'
+    description: (target === 'internal' || target === 'dev')
       ? 'TypeScript SDK for Nadeshiko API (internal build - includes internal endpoints)'
       : (rootPackage.description || 'TypeScript SDK for Nadeshiko API (public endpoints only)'),
     main: './dist/index.cjs',

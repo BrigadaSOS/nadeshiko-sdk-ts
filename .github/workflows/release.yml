@@ -122,7 +122,7 @@ jobs:
           OPENAPI_SPEC_PATH: ${{ steps.payload.outputs.spec_url }}
         run: |
           if [[ "${{ steps.payload.outputs.release_channel }}" == "dev" ]]; then
-            bun run codegen:internal
+            bun run codegen:dev
           else
             bun run codegen
           fi
@@ -140,7 +140,7 @@ jobs:
           INTERNAL_VERSION: ${{ steps.payload.outputs.internal_version }}
         run: |
           if [[ "${{ steps.payload.outputs.release_channel }}" == "dev" ]]; then
-            bun run pack:internal
+            bun run pack:dev
           else
             bun run pack
           fi
@@ -149,27 +149,36 @@ jobs:
         if: steps.skip.outputs.skip != 'true'
         run: |
           CHANNEL="${{ steps.payload.outputs.release_channel }}"
-          if [[ "${CHANNEL}" != "dev" ]]; then
+          if [[ "${CHANNEL}" == "dev" ]]; then
+            node -e "import('./build/dev/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('dev esm missing createClient');})"
+            node -e "const m=require('./build/dev/dist/index.cjs'); if(!m.createClient) throw new Error('dev cjs missing createClient');"
+          else
             node -e "import('./build/public/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
             node -e "const m=require('./build/public/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
+            node -e "import('./build/internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
+            node -e "const m=require('./build/internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
           fi
-          node -e "import('./build/internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
-          node -e "const m=require('./build/internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
 
       - name: Commit and push
-        if: steps.skip.outputs.skip != 'true' && steps.payload.outputs.release_channel == 'stable'
+        if: steps.skip.outputs.skip != 'true'
         env:
           VERSION: ${{ steps.payload.outputs.spec_version }}
           BACKEND_SHA: ${{ steps.payload.outputs.backend_sha }}
           BACKEND_REPO: ${{ steps.payload.outputs.backend_repo }}
+          CHANNEL: ${{ steps.payload.outputs.release_channel }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            package.json \
-            generated/public \
-            generated/internal
+
+          if [[ "${CHANNEL}" == "dev" ]]; then
+            git add generated/dev
+          else
+            git add \
+              package.json \
+              generated/public \
+              generated/internal
+          fi
 
           if git diff --cached --quiet; then
             echo "No version or generated changes detected; skipping commit."
@@ -185,7 +194,7 @@ jobs:
 
       - name: Publish internal SDK
         if: steps.skip.outputs.skip != 'true' && steps.npm_check.outputs.internal_exists != 'true'
-        working-directory: build/internal
+        working-directory: ${{ steps.payload.outputs.release_channel == 'dev' && 'build/dev' || 'build/internal' }}
         run: npm publish --access public --provenance --tag "${{ steps.payload.outputs.internal_dist_tag }}"
 
       - name: Create tag

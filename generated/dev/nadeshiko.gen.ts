@@ -2,7 +2,7 @@
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
-import { searchSegments, getSearchStats, searchWords, getSegmentContext, browseMedia, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, getUserQuota, createReport, getUserReports, getUserPreferences, updateUserPreferences, getUserActivity, clearUserActivity, getUserActivityStats, exportUserData, getLabFeatures, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs, morphemeBackfill, getAdminReports, updateReport, runReviewChecks, getReviewChecks, updateReviewCheck, getReviewRuns, getReviewRunDetails, getReviewAllowlist, addToReviewAllowlist, removeFromReviewAllowlist } from './sdk.gen';
+import { searchSegments, getSearchStats, searchWords, getSegmentContext, browseMedia, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, getUserQuota, createReport, getUserReports, getUserPreferences, updateUserPreferences, getUserActivity, clearUserActivity, getUserActivityStats, exportUserData, getLabFeatures, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs, morphemeBackfill, getAdminReports, updateReport, runReviewChecks, getReviewChecks, updateReviewCheck, getReviewRuns, getReviewRunDetails, getReviewAllowlist, addToReviewAllowlist, removeFromReviewAllowlist, healthCheck, mediaCreate, mediaUpdate, mediaDestroy, episodeCreate, episodeUpdate, episodeDestroy, segmentIndex, segmentCreate, segmentUpdate, segmentDestroy, listCreate, listUpdate, listDestroy, listAddItem, listUpdateItem, listRemoveItem } from './sdk.gen';
 
 export interface NadeshikoConfig {
   apiKey: string;
@@ -63,6 +63,23 @@ export type NadeshikoClient = {
     getReviewAllowlist: typeof getReviewAllowlist;
     addToReviewAllowlist: typeof addToReviewAllowlist;
     removeFromReviewAllowlist: typeof removeFromReviewAllowlist;
+    healthCheck: typeof healthCheck;
+    mediaCreate: typeof mediaCreate;
+    mediaUpdate: typeof mediaUpdate;
+    mediaDestroy: typeof mediaDestroy;
+    episodeCreate: typeof episodeCreate;
+    episodeUpdate: typeof episodeUpdate;
+    episodeDestroy: typeof episodeDestroy;
+    segmentIndex: typeof segmentIndex;
+    segmentCreate: typeof segmentCreate;
+    segmentUpdate: typeof segmentUpdate;
+    segmentDestroy: typeof segmentDestroy;
+    listCreate: typeof listCreate;
+    listUpdate: typeof listUpdate;
+    listDestroy: typeof listDestroy;
+    listAddItem: typeof listAddItem;
+    listUpdateItem: typeof listUpdateItem;
+    listRemoveItem: typeof listRemoveItem;
   };
 
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
@@ -125,6 +142,23 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getReviewAllowlist: (options?: any) => getReviewAllowlist({ ...options, client: clientInstance }),
     addToReviewAllowlist: (options?: any) => addToReviewAllowlist({ ...options, client: clientInstance }),
     removeFromReviewAllowlist: (options?: any) => removeFromReviewAllowlist({ ...options, client: clientInstance }),
+    healthCheck: (options?: any) => healthCheck({ ...options, client: clientInstance }),
+    mediaCreate: (options?: any) => mediaCreate({ ...options, client: clientInstance }),
+    mediaUpdate: (options?: any) => mediaUpdate({ ...options, client: clientInstance }),
+    mediaDestroy: (options?: any) => mediaDestroy({ ...options, client: clientInstance }),
+    episodeCreate: (options?: any) => episodeCreate({ ...options, client: clientInstance }),
+    episodeUpdate: (options?: any) => episodeUpdate({ ...options, client: clientInstance }),
+    episodeDestroy: (options?: any) => episodeDestroy({ ...options, client: clientInstance }),
+    segmentIndex: (options?: any) => segmentIndex({ ...options, client: clientInstance }),
+    segmentCreate: (options?: any) => segmentCreate({ ...options, client: clientInstance }),
+    segmentUpdate: (options?: any) => segmentUpdate({ ...options, client: clientInstance }),
+    segmentDestroy: (options?: any) => segmentDestroy({ ...options, client: clientInstance }),
+    listCreate: (options?: any) => listCreate({ ...options, client: clientInstance }),
+    listUpdate: (options?: any) => listUpdate({ ...options, client: clientInstance }),
+    listDestroy: (options?: any) => listDestroy({ ...options, client: clientInstance }),
+    listAddItem: (options?: any) => listAddItem({ ...options, client: clientInstance }),
+    listUpdateItem: (options?: any) => listUpdateItem({ ...options, client: clientInstance }),
+    listRemoveItem: (options?: any) => listRemoveItem({ ...options, client: clientInstance }),
   };
 }
 
