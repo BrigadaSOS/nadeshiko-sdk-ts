@@ -54,7 +54,7 @@ jobs:
 
       - name: Validate payload
         id: payload
-        run: bun run scripts/release/validate-payload.ts
+        run: bun run scripts/validate-payload.ts
 
       - name: Check npm for existing versions
         id: npm_check
@@ -183,7 +183,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No version or generated changes detected; skipping commit."
           else
-            git commit -m "chore(release): SDK ${VERSION} for ${BACKEND_REPO}@${BACKEND_SHA}"
+            git commit -m "chore(release): SDK ${VERSION} (${CHANNEL}) for ${BACKEND_REPO}@${BACKEND_SHA}"
             git push origin "HEAD:${BASE_BRANCH}"
           fi
 
