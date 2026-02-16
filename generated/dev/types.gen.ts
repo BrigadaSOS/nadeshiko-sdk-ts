@@ -638,87 +638,6 @@ export type SearchMultipleResponse = {
     results?: Array<WordMatch>;
 };
 
-export type SegmentContextRequest = {
-    /**
-     * Media ID
-     */
-    mediaId: number;
-    /**
-     * Episode number
-     */
-    episodeNumber: number;
-    /**
-     * Segment position in the episode
-     */
-    segmentPosition: number;
-    /**
-     * Number of surrounding segments to retrieve
-     */
-    limit?: number;
-};
-
-export type SegmentContextResponse = {
-    segments: Array<SearchResult>;
-};
-
-/**
- * Not Found error response
- */
-export type Error404 = {
-    /**
-     * Specific error code for programmatic handling
-     */
-    code: 'NOT_FOUND';
-    /**
-     * A short, human-readable summary of the problem
-     */
-    title: string;
-    /**
-     * A human-readable explanation specific to this occurrence
-     */
-    detail: string;
-    /**
-     * A URI reference that identifies the problem type (e.g., GitHub issues link)
-     */
-    type?: string;
-    /**
-     * A URI reference that identifies the specific occurrence (e.g., trace ID)
-     */
-    instance?: string;
-    /**
-     * The HTTP status code
-     */
-    status: 404;
-    /**
-     * Optional map of field names to their error messages (for validation errors)
-     */
-    errors?: {
-        [key: string]: string;
-    };
-};
-
-/**
- * Statistics about media and segments for browse view
- */
-export type MediaBrowseStats = {
-    /**
-     * Number of media entries matching current search/filter
-     */
-    filteredMediaCount?: number;
-    /**
-     * Number of segments in the filtered media
-     */
-    filteredSegmentCount?: number;
-    /**
-     * Total number of media entries in the entire database
-     */
-    totalMediaCount?: number;
-    /**
-     * Total number of segments in the entire database
-     */
-    totalSegmentCount?: number;
-};
-
 /**
  * Map of external IDs keyed by source. Only sources with values are included.
  */
@@ -735,95 +654,6 @@ export type ExternalId = {
      * TVDB ID
      */
     tvdb?: string;
-};
-
-/**
- * Summary information about a media entry for browse/list views
- */
-export type MediaSummary = {
-    /**
-     * Unique identifier for the media
-     */
-    id: number;
-    externalIds?: ExternalId;
-    category?: Category;
-    /**
-     * Timestamp when the media entry was created in the database
-     */
-    createdAt?: string;
-    /**
-     * Timestamp when the media entry was last updated
-     */
-    updatedAt?: number;
-    /**
-     * Romaji transliteration of the media name
-     */
-    nameRomaji?: string;
-    /**
-     * English name of the media
-     */
-    nameEn?: string;
-    /**
-     * Original Japanese name of the media
-     */
-    nameJa?: string;
-    /**
-     * Format of the media release (e.g., TV, OVA, Movie)
-     */
-    airingFormat?: string;
-    /**
-     * Current airing status (FINISHED, RELEASING)
-     */
-    airingStatus?: string;
-    /**
-     * Start date of the media (YYYY-MM-DD)
-     */
-    startDate?: string;
-    /**
-     * End date of the media (null if unknown) (YYYY-MM-DD)
-     */
-    endDate?: string;
-    /**
-     * Folder name used for storing media files
-     */
-    folderMediaName?: string;
-    /**
-     * List of genres associated with the media
-     */
-    genres?: Array<string>;
-    /**
-     * URL to the cover image
-     */
-    coverUrl?: string;
-    /**
-     * URL to the banner image
-     */
-    bannerUrl?: string;
-    /**
-     * Version identifier for the media entry
-     */
-    version?: string;
-    /**
-     * Total number of subtitle segments available
-     */
-    segmentCount?: number;
-    /**
-     * Total number of episodes available
-     */
-    episodeCount?: number;
-};
-
-export type MediaBrowseResponse = {
-    stats?: MediaBrowseStats;
-    results?: Array<MediaSummary>;
-    /**
-     * Next cursor for pagination
-     */
-    cursor?: number;
-    /**
-     * Whether more results are available
-     */
-    hasMore?: boolean;
 };
 
 /**
@@ -1175,6 +1005,42 @@ export type Error409 = {
      * The HTTP status code
      */
     status: 409;
+    /**
+     * Optional map of field names to their error messages (for validation errors)
+     */
+    errors?: {
+        [key: string]: string;
+    };
+};
+
+/**
+ * Not Found error response
+ */
+export type Error404 = {
+    /**
+     * Specific error code for programmatic handling
+     */
+    code: 'NOT_FOUND';
+    /**
+     * A short, human-readable summary of the problem
+     */
+    title: string;
+    /**
+     * A human-readable explanation specific to this occurrence
+     */
+    detail: string;
+    /**
+     * A URI reference that identifies the problem type (e.g., GitHub issues link)
+     */
+    type?: string;
+    /**
+     * A URI reference that identifies the specific occurrence (e.g., trace ID)
+     */
+    instance?: string;
+    /**
+     * The HTTP status code
+     */
+    status: 404;
     /**
      * Optional map of field names to their error messages (for validation errors)
      */
@@ -1613,6 +1479,10 @@ export type SegmentUpdateRequest = {
      * Hash identifier for the segment (from segment JSON)
      */
     hashedId?: string;
+};
+
+export type SegmentContextResponse = {
+    segments: Array<SearchResult>;
 };
 
 /**
@@ -2242,14 +2112,14 @@ export type HealthCheckResponses = {
 
 export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponses];
 
-export type SearchSegmentsData = {
+export type SearchIndexData = {
     body?: SearchRequest;
     path?: never;
     query?: never;
-    url: '/v1/search/segments';
+    url: '/v1/search';
 };
 
-export type SearchSegmentsErrors = {
+export type SearchIndexErrors = {
     /**
      * Bad Request
      */
@@ -2272,25 +2142,25 @@ export type SearchSegmentsErrors = {
     500: Error500;
 };
 
-export type SearchSegmentsError = SearchSegmentsErrors[keyof SearchSegmentsErrors];
+export type SearchIndexError = SearchIndexErrors[keyof SearchIndexErrors];
 
-export type SearchSegmentsResponses = {
+export type SearchIndexResponses = {
     /**
      * OK
      */
     200: SearchResponse;
 };
 
-export type SearchSegmentsResponse = SearchSegmentsResponses[keyof SearchSegmentsResponses];
+export type SearchIndexResponse = SearchIndexResponses[keyof SearchIndexResponses];
 
-export type GetSearchStatsData = {
+export type SearchStatsData = {
     body?: SearchStatsRequest;
     path?: never;
     query?: never;
     url: '/v1/search/stats';
 };
 
-export type GetSearchStatsErrors = {
+export type SearchStatsErrors = {
     /**
      * Bad Request
      */
@@ -2313,16 +2183,16 @@ export type GetSearchStatsErrors = {
     500: Error500;
 };
 
-export type GetSearchStatsError = GetSearchStatsErrors[keyof GetSearchStatsErrors];
+export type SearchStatsError = SearchStatsErrors[keyof SearchStatsErrors];
 
-export type GetSearchStatsResponses = {
+export type SearchStatsResponses = {
     /**
      * OK
      */
     200: SearchStatsResponse;
 };
 
-export type GetSearchStatsResponse = GetSearchStatsResponses[keyof GetSearchStatsResponses];
+export type SearchStatsResponse2 = SearchStatsResponses[keyof SearchStatsResponses];
 
 export type SearchWordsData = {
     body: SearchMultipleRequest;
@@ -2365,105 +2235,6 @@ export type SearchWordsResponses = {
 
 export type SearchWordsResponse = SearchWordsResponses[keyof SearchWordsResponses];
 
-export type GetSegmentContextData = {
-    body: SegmentContextRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/search/context';
-};
-
-export type GetSegmentContextErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetSegmentContextError = GetSegmentContextErrors[keyof GetSegmentContextErrors];
-
-export type GetSegmentContextResponses = {
-    /**
-     * OK
-     */
-    200: SegmentContextResponse;
-};
-
-export type GetSegmentContextResponse = GetSegmentContextResponses[keyof GetSegmentContextResponses];
-
-export type BrowseMediaData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Number of results per page
-         */
-        size?: number;
-        /**
-         * Pagination cursor offset
-         */
-        cursor?: number;
-        /**
-         * Search query for filtering media
-         */
-        query?: string;
-        /**
-         * Filter by media category
-         */
-        type?: 'anime' | 'liveaction' | 'audiobook';
-    };
-    url: '/v1/media/browse';
-};
-
-export type BrowseMediaErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type BrowseMediaError = BrowseMediaErrors[keyof BrowseMediaErrors];
-
-export type BrowseMediaResponses = {
-    /**
-     * OK
-     */
-    200: MediaBrowseResponse;
-};
-
-export type BrowseMediaResponse = BrowseMediaResponses[keyof BrowseMediaResponses];
-
 export type MediaIndexData = {
     body?: never;
     path?: never;
@@ -2480,6 +2251,10 @@ export type MediaIndexData = {
          * Filter by media category
          */
         category?: 'ANIME' | 'JDRAMA';
+        /**
+         * Search query for filtering media by name
+         */
+        query?: string;
     };
     url: '/v1/media';
 };
@@ -3333,6 +3108,61 @@ export type SegmentShowByUuidResponses = {
 
 export type SegmentShowByUuidResponse = SegmentShowByUuidResponses[keyof SegmentShowByUuidResponses];
 
+export type SegmentContextShowData = {
+    body?: never;
+    path: {
+        /**
+         * Segment UUID
+         */
+        uuid: string;
+    };
+    query?: {
+        /**
+         * Number of segments to return before and after the target
+         */
+        limit?: number;
+    };
+    url: '/v1/media/segments/{uuid}/context';
+};
+
+export type SegmentContextShowErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SegmentContextShowError = SegmentContextShowErrors[keyof SegmentContextShowErrors];
+
+export type SegmentContextShowResponses = {
+    /**
+     * OK
+     */
+    200: SegmentContextResponse;
+};
+
+export type SegmentContextShowResponse = SegmentContextShowResponses[keyof SegmentContextShowResponses];
+
 export type CharacterShowData = {
     body?: never;
     path: {
@@ -3433,14 +3263,14 @@ export type SeiyuuShowResponses = {
 
 export type SeiyuuShowResponse = SeiyuuShowResponses[keyof SeiyuuShowResponses];
 
-export type GetUserQuotaData = {
+export type UserQuotaShowData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/quota';
 };
 
-export type GetUserQuotaErrors = {
+export type UserQuotaShowErrors = {
     /**
      * Unauthorized
      */
@@ -3451,18 +3281,18 @@ export type GetUserQuotaErrors = {
     500: Error500;
 };
 
-export type GetUserQuotaError = GetUserQuotaErrors[keyof GetUserQuotaErrors];
+export type UserQuotaShowError = UserQuotaShowErrors[keyof UserQuotaShowErrors];
 
-export type GetUserQuotaResponses = {
+export type UserQuotaShowResponses = {
     /**
      * OK
      */
     200: UserQuotaResponse;
 };
 
-export type GetUserQuotaResponse = GetUserQuotaResponses[keyof GetUserQuotaResponses];
+export type UserQuotaShowResponse = UserQuotaShowResponses[keyof UserQuotaShowResponses];
 
-export type GetUserReportsData = {
+export type UserReportIndexData = {
     body?: never;
     path?: never;
     query?: {
@@ -3482,7 +3312,7 @@ export type GetUserReportsData = {
     url: '/v1/user/reports';
 };
 
-export type GetUserReportsErrors = {
+export type UserReportIndexErrors = {
     /**
      * Unauthorized
      */
@@ -3493,25 +3323,25 @@ export type GetUserReportsErrors = {
     500: Error500;
 };
 
-export type GetUserReportsError = GetUserReportsErrors[keyof GetUserReportsErrors];
+export type UserReportIndexError = UserReportIndexErrors[keyof UserReportIndexErrors];
 
-export type GetUserReportsResponses = {
+export type UserReportIndexResponses = {
     /**
      * OK
      */
     200: ReportListResponse;
 };
 
-export type GetUserReportsResponse = GetUserReportsResponses[keyof GetUserReportsResponses];
+export type UserReportIndexResponse = UserReportIndexResponses[keyof UserReportIndexResponses];
 
-export type CreateReportData = {
+export type UserReportCreateData = {
     body: CreateReportRequest;
     path?: never;
     query?: never;
     url: '/v1/user/reports';
 };
 
-export type CreateReportErrors = {
+export type UserReportCreateErrors = {
     /**
      * Bad Request
      */
@@ -3530,25 +3360,25 @@ export type CreateReportErrors = {
     500: Error500;
 };
 
-export type CreateReportError = CreateReportErrors[keyof CreateReportErrors];
+export type UserReportCreateError = UserReportCreateErrors[keyof UserReportCreateErrors];
 
-export type CreateReportResponses = {
+export type UserReportCreateResponses = {
     /**
      * Report created successfully
      */
     201: Report;
 };
 
-export type CreateReportResponse = CreateReportResponses[keyof CreateReportResponses];
+export type UserReportCreateResponse = UserReportCreateResponses[keyof UserReportCreateResponses];
 
-export type GetUserPreferencesData = {
+export type UserPreferencesShowData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/preferences';
 };
 
-export type GetUserPreferencesErrors = {
+export type UserPreferencesShowErrors = {
     /**
      * Unauthorized
      */
@@ -3559,25 +3389,25 @@ export type GetUserPreferencesErrors = {
     500: Error500;
 };
 
-export type GetUserPreferencesError = GetUserPreferencesErrors[keyof GetUserPreferencesErrors];
+export type UserPreferencesShowError = UserPreferencesShowErrors[keyof UserPreferencesShowErrors];
 
-export type GetUserPreferencesResponses = {
+export type UserPreferencesShowResponses = {
     /**
      * OK
      */
     200: UserPreferences;
 };
 
-export type GetUserPreferencesResponse = GetUserPreferencesResponses[keyof GetUserPreferencesResponses];
+export type UserPreferencesShowResponse = UserPreferencesShowResponses[keyof UserPreferencesShowResponses];
 
-export type UpdateUserPreferencesData = {
+export type UserPreferencesUpdateData = {
     body: UserPreferences;
     path?: never;
     query?: never;
     url: '/v1/user/preferences';
 };
 
-export type UpdateUserPreferencesErrors = {
+export type UserPreferencesUpdateErrors = {
     /**
      * Unauthorized
      */
@@ -3588,18 +3418,18 @@ export type UpdateUserPreferencesErrors = {
     500: Error500;
 };
 
-export type UpdateUserPreferencesError = UpdateUserPreferencesErrors[keyof UpdateUserPreferencesErrors];
+export type UserPreferencesUpdateError = UserPreferencesUpdateErrors[keyof UserPreferencesUpdateErrors];
 
-export type UpdateUserPreferencesResponses = {
+export type UserPreferencesUpdateResponses = {
     /**
      * OK
      */
     200: UserPreferences;
 };
 
-export type UpdateUserPreferencesResponse = UpdateUserPreferencesResponses[keyof UpdateUserPreferencesResponses];
+export type UserPreferencesUpdateResponse = UserPreferencesUpdateResponses[keyof UserPreferencesUpdateResponses];
 
-export type ClearUserActivityData = {
+export type UserActivityDestroyData = {
     body?: never;
     path?: never;
     query?: {
@@ -3611,7 +3441,7 @@ export type ClearUserActivityData = {
     url: '/v1/user/activity';
 };
 
-export type ClearUserActivityErrors = {
+export type UserActivityDestroyErrors = {
     /**
      * Unauthorized
      */
@@ -3622,9 +3452,9 @@ export type ClearUserActivityErrors = {
     500: Error500;
 };
 
-export type ClearUserActivityError = ClearUserActivityErrors[keyof ClearUserActivityErrors];
+export type UserActivityDestroyError = UserActivityDestroyErrors[keyof UserActivityDestroyErrors];
 
-export type ClearUserActivityResponses = {
+export type UserActivityDestroyResponses = {
     /**
      * OK
      */
@@ -3634,9 +3464,9 @@ export type ClearUserActivityResponses = {
     };
 };
 
-export type ClearUserActivityResponse = ClearUserActivityResponses[keyof ClearUserActivityResponses];
+export type UserActivityDestroyResponse = UserActivityDestroyResponses[keyof UserActivityDestroyResponses];
 
-export type GetUserActivityData = {
+export type UserActivityIndexData = {
     body?: never;
     path?: never;
     query?: {
@@ -3656,7 +3486,7 @@ export type GetUserActivityData = {
     url: '/v1/user/activity';
 };
 
-export type GetUserActivityErrors = {
+export type UserActivityIndexErrors = {
     /**
      * Unauthorized
      */
@@ -3667,9 +3497,9 @@ export type GetUserActivityErrors = {
     500: Error500;
 };
 
-export type GetUserActivityError = GetUserActivityErrors[keyof GetUserActivityErrors];
+export type UserActivityIndexError = UserActivityIndexErrors[keyof UserActivityIndexErrors];
 
-export type GetUserActivityResponses = {
+export type UserActivityIndexResponses = {
     /**
      * OK
      */
@@ -3680,16 +3510,16 @@ export type GetUserActivityResponses = {
     };
 };
 
-export type GetUserActivityResponse = GetUserActivityResponses[keyof GetUserActivityResponses];
+export type UserActivityIndexResponse = UserActivityIndexResponses[keyof UserActivityIndexResponses];
 
-export type GetUserActivityStatsData = {
+export type UserActivityStatsShowData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/activity/stats';
 };
 
-export type GetUserActivityStatsErrors = {
+export type UserActivityStatsShowErrors = {
     /**
      * Unauthorized
      */
@@ -3700,9 +3530,9 @@ export type GetUserActivityStatsErrors = {
     500: Error500;
 };
 
-export type GetUserActivityStatsError = GetUserActivityStatsErrors[keyof GetUserActivityStatsErrors];
+export type UserActivityStatsShowError = UserActivityStatsShowErrors[keyof UserActivityStatsShowErrors];
 
-export type GetUserActivityStatsResponses = {
+export type UserActivityStatsShowResponses = {
     /**
      * OK
      */
@@ -3722,16 +3552,16 @@ export type GetUserActivityStatsResponses = {
     };
 };
 
-export type GetUserActivityStatsResponse = GetUserActivityStatsResponses[keyof GetUserActivityStatsResponses];
+export type UserActivityStatsShowResponse = UserActivityStatsShowResponses[keyof UserActivityStatsShowResponses];
 
-export type ExportUserDataData = {
+export type UserExportShowData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/export';
 };
 
-export type ExportUserDataErrors = {
+export type UserExportShowErrors = {
     /**
      * Unauthorized
      */
@@ -3742,9 +3572,9 @@ export type ExportUserDataErrors = {
     500: Error500;
 };
 
-export type ExportUserDataError = ExportUserDataErrors[keyof ExportUserDataErrors];
+export type UserExportShowError = UserExportShowErrors[keyof UserExportShowErrors];
 
-export type ExportUserDataResponses = {
+export type UserExportShowResponses = {
     /**
      * OK
      */
@@ -3766,32 +3596,32 @@ export type ExportUserDataResponses = {
     };
 };
 
-export type ExportUserDataResponse = ExportUserDataResponses[keyof ExportUserDataResponses];
+export type UserExportShowResponse = UserExportShowResponses[keyof UserExportShowResponses];
 
-export type GetLabFeaturesData = {
+export type LabIndexData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/labs';
 };
 
-export type GetLabFeaturesErrors = {
+export type LabIndexErrors = {
     /**
      * Internal Server Error
      */
     500: Error500;
 };
 
-export type GetLabFeaturesError = GetLabFeaturesErrors[keyof GetLabFeaturesErrors];
+export type LabIndexError = LabIndexErrors[keyof LabIndexErrors];
 
-export type GetLabFeaturesResponses = {
+export type LabIndexResponses = {
     /**
      * OK
      */
     200: Array<LabFeature>;
 };
 
-export type GetLabFeaturesResponse = GetLabFeaturesResponses[keyof GetLabFeaturesResponses];
+export type LabIndexResponse = LabIndexResponses[keyof LabIndexResponses];
 
 export type ListIndexData = {
     body?: never;
@@ -4472,14 +4302,14 @@ export type ListUpdateSegmentResponses = {
 
 export type ListUpdateSegmentResponse = ListUpdateSegmentResponses[keyof ListUpdateSegmentResponses];
 
-export type ReindexElasticsearchData = {
+export type AdminReindexCreateData = {
     body?: ReindexRequest;
     path?: never;
     query?: never;
     url: '/v1/admin/reindex';
 };
 
-export type ReindexElasticsearchErrors = {
+export type AdminReindexCreateErrors = {
     /**
      * Bad Request
      */
@@ -4502,25 +4332,25 @@ export type ReindexElasticsearchErrors = {
     500: Error500;
 };
 
-export type ReindexElasticsearchError = ReindexElasticsearchErrors[keyof ReindexElasticsearchErrors];
+export type AdminReindexCreateError = AdminReindexCreateErrors[keyof AdminReindexCreateErrors];
 
-export type ReindexElasticsearchResponses = {
+export type AdminReindexCreateResponses = {
     /**
      * Reindex operation completed
      */
     200: ReindexResponse;
 };
 
-export type ReindexElasticsearchResponse = ReindexElasticsearchResponses[keyof ReindexElasticsearchResponses];
+export type AdminReindexCreateResponse = AdminReindexCreateResponses[keyof AdminReindexCreateResponses];
 
-export type GetQueueStatsData = {
+export type AdminQueueStatsIndexData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/admin/queues/stats';
 };
 
-export type GetQueueStatsErrors = {
+export type AdminQueueStatsIndexErrors = {
     /**
      * Bad Request
      */
@@ -4543,9 +4373,9 @@ export type GetQueueStatsErrors = {
     500: Error500;
 };
 
-export type GetQueueStatsError = GetQueueStatsErrors[keyof GetQueueStatsErrors];
+export type AdminQueueStatsIndexError = AdminQueueStatsIndexErrors[keyof AdminQueueStatsIndexErrors];
 
-export type GetQueueStatsResponses = {
+export type AdminQueueStatsIndexResponses = {
     /**
      * Queue statistics retrieved successfully
      */
@@ -4562,9 +4392,9 @@ export type GetQueueStatsResponses = {
     }>;
 };
 
-export type GetQueueStatsResponse = GetQueueStatsResponses[keyof GetQueueStatsResponses];
+export type AdminQueueStatsIndexResponse = AdminQueueStatsIndexResponses[keyof AdminQueueStatsIndexResponses];
 
-export type GetQueueDetailsData = {
+export type AdminQueueShowData = {
     body?: never;
     path: {
         /**
@@ -4576,7 +4406,7 @@ export type GetQueueDetailsData = {
     url: '/v1/admin/queues/{queueName}';
 };
 
-export type GetQueueDetailsErrors = {
+export type AdminQueueShowErrors = {
     /**
      * Bad Request
      */
@@ -4603,9 +4433,9 @@ export type GetQueueDetailsErrors = {
     500: Error500;
 };
 
-export type GetQueueDetailsError = GetQueueDetailsErrors[keyof GetQueueDetailsErrors];
+export type AdminQueueShowError = AdminQueueShowErrors[keyof AdminQueueShowErrors];
 
-export type GetQueueDetailsResponses = {
+export type AdminQueueShowResponses = {
     /**
      * Queue details retrieved successfully
      */
@@ -4638,9 +4468,9 @@ export type GetQueueDetailsResponses = {
     };
 };
 
-export type GetQueueDetailsResponse = GetQueueDetailsResponses[keyof GetQueueDetailsResponses];
+export type AdminQueueShowResponse = AdminQueueShowResponses[keyof AdminQueueShowResponses];
 
-export type GetFailedJobsData = {
+export type AdminQueueFailedIndexData = {
     body?: never;
     path: {
         /**
@@ -4652,7 +4482,7 @@ export type GetFailedJobsData = {
     url: '/v1/admin/queues/{queueName}/failed';
 };
 
-export type GetFailedJobsErrors = {
+export type AdminQueueFailedIndexErrors = {
     /**
      * Bad Request
      */
@@ -4675,9 +4505,9 @@ export type GetFailedJobsErrors = {
     500: Error500;
 };
 
-export type GetFailedJobsError = GetFailedJobsErrors[keyof GetFailedJobsErrors];
+export type AdminQueueFailedIndexError = AdminQueueFailedIndexErrors[keyof AdminQueueFailedIndexErrors];
 
-export type GetFailedJobsResponses = {
+export type AdminQueueFailedIndexResponses = {
     /**
      * Failed jobs retrieved successfully
      */
@@ -4701,9 +4531,9 @@ export type GetFailedJobsResponses = {
     }>;
 };
 
-export type GetFailedJobsResponse = GetFailedJobsResponses[keyof GetFailedJobsResponses];
+export type AdminQueueFailedIndexResponse = AdminQueueFailedIndexResponses[keyof AdminQueueFailedIndexResponses];
 
-export type RetryQueueJobsData = {
+export type AdminQueueRetryCreateData = {
     body?: never;
     path: {
         /**
@@ -4715,7 +4545,7 @@ export type RetryQueueJobsData = {
     url: '/v1/admin/queues/{queueName}/retry';
 };
 
-export type RetryQueueJobsErrors = {
+export type AdminQueueRetryCreateErrors = {
     /**
      * Bad Request
      */
@@ -4738,9 +4568,9 @@ export type RetryQueueJobsErrors = {
     500: Error500;
 };
 
-export type RetryQueueJobsError = RetryQueueJobsErrors[keyof RetryQueueJobsErrors];
+export type AdminQueueRetryCreateError = AdminQueueRetryCreateErrors[keyof AdminQueueRetryCreateErrors];
 
-export type RetryQueueJobsResponses = {
+export type AdminQueueRetryCreateResponses = {
     /**
      * Jobs queued for retry
      */
@@ -4754,9 +4584,9 @@ export type RetryQueueJobsResponses = {
     };
 };
 
-export type RetryQueueJobsResponse = RetryQueueJobsResponses[keyof RetryQueueJobsResponses];
+export type AdminQueueRetryCreateResponse = AdminQueueRetryCreateResponses[keyof AdminQueueRetryCreateResponses];
 
-export type PurgeFailedJobsData = {
+export type AdminQueueFailedDestroyData = {
     body?: never;
     path: {
         /**
@@ -4768,7 +4598,7 @@ export type PurgeFailedJobsData = {
     url: '/v1/admin/queues/{queueName}/purge';
 };
 
-export type PurgeFailedJobsErrors = {
+export type AdminQueueFailedDestroyErrors = {
     /**
      * Bad Request
      */
@@ -4791,9 +4621,9 @@ export type PurgeFailedJobsErrors = {
     500: Error500;
 };
 
-export type PurgeFailedJobsError = PurgeFailedJobsErrors[keyof PurgeFailedJobsErrors];
+export type AdminQueueFailedDestroyError = AdminQueueFailedDestroyErrors[keyof AdminQueueFailedDestroyErrors];
 
-export type PurgeFailedJobsResponses = {
+export type AdminQueueFailedDestroyResponses = {
     /**
      * Failed jobs purged successfully
      */
@@ -4807,16 +4637,16 @@ export type PurgeFailedJobsResponses = {
     };
 };
 
-export type PurgeFailedJobsResponse = PurgeFailedJobsResponses[keyof PurgeFailedJobsResponses];
+export type AdminQueueFailedDestroyResponse = AdminQueueFailedDestroyResponses[keyof AdminQueueFailedDestroyResponses];
 
-export type MorphemeBackfillData = {
+export type AdminMorphemeBackfillCreateData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/admin/morpheme-backfill';
 };
 
-export type MorphemeBackfillResponses = {
+export type AdminMorphemeBackfillCreateResponses = {
     /**
      * Backfill completed
      */
@@ -4831,9 +4661,9 @@ export type MorphemeBackfillResponses = {
     };
 };
 
-export type MorphemeBackfillResponse = MorphemeBackfillResponses[keyof MorphemeBackfillResponses];
+export type AdminMorphemeBackfillCreateResponse = AdminMorphemeBackfillCreateResponses[keyof AdminMorphemeBackfillCreateResponses];
 
-export type GetAdminReportsData = {
+export type AdminReportIndexData = {
     body?: never;
     path?: never;
     query?: {
@@ -4869,7 +4699,7 @@ export type GetAdminReportsData = {
     url: '/v1/admin/reports';
 };
 
-export type GetAdminReportsErrors = {
+export type AdminReportIndexErrors = {
     /**
      * Unauthorized
      */
@@ -4888,18 +4718,18 @@ export type GetAdminReportsErrors = {
     500: Error500;
 };
 
-export type GetAdminReportsError = GetAdminReportsErrors[keyof GetAdminReportsErrors];
+export type AdminReportIndexError = AdminReportIndexErrors[keyof AdminReportIndexErrors];
 
-export type GetAdminReportsResponses = {
+export type AdminReportIndexResponses = {
     /**
      * OK
      */
     200: AdminReportListResponse;
 };
 
-export type GetAdminReportsResponse = GetAdminReportsResponses[keyof GetAdminReportsResponses];
+export type AdminReportIndexResponse = AdminReportIndexResponses[keyof AdminReportIndexResponses];
 
-export type UpdateReportData = {
+export type AdminReportUpdateData = {
     body: UpdateReportRequest;
     path: {
         /**
@@ -4911,7 +4741,7 @@ export type UpdateReportData = {
     url: '/v1/admin/reports/{id}';
 };
 
-export type UpdateReportErrors = {
+export type AdminReportUpdateErrors = {
     /**
      * Bad Request
      */
@@ -4938,18 +4768,18 @@ export type UpdateReportErrors = {
     500: Error500;
 };
 
-export type UpdateReportError = UpdateReportErrors[keyof UpdateReportErrors];
+export type AdminReportUpdateError = AdminReportUpdateErrors[keyof AdminReportUpdateErrors];
 
-export type UpdateReportResponses = {
+export type AdminReportUpdateResponses = {
     /**
      * Report updated successfully
      */
     200: Report;
 };
 
-export type UpdateReportResponse = UpdateReportResponses[keyof UpdateReportResponses];
+export type AdminReportUpdateResponse = AdminReportUpdateResponses[keyof AdminReportUpdateResponses];
 
-export type RunReviewChecksData = {
+export type AdminReviewRunCreateData = {
     body?: never;
     path?: never;
     query?: {
@@ -4961,7 +4791,7 @@ export type RunReviewChecksData = {
     url: '/v1/admin/review/run';
 };
 
-export type RunReviewChecksErrors = {
+export type AdminReviewRunCreateErrors = {
     /**
      * Unauthorized
      */
@@ -4980,25 +4810,25 @@ export type RunReviewChecksErrors = {
     500: Error500;
 };
 
-export type RunReviewChecksError = RunReviewChecksErrors[keyof RunReviewChecksErrors];
+export type AdminReviewRunCreateError = AdminReviewRunCreateErrors[keyof AdminReviewRunCreateErrors];
 
-export type RunReviewChecksResponses = {
+export type AdminReviewRunCreateResponses = {
     /**
      * Check run completed
      */
     200: RunReviewResponse;
 };
 
-export type RunReviewChecksResponse = RunReviewChecksResponses[keyof RunReviewChecksResponses];
+export type AdminReviewRunCreateResponse = AdminReviewRunCreateResponses[keyof AdminReviewRunCreateResponses];
 
-export type GetReviewChecksData = {
+export type AdminReviewCheckIndexData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/admin/review/checks';
 };
 
-export type GetReviewChecksErrors = {
+export type AdminReviewCheckIndexErrors = {
     /**
      * Unauthorized
      */
@@ -5017,18 +4847,18 @@ export type GetReviewChecksErrors = {
     500: Error500;
 };
 
-export type GetReviewChecksError = GetReviewChecksErrors[keyof GetReviewChecksErrors];
+export type AdminReviewCheckIndexError = AdminReviewCheckIndexErrors[keyof AdminReviewCheckIndexErrors];
 
-export type GetReviewChecksResponses = {
+export type AdminReviewCheckIndexResponses = {
     /**
      * OK
      */
     200: Array<ReviewCheck>;
 };
 
-export type GetReviewChecksResponse = GetReviewChecksResponses[keyof GetReviewChecksResponses];
+export type AdminReviewCheckIndexResponse = AdminReviewCheckIndexResponses[keyof AdminReviewCheckIndexResponses];
 
-export type UpdateReviewCheckData = {
+export type AdminReviewCheckUpdateData = {
     body: {
         /**
          * New threshold values
@@ -5051,7 +4881,7 @@ export type UpdateReviewCheckData = {
     url: '/v1/admin/review/checks/{name}';
 };
 
-export type UpdateReviewCheckErrors = {
+export type AdminReviewCheckUpdateErrors = {
     /**
      * Bad Request
      */
@@ -5078,18 +4908,18 @@ export type UpdateReviewCheckErrors = {
     500: Error500;
 };
 
-export type UpdateReviewCheckError = UpdateReviewCheckErrors[keyof UpdateReviewCheckErrors];
+export type AdminReviewCheckUpdateError = AdminReviewCheckUpdateErrors[keyof AdminReviewCheckUpdateErrors];
 
-export type UpdateReviewCheckResponses = {
+export type AdminReviewCheckUpdateResponses = {
     /**
      * Check updated successfully
      */
     200: ReviewCheck;
 };
 
-export type UpdateReviewCheckResponse = UpdateReviewCheckResponses[keyof UpdateReviewCheckResponses];
+export type AdminReviewCheckUpdateResponse = AdminReviewCheckUpdateResponses[keyof AdminReviewCheckUpdateResponses];
 
-export type GetReviewRunsData = {
+export type AdminReviewRunIndexData = {
     body?: never;
     path?: never;
     query?: {
@@ -5109,7 +4939,7 @@ export type GetReviewRunsData = {
     url: '/v1/admin/review/runs';
 };
 
-export type GetReviewRunsErrors = {
+export type AdminReviewRunIndexErrors = {
     /**
      * Unauthorized
      */
@@ -5128,9 +4958,9 @@ export type GetReviewRunsErrors = {
     500: Error500;
 };
 
-export type GetReviewRunsError = GetReviewRunsErrors[keyof GetReviewRunsErrors];
+export type AdminReviewRunIndexError = AdminReviewRunIndexErrors[keyof AdminReviewRunIndexErrors];
 
-export type GetReviewRunsResponses = {
+export type AdminReviewRunIndexResponses = {
     /**
      * OK
      */
@@ -5141,9 +4971,9 @@ export type GetReviewRunsResponses = {
     };
 };
 
-export type GetReviewRunsResponse = GetReviewRunsResponses[keyof GetReviewRunsResponses];
+export type AdminReviewRunIndexResponse = AdminReviewRunIndexResponses[keyof AdminReviewRunIndexResponses];
 
-export type GetReviewRunDetailsData = {
+export type AdminReviewRunShowData = {
     body?: never;
     path: {
         /**
@@ -5155,7 +4985,7 @@ export type GetReviewRunDetailsData = {
     url: '/v1/admin/review/runs/{id}';
 };
 
-export type GetReviewRunDetailsErrors = {
+export type AdminReviewRunShowErrors = {
     /**
      * Unauthorized
      */
@@ -5178,9 +5008,9 @@ export type GetReviewRunDetailsErrors = {
     500: Error500;
 };
 
-export type GetReviewRunDetailsError = GetReviewRunDetailsErrors[keyof GetReviewRunDetailsErrors];
+export type AdminReviewRunShowError = AdminReviewRunShowErrors[keyof AdminReviewRunShowErrors];
 
-export type GetReviewRunDetailsResponses = {
+export type AdminReviewRunShowResponses = {
     /**
      * OK
      */
@@ -5190,9 +5020,9 @@ export type GetReviewRunDetailsResponses = {
     };
 };
 
-export type GetReviewRunDetailsResponse = GetReviewRunDetailsResponses[keyof GetReviewRunDetailsResponses];
+export type AdminReviewRunShowResponse = AdminReviewRunShowResponses[keyof AdminReviewRunShowResponses];
 
-export type GetReviewAllowlistData = {
+export type AdminReviewAllowlistIndexData = {
     body?: never;
     path?: never;
     query?: {
@@ -5204,7 +5034,7 @@ export type GetReviewAllowlistData = {
     url: '/v1/admin/review/allowlist';
 };
 
-export type GetReviewAllowlistErrors = {
+export type AdminReviewAllowlistIndexErrors = {
     /**
      * Unauthorized
      */
@@ -5223,18 +5053,18 @@ export type GetReviewAllowlistErrors = {
     500: Error500;
 };
 
-export type GetReviewAllowlistError = GetReviewAllowlistErrors[keyof GetReviewAllowlistErrors];
+export type AdminReviewAllowlistIndexError = AdminReviewAllowlistIndexErrors[keyof AdminReviewAllowlistIndexErrors];
 
-export type GetReviewAllowlistResponses = {
+export type AdminReviewAllowlistIndexResponses = {
     /**
      * OK
      */
     200: Array<ReviewAllowlist>;
 };
 
-export type GetReviewAllowlistResponse = GetReviewAllowlistResponses[keyof GetReviewAllowlistResponses];
+export type AdminReviewAllowlistIndexResponse = AdminReviewAllowlistIndexResponses[keyof AdminReviewAllowlistIndexResponses];
 
-export type AddToReviewAllowlistData = {
+export type AdminReviewAllowlistCreateData = {
     body: {
         /**
          * Check name to allowlist for
@@ -5258,7 +5088,7 @@ export type AddToReviewAllowlistData = {
     url: '/v1/admin/review/allowlist';
 };
 
-export type AddToReviewAllowlistErrors = {
+export type AdminReviewAllowlistCreateErrors = {
     /**
      * Bad Request
      */
@@ -5285,18 +5115,18 @@ export type AddToReviewAllowlistErrors = {
     500: Error500;
 };
 
-export type AddToReviewAllowlistError = AddToReviewAllowlistErrors[keyof AddToReviewAllowlistErrors];
+export type AdminReviewAllowlistCreateError = AdminReviewAllowlistCreateErrors[keyof AdminReviewAllowlistCreateErrors];
 
-export type AddToReviewAllowlistResponses = {
+export type AdminReviewAllowlistCreateResponses = {
     /**
      * Added to allowlist
      */
     201: ReviewAllowlist;
 };
 
-export type AddToReviewAllowlistResponse = AddToReviewAllowlistResponses[keyof AddToReviewAllowlistResponses];
+export type AdminReviewAllowlistCreateResponse = AdminReviewAllowlistCreateResponses[keyof AdminReviewAllowlistCreateResponses];
 
-export type RemoveFromReviewAllowlistData = {
+export type AdminReviewAllowlistDestroyData = {
     body?: never;
     path: {
         /**
@@ -5308,7 +5138,7 @@ export type RemoveFromReviewAllowlistData = {
     url: '/v1/admin/review/allowlist/{id}';
 };
 
-export type RemoveFromReviewAllowlistErrors = {
+export type AdminReviewAllowlistDestroyErrors = {
     /**
      * Unauthorized
      */
@@ -5331,13 +5161,13 @@ export type RemoveFromReviewAllowlistErrors = {
     500: Error500;
 };
 
-export type RemoveFromReviewAllowlistError = RemoveFromReviewAllowlistErrors[keyof RemoveFromReviewAllowlistErrors];
+export type AdminReviewAllowlistDestroyError = AdminReviewAllowlistDestroyErrors[keyof AdminReviewAllowlistDestroyErrors];
 
-export type RemoveFromReviewAllowlistResponses = {
+export type AdminReviewAllowlistDestroyResponses = {
     /**
      * Removed from allowlist
      */
     204: void;
 };
 
-export type RemoveFromReviewAllowlistResponse = RemoveFromReviewAllowlistResponses[keyof RemoveFromReviewAllowlistResponses];
+export type AdminReviewAllowlistDestroyResponse = AdminReviewAllowlistDestroyResponses[keyof AdminReviewAllowlistDestroyResponses];

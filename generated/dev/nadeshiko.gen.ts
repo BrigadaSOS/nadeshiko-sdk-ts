@@ -2,7 +2,7 @@
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
-import { searchSegments, getSearchStats, searchWords, getSegmentContext, browseMedia, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, getUserQuota, createReport, getUserReports, getUserPreferences, updateUserPreferences, getUserActivity, clearUserActivity, getUserActivityStats, exportUserData, getLabFeatures, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs, morphemeBackfill, getAdminReports, updateReport, runReviewChecks, getReviewChecks, updateReviewCheck, getReviewRuns, getReviewRunDetails, getReviewAllowlist, addToReviewAllowlist, removeFromReviewAllowlist, healthCheck, mediaCreate, mediaUpdate, mediaDestroy, episodeCreate, episodeUpdate, episodeDestroy, segmentIndex, segmentCreate, segmentUpdate, segmentDestroy, listCreate, listUpdate, listDestroy, listAddItem, listUpdateItem, listRemoveItem } from './sdk.gen';
+import { searchIndex, searchStats, searchWords, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, segmentContextShow, characterShow, seiyuuShow, userQuotaShow, userReportCreate, userReportIndex, userPreferencesShow, userPreferencesUpdate, userActivityIndex, userActivityDestroy, userActivityStatsShow, userExportShow, labIndex, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, adminReindexCreate, adminQueueStatsIndex, adminQueueShow, adminQueueFailedIndex, adminQueueRetryCreate, adminQueueFailedDestroy, adminMorphemeBackfillCreate, adminReportIndex, adminReportUpdate, adminReviewRunCreate, adminReviewCheckIndex, adminReviewCheckUpdate, adminReviewRunIndex, adminReviewRunShow, adminReviewAllowlistIndex, adminReviewAllowlistCreate, adminReviewAllowlistDestroy, healthCheck, mediaCreate, mediaUpdate, mediaDestroy, episodeCreate, episodeUpdate, episodeDestroy, segmentIndex, segmentCreate, segmentUpdate, segmentDestroy, listCreate, listUpdate, listDestroy, listAddItem, listUpdateItem, listRemoveItem } from './sdk.gen';
 
 export interface NadeshikoConfig {
   apiKey: string;
@@ -17,52 +17,51 @@ const environments = {
 
 export type NadeshikoClient = {
     client: Client;
-    searchSegments: typeof searchSegments;
-    getSearchStats: typeof getSearchStats;
+    searchIndex: typeof searchIndex;
+    searchStats: typeof searchStats;
     searchWords: typeof searchWords;
-    getSegmentContext: typeof getSegmentContext;
-    browseMedia: typeof browseMedia;
     mediaIndex: typeof mediaIndex;
     mediaShow: typeof mediaShow;
     episodeIndex: typeof episodeIndex;
     episodeShow: typeof episodeShow;
     segmentShow: typeof segmentShow;
     segmentShowByUuid: typeof segmentShowByUuid;
+    segmentContextShow: typeof segmentContextShow;
     characterShow: typeof characterShow;
     seiyuuShow: typeof seiyuuShow;
-    getUserQuota: typeof getUserQuota;
-    createReport: typeof createReport;
-    getUserReports: typeof getUserReports;
-    getUserPreferences: typeof getUserPreferences;
-    updateUserPreferences: typeof updateUserPreferences;
-    getUserActivity: typeof getUserActivity;
-    clearUserActivity: typeof clearUserActivity;
-    getUserActivityStats: typeof getUserActivityStats;
-    exportUserData: typeof exportUserData;
-    getLabFeatures: typeof getLabFeatures;
+    userQuotaShow: typeof userQuotaShow;
+    userReportCreate: typeof userReportCreate;
+    userReportIndex: typeof userReportIndex;
+    userPreferencesShow: typeof userPreferencesShow;
+    userPreferencesUpdate: typeof userPreferencesUpdate;
+    userActivityIndex: typeof userActivityIndex;
+    userActivityDestroy: typeof userActivityDestroy;
+    userActivityStatsShow: typeof userActivityStatsShow;
+    userExportShow: typeof userExportShow;
+    labIndex: typeof labIndex;
     listIndex: typeof listIndex;
     listShow: typeof listShow;
     listGetSegments: typeof listGetSegments;
     listAddSegment: typeof listAddSegment;
     listUpdateSegment: typeof listUpdateSegment;
     listRemoveSegment: typeof listRemoveSegment;
-    reindexElasticsearch: typeof reindexElasticsearch;
-    getQueueStats: typeof getQueueStats;
-    getQueueDetails: typeof getQueueDetails;
-    getFailedJobs: typeof getFailedJobs;
-    retryQueueJobs: typeof retryQueueJobs;
-    purgeFailedJobs: typeof purgeFailedJobs;
-    morphemeBackfill: typeof morphemeBackfill;
-    getAdminReports: typeof getAdminReports;
-    updateReport: typeof updateReport;
-    runReviewChecks: typeof runReviewChecks;
-    getReviewChecks: typeof getReviewChecks;
-    updateReviewCheck: typeof updateReviewCheck;
-    getReviewRuns: typeof getReviewRuns;
-    getReviewRunDetails: typeof getReviewRunDetails;
-    getReviewAllowlist: typeof getReviewAllowlist;
-    addToReviewAllowlist: typeof addToReviewAllowlist;
-    removeFromReviewAllowlist: typeof removeFromReviewAllowlist;
+    adminReindexCreate: typeof adminReindexCreate;
+    adminQueueStatsIndex: typeof adminQueueStatsIndex;
+    adminQueueShow: typeof adminQueueShow;
+    adminQueueFailedIndex: typeof adminQueueFailedIndex;
+    adminQueueRetryCreate: typeof adminQueueRetryCreate;
+    adminQueueFailedDestroy: typeof adminQueueFailedDestroy;
+    adminMorphemeBackfillCreate: typeof adminMorphemeBackfillCreate;
+    adminReportIndex: typeof adminReportIndex;
+    adminReportUpdate: typeof adminReportUpdate;
+    adminReviewRunCreate: typeof adminReviewRunCreate;
+    adminReviewCheckIndex: typeof adminReviewCheckIndex;
+    adminReviewCheckUpdate: typeof adminReviewCheckUpdate;
+    adminReviewRunIndex: typeof adminReviewRunIndex;
+    adminReviewRunShow: typeof adminReviewRunShow;
+    adminReviewAllowlistIndex: typeof adminReviewAllowlistIndex;
+    adminReviewAllowlistCreate: typeof adminReviewAllowlistCreate;
+    adminReviewAllowlistDestroy: typeof adminReviewAllowlistDestroy;
     healthCheck: typeof healthCheck;
     mediaCreate: typeof mediaCreate;
     mediaUpdate: typeof mediaUpdate;
@@ -96,52 +95,51 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   return {
     client: clientInstance,
-    searchSegments: (options?: any) => searchSegments({ ...options, client: clientInstance }),
-    getSearchStats: (options?: any) => getSearchStats({ ...options, client: clientInstance }),
+    searchIndex: (options?: any) => searchIndex({ ...options, client: clientInstance }),
+    searchStats: (options?: any) => searchStats({ ...options, client: clientInstance }),
     searchWords: (options?: any) => searchWords({ ...options, client: clientInstance }),
-    getSegmentContext: (options?: any) => getSegmentContext({ ...options, client: clientInstance }),
-    browseMedia: (options?: any) => browseMedia({ ...options, client: clientInstance }),
     mediaIndex: (options?: any) => mediaIndex({ ...options, client: clientInstance }),
     mediaShow: (options?: any) => mediaShow({ ...options, client: clientInstance }),
     episodeIndex: (options?: any) => episodeIndex({ ...options, client: clientInstance }),
     episodeShow: (options?: any) => episodeShow({ ...options, client: clientInstance }),
     segmentShow: (options?: any) => segmentShow({ ...options, client: clientInstance }),
     segmentShowByUuid: (options?: any) => segmentShowByUuid({ ...options, client: clientInstance }),
+    segmentContextShow: (options?: any) => segmentContextShow({ ...options, client: clientInstance }),
     characterShow: (options?: any) => characterShow({ ...options, client: clientInstance }),
     seiyuuShow: (options?: any) => seiyuuShow({ ...options, client: clientInstance }),
-    getUserQuota: (options?: any) => getUserQuota({ ...options, client: clientInstance }),
-    createReport: (options?: any) => createReport({ ...options, client: clientInstance }),
-    getUserReports: (options?: any) => getUserReports({ ...options, client: clientInstance }),
-    getUserPreferences: (options?: any) => getUserPreferences({ ...options, client: clientInstance }),
-    updateUserPreferences: (options?: any) => updateUserPreferences({ ...options, client: clientInstance }),
-    getUserActivity: (options?: any) => getUserActivity({ ...options, client: clientInstance }),
-    clearUserActivity: (options?: any) => clearUserActivity({ ...options, client: clientInstance }),
-    getUserActivityStats: (options?: any) => getUserActivityStats({ ...options, client: clientInstance }),
-    exportUserData: (options?: any) => exportUserData({ ...options, client: clientInstance }),
-    getLabFeatures: (options?: any) => getLabFeatures({ ...options, client: clientInstance }),
+    userQuotaShow: (options?: any) => userQuotaShow({ ...options, client: clientInstance }),
+    userReportCreate: (options?: any) => userReportCreate({ ...options, client: clientInstance }),
+    userReportIndex: (options?: any) => userReportIndex({ ...options, client: clientInstance }),
+    userPreferencesShow: (options?: any) => userPreferencesShow({ ...options, client: clientInstance }),
+    userPreferencesUpdate: (options?: any) => userPreferencesUpdate({ ...options, client: clientInstance }),
+    userActivityIndex: (options?: any) => userActivityIndex({ ...options, client: clientInstance }),
+    userActivityDestroy: (options?: any) => userActivityDestroy({ ...options, client: clientInstance }),
+    userActivityStatsShow: (options?: any) => userActivityStatsShow({ ...options, client: clientInstance }),
+    userExportShow: (options?: any) => userExportShow({ ...options, client: clientInstance }),
+    labIndex: (options?: any) => labIndex({ ...options, client: clientInstance }),
     listIndex: (options?: any) => listIndex({ ...options, client: clientInstance }),
     listShow: (options?: any) => listShow({ ...options, client: clientInstance }),
     listGetSegments: (options?: any) => listGetSegments({ ...options, client: clientInstance }),
     listAddSegment: (options?: any) => listAddSegment({ ...options, client: clientInstance }),
     listUpdateSegment: (options?: any) => listUpdateSegment({ ...options, client: clientInstance }),
     listRemoveSegment: (options?: any) => listRemoveSegment({ ...options, client: clientInstance }),
-    reindexElasticsearch: (options?: any) => reindexElasticsearch({ ...options, client: clientInstance }),
-    getQueueStats: (options?: any) => getQueueStats({ ...options, client: clientInstance }),
-    getQueueDetails: (options?: any) => getQueueDetails({ ...options, client: clientInstance }),
-    getFailedJobs: (options?: any) => getFailedJobs({ ...options, client: clientInstance }),
-    retryQueueJobs: (options?: any) => retryQueueJobs({ ...options, client: clientInstance }),
-    purgeFailedJobs: (options?: any) => purgeFailedJobs({ ...options, client: clientInstance }),
-    morphemeBackfill: (options?: any) => morphemeBackfill({ ...options, client: clientInstance }),
-    getAdminReports: (options?: any) => getAdminReports({ ...options, client: clientInstance }),
-    updateReport: (options?: any) => updateReport({ ...options, client: clientInstance }),
-    runReviewChecks: (options?: any) => runReviewChecks({ ...options, client: clientInstance }),
-    getReviewChecks: (options?: any) => getReviewChecks({ ...options, client: clientInstance }),
-    updateReviewCheck: (options?: any) => updateReviewCheck({ ...options, client: clientInstance }),
-    getReviewRuns: (options?: any) => getReviewRuns({ ...options, client: clientInstance }),
-    getReviewRunDetails: (options?: any) => getReviewRunDetails({ ...options, client: clientInstance }),
-    getReviewAllowlist: (options?: any) => getReviewAllowlist({ ...options, client: clientInstance }),
-    addToReviewAllowlist: (options?: any) => addToReviewAllowlist({ ...options, client: clientInstance }),
-    removeFromReviewAllowlist: (options?: any) => removeFromReviewAllowlist({ ...options, client: clientInstance }),
+    adminReindexCreate: (options?: any) => adminReindexCreate({ ...options, client: clientInstance }),
+    adminQueueStatsIndex: (options?: any) => adminQueueStatsIndex({ ...options, client: clientInstance }),
+    adminQueueShow: (options?: any) => adminQueueShow({ ...options, client: clientInstance }),
+    adminQueueFailedIndex: (options?: any) => adminQueueFailedIndex({ ...options, client: clientInstance }),
+    adminQueueRetryCreate: (options?: any) => adminQueueRetryCreate({ ...options, client: clientInstance }),
+    adminQueueFailedDestroy: (options?: any) => adminQueueFailedDestroy({ ...options, client: clientInstance }),
+    adminMorphemeBackfillCreate: (options?: any) => adminMorphemeBackfillCreate({ ...options, client: clientInstance }),
+    adminReportIndex: (options?: any) => adminReportIndex({ ...options, client: clientInstance }),
+    adminReportUpdate: (options?: any) => adminReportUpdate({ ...options, client: clientInstance }),
+    adminReviewRunCreate: (options?: any) => adminReviewRunCreate({ ...options, client: clientInstance }),
+    adminReviewCheckIndex: (options?: any) => adminReviewCheckIndex({ ...options, client: clientInstance }),
+    adminReviewCheckUpdate: (options?: any) => adminReviewCheckUpdate({ ...options, client: clientInstance }),
+    adminReviewRunIndex: (options?: any) => adminReviewRunIndex({ ...options, client: clientInstance }),
+    adminReviewRunShow: (options?: any) => adminReviewRunShow({ ...options, client: clientInstance }),
+    adminReviewAllowlistIndex: (options?: any) => adminReviewAllowlistIndex({ ...options, client: clientInstance }),
+    adminReviewAllowlistCreate: (options?: any) => adminReviewAllowlistCreate({ ...options, client: clientInstance }),
+    adminReviewAllowlistDestroy: (options?: any) => adminReviewAllowlistDestroy({ ...options, client: clientInstance }),
     healthCheck: (options?: any) => healthCheck({ ...options, client: clientInstance }),
     mediaCreate: (options?: any) => mediaCreate({ ...options, client: clientInstance }),
     mediaUpdate: (options?: any) => mediaUpdate({ ...options, client: clientInstance }),
