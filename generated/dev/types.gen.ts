@@ -1652,6 +1652,8 @@ export type UserActivity = {
     segmentUuid?: string;
     mediaId?: number;
     searchQuery?: string;
+    animeName?: string;
+    japaneseText?: string;
     createdAt: string;
 };
 
@@ -1675,6 +1677,18 @@ export type Collection = {
      * Visibility of the collection
      */
     visibility: 'PUBLIC' | 'PRIVATE';
+    /**
+     * Number of segments in the collection
+     */
+    segmentCount?: number;
+    /**
+     * When the collection was created
+     */
+    createdAt?: string;
+    /**
+     * When the collection was last updated
+     */
+    updatedAt?: string;
 };
 
 export type UserExportCollection = Collection & {
