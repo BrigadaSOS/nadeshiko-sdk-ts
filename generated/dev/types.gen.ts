@@ -5,134 +5,137 @@ export type ClientOptions = {
 };
 
 /**
+ * A media filter entry with optional episode restriction
+ */
+export type MediaFilterItem = {
+    /**
+     * Media ID to filter
+     */
+    mediaId: number;
+    /**
+     * Specific episodes (omit for all episodes)
+     */
+    episodes?: Array<number>;
+};
+
+/**
  * Media category type
  */
 export type Category = 'ANIME' | 'JDRAMA';
 
 /**
- * Media information included in search results
+ * Content rating level for the segment
  */
-export type SearchResultMedia = {
+export type ContentRating = 'SAFE' | 'SUGGESTIVE' | 'QUESTIONABLE' | 'EXPLICIT';
+
+/**
+ * Search filters for narrowing segment results
+ */
+export type SearchFilters = {
     /**
-     * Unique identifier for the media
+     * Media inclusion/exclusion filters
      */
-    mediaId: number;
+    media?: {
+        /**
+         * Include only segments from these media (with optional episode filter)
+         */
+        include?: Array<MediaFilterItem>;
+        /**
+         * Exclude segments from these media (with optional episode filter)
+         */
+        exclude?: Array<MediaFilterItem>;
+    };
     /**
-     * Romaji transliteration of the media name
+     * Media category filter
      */
-    nameRomaji: string;
+    category?: Array<Category>;
     /**
-     * English name of the media
+     * Content ratings to include (omit for all ratings)
      */
-    nameEn?: string;
+    contentRating?: Array<ContentRating>;
     /**
-     * Original Japanese name of the media
+     * Segment status filter
      */
-    nameJa?: string;
+    status?: Array<'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG'>;
     /**
-     * URL to the cover image
+     * Content character count range filter
      */
-    coverUrl?: string;
+    segmentLengthChars?: {
+        /**
+         * Minimum content length
+         */
+        min?: number;
+        /**
+         * Maximum content length
+         */
+        max?: number;
+    };
     /**
-     * URL to the banner image
+     * Segment audio duration range filter (in milliseconds)
      */
-    bannerUrl?: string;
-    category: Category;
+    segmentDurationMs?: {
+        /**
+         * Minimum duration in ms
+         */
+        min?: number;
+        /**
+         * Maximum duration in ms
+         */
+        max?: number;
+    };
 };
 
 /**
- * Japanese content in search results with optional highlight
+ * Resource to expand in the response includes block
  */
-export type JapaneseSearchContent = {
+export type IncludeExpansion = 'media';
+
+export type SearchRequest = {
     /**
-     * Original Japanese content of the segment
+     * What to search for (omit for queryless browse)
      */
-    content: string;
+    query?: {
+        /**
+         * Search expression (supports boolean operators, wildcards, phrase matching)
+         */
+        search?: string;
+        /**
+         * Whether to use exact phrase matching
+         */
+        exactMatch?: boolean;
+    };
     /**
-     * Japanese content with search terms highlighted
+     * Max amount of entries by response
      */
-    highlight?: string;
+    limit?: number;
+    /**
+     * Current page of search
+     */
+    cursor?: Array<number>;
+    /**
+     * Sort configuration
+     */
+    sort?: {
+        /**
+         * Sort mode
+         */
+        mode?: 'ASC' | 'DESC' | 'NONE' | 'TIME_ASC' | 'TIME_DESC' | 'RANDOM';
+        /**
+         * Non-negative integer seed for deterministic random sorting (only used when mode is RANDOM)
+         */
+        seed?: number;
+    };
+    filters?: SearchFilters;
+    /**
+     * Resources to expand in the response includes block
+     */
+    include?: Array<IncludeExpansion>;
 };
 
 /**
- * Translation content in search results with optional highlight
+ * Segment with content, optional highlights, and media URLs
  */
-export type TranslationSearchContent = {
-    /**
-     * Translated content
-     */
-    content?: string;
-    /**
-     * Translated content with search terms highlighted
-     */
-    highlight?: string;
-    /**
-     * Whether the translation was machine-translated
-     */
-    isMachineTranslated: boolean;
-};
-
-/**
- * Morphological analysis token
- */
-export type Morpheme = {
-    /**
-     * Surface form of the token as it appears in the text
-     */
-    surface: string;
-    /**
-     * Reading in katakana
-     */
-    reading: string;
-    /**
-     * Dictionary/base form of the word
-     */
-    baseform: string;
-    /**
-     * Pronunciation in katakana
-     */
-    pronunciation: string;
-    /**
-     * Full part-of-speech tag array
-     */
-    pos: Array<string>;
-    /**
-     * Short part-of-speech label (first element of pos array)
-     */
-    posShort: string;
-    /**
-     * Character offset where the token begins in the original text
-     */
-    begin: number;
-    /**
-     * Character offset where the token ends in the original text
-     */
-    end: number;
-    /**
-     * Pitch accent type — mora position(s) where the pitch drops. 0 = heiban (flat), 1 = atamadaka, 2+ = nakadaka/odaka. Comma-separated in UniDic feature[24]. Null if not available.
-     *
-     */
-    pitchAccentType: Array<number>;
-    /**
-     * Compound accent connection rule from UniDic feature[25]. Values like C1-C5, F1-F6, P1-P13. Null if not available.
-     *
-     */
-    pitchCompoundRule: string;
-    /**
-     * Accent modification rule from UniDic feature[26]. Values like M1, M2, M4. Null if not available.
-     *
-     */
-    pitchModificationRule: string;
-};
-
-/**
- * Segment details in search results
- */
-export type SearchResultSegment = {
-    /**
-     * Segment status
-     */
-    status: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
+export type Segment = {
     /**
      * Unique identifier for the segment
      */
@@ -142,74 +145,230 @@ export type SearchResultSegment = {
      */
     position: number;
     /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment starts
+     * Segment status
      */
-    startTime: string;
+    status: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
     /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
+     * Start time of the segment in milliseconds from the beginning of the episode
      */
-    endTime: string;
+    startTimeMs: number;
     /**
-     * Episode number where the segment appears
+     * End time of the segment in milliseconds from the beginning of the episode
      */
-    episodeNumber: number;
-    textJa: JapaneseSearchContent;
-    textEn: TranslationSearchContent;
-    textEs: TranslationSearchContent;
+    endTimeMs: number;
+    contentRating: ContentRating;
     /**
-     * Whether the segment contains NSFW content
+     * Episode number this segment belongs to
      */
-    isNsfw: boolean;
+    episode: number;
     /**
-     * Morphological analysis of the Japanese content
+     * Media ID this segment belongs to
      */
-    morphemes?: Array<Morpheme>;
+    mediaId: number;
+    textJa: {
+        /**
+         * Original Japanese content
+         */
+        content: string;
+        /**
+         * Japanese content with search terms highlighted
+         */
+        highlight?: string;
+    };
+    textEn: {
+        /**
+         * English translation
+         */
+        content: string;
+        /**
+         * Whether the translation was machine-translated
+         */
+        isMachineTranslated: boolean;
+        /**
+         * English content with search terms highlighted
+         */
+        highlight?: string;
+    };
+    textEs: {
+        /**
+         * Spanish translation
+         */
+        content: string;
+        /**
+         * Whether the translation was machine-translated
+         */
+        isMachineTranslated: boolean;
+        /**
+         * Spanish content with search terms highlighted
+         */
+        highlight?: string;
+    };
+    /**
+     * URLs to media resources for this segment
+     */
+    urls: {
+        /**
+         * URL to the subtitle image snapshot
+         */
+        imageUrl: string;
+        /**
+         * URL to the audio clip for this segment
+         */
+        audioUrl: string;
+        /**
+         * URL to the video clip for this segment
+         */
+        videoUrl: string;
+    };
 };
 
 /**
- * URLs to media resources for a segment
+ * Map of external IDs keyed by source. Only sources with values are included.
  */
-export type SearchResultUrls = {
+export type ExternalId = {
     /**
-     * URL to the subtitle image snapshot
+     * AniList ID
      */
-    imageUrl?: string;
+    anilist?: string;
     /**
-     * URL to the audio clip for this segment
+     * IMDB ID
      */
-    audioUrl?: string;
+    imdb?: string;
     /**
-     * URL to the video clip for this segment
+     * TVDB ID
      */
-    videoUrl?: string;
+    tvdb?: string;
 };
 
 /**
- * A complete search result combining media info, segment details, and URLs
+ * Japanese voice actor (seiyuu)
  */
-export type SearchResult = {
+export type Seiyuu = {
     /**
-     * Media information for this result
+     * AniList staff ID
      */
-    media: SearchResultMedia;
+    id: number;
     /**
-     * Segment details including translations
+     * Japanese name of the voice actor
      */
-    segment: SearchResultSegment;
+    nameJa: string;
     /**
-     * URLs to media resources (images, audio, video)
+     * English name of the voice actor
      */
-    urls: SearchResultUrls;
+    nameEn: string;
+    /**
+     * Profile image URL
+     */
+    imageUrl: string;
+};
+
+/**
+ * Character appearing in a media with their voice actor and role
+ */
+export type MediaCharacter = {
+    /**
+     * AniList character ID
+     */
+    id: number;
+    /**
+     * Japanese name of the character
+     */
+    nameJa: string;
+    /**
+     * English name of the character
+     */
+    nameEn: string;
+    /**
+     * Character image URL
+     */
+    imageUrl: string;
+    seiyuu: Seiyuu;
+    /**
+     * Character's role in the media
+     */
+    role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
+};
+
+/**
+ * Media entry with full metadata
+ */
+export type Media = {
+    /**
+     * Unique identifier for the media
+     */
+    id: number;
+    externalIds: ExternalId;
+    /**
+     * Original Japanese name of the media
+     */
+    nameJa: string;
+    /**
+     * Romaji transliteration of the media name
+     */
+    nameRomaji: string;
+    /**
+     * English name of the media
+     */
+    nameEn: string;
+    /**
+     * Format of the media release (e.g., TV, OVA, Movie)
+     */
+    airingFormat: string;
+    /**
+     * Current airing status (FINISHED, RELEASING, NOT_YET_RELEASED, CANCELLED)
+     */
+    airingStatus: string;
+    /**
+     * List of genres associated with the media
+     */
+    genres: Array<string>;
+    /**
+     * Full URL to the cover image
+     */
+    coverUrl: string;
+    /**
+     * Full URL to the banner image
+     */
+    bannerUrl: string;
+    /**
+     * Start date of the media (first airing/release)
+     */
+    startDate: string;
+    /**
+     * End date of the media (last airing/release)
+     */
+    endDate?: string;
+    category: Category;
+    /**
+     * Total number of subtitle segments available
+     */
+    segmentCount: number;
+    /**
+     * Total number of episodes available
+     */
+    episodeCount: number;
+    /**
+     * Animation studio that produced the media
+     */
+    studio: string;
+    /**
+     * Airing season label for the media
+     */
+    seasonName: string;
+    /**
+     * Airing year for the media
+     */
+    seasonYear: number;
+    /**
+     * Characters appearing in the media with their voice actors
+     */
+    characters?: Array<MediaCharacter>;
 };
 
 /**
  * Pagination metadata for search results
  */
 export type PaginationInfo = {
-    /**
-     * Number of results returned in this page
-     */
-    pageSize?: number;
     /**
      * Whether there are more results after this page
      */
@@ -222,15 +381,59 @@ export type PaginationInfo = {
      * Whether estimatedTotalHits is exact or a lower bound
      */
     estimatedTotalHitsRelation?: 'EXACT' | 'LOWER_BOUND';
-};
-
-export type SearchHealthCheckResponse = {
-    results?: Array<SearchResult>;
-    pagination?: PaginationInfo;
     /**
-     * Cursor for pagination
+     * Cursor for fetching the next page (undefined when hasMore is false)
      */
     cursor?: Array<number>;
+};
+
+export type SearchResponse = {
+    segments?: Array<Segment>;
+    includes?: {
+        /**
+         * Media objects keyed by mediaId
+         */
+        media?: {
+            [key: string]: Media;
+        };
+    };
+    pagination?: PaginationInfo;
+};
+
+/**
+ * Bad Request error response
+ */
+export type Error400 = {
+    /**
+     * Specific error code for programmatic handling
+     */
+    code: 'VALIDATION_FAILED' | 'INVALID_JSON' | 'INVALID_REQUEST';
+    /**
+     * A short, human-readable summary of the problem
+     */
+    title: string;
+    /**
+     * A human-readable explanation specific to this occurrence
+     */
+    detail: string;
+    /**
+     * A URI reference that identifies the problem type (e.g., GitHub issues link)
+     */
+    type?: string;
+    /**
+     * A URI reference that identifies the specific occurrence (e.g., trace ID)
+     */
+    instance?: string;
+    /**
+     * The HTTP status code
+     */
+    status: 400;
+    /**
+     * Optional map of field names to their error messages (for validation errors)
+     */
+    errors?: {
+        [key: string]: string;
+    };
 };
 
 /**
@@ -377,184 +580,43 @@ export type Error500 = {
     };
 };
 
-export type SearchRequest = {
-    /**
-     * Text or sentence to search (null to search without query)
-     */
-    query?: string;
-    /**
-     * Max amount of entries by response
-     */
-    limit?: number;
-    /**
-     * Unique ID from segment (Useful to get a specific segment)
-     */
-    uuid?: string;
-    /**
-     * Media category filter
-     */
-    category?: Array<Category>;
-    /**
-     * Unique ID from media
-     */
-    mediaId?: number;
-    /**
-     * Array of episodes to get
-     */
-    episode?: Array<number>;
-    /**
-     * Non-negative integer seed for deterministic random sorting
-     */
-    randomSeed?: number;
-    /**
-     * Order by amount of characters
-     */
-    contentSort?: 'ASC' | 'DESC' | 'NONE' | 'TIME_ASC' | 'TIME_DESC' | 'RANDOM';
-    /**
-     * Current page of search
-     */
-    cursor?: Array<number>;
-    /**
-     * Whether to use exact phrase matching
-     */
-    exactMatch?: boolean;
-    /**
-     * Minimum content length
-     */
-    minLength?: number;
-    /**
-     * Maximum content length
-     */
-    maxLength?: number;
-    /**
-     * Media IDs to exclude from results
-     */
-    excludedMediaIds?: Array<number>;
-    /**
-     * Segment status filter
-     */
-    status?: Array<'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG'>;
-    /**
-     * Media filter with episodes
-     */
-    media?: Array<{
-        mediaId: number;
-        /**
-         * Array of episode numbers
-         */
-        episodes: Array<number>;
-    }>;
-};
-
-export type SearchResponse = {
-    results?: Array<SearchResult>;
-    pagination?: PaginationInfo;
-    /**
-     * Cursor for pagination
-     */
-    cursor?: Array<number>;
-};
-
-/**
- * Bad Request error response
- */
-export type Error400 = {
-    /**
-     * Specific error code for programmatic handling
-     */
-    code: 'VALIDATION_FAILED' | 'INVALID_JSON' | 'INVALID_REQUEST';
-    /**
-     * A short, human-readable summary of the problem
-     */
-    title: string;
-    /**
-     * A human-readable explanation specific to this occurrence
-     */
-    detail: string;
-    /**
-     * A URI reference that identifies the problem type (e.g., GitHub issues link)
-     */
-    type?: string;
-    /**
-     * A URI reference that identifies the specific occurrence (e.g., trace ID)
-     */
-    instance?: string;
-    /**
-     * The HTTP status code
-     */
-    status: 400;
-    /**
-     * Optional map of field names to their error messages (for validation errors)
-     */
-    errors?: {
-        [key: string]: string;
-    };
-};
-
 export type SearchStatsRequest = {
     /**
-     * Text or sentence to search
+     * What to search for (omit for queryless stats)
      */
-    query?: string;
+    query?: {
+        /**
+         * Search expression (supports boolean operators, wildcards, phrase matching)
+         */
+        search?: string;
+        /**
+         * Whether to use exact phrase matching
+         */
+        exactMatch?: boolean;
+    };
+    filters?: SearchFilters;
     /**
-     * Media category filter
+     * Resources to expand in the response includes block
      */
-    category?: Array<Category>;
-    /**
-     * Whether to use exact phrase matching
-     */
-    exactMatch?: boolean;
-    /**
-     * Minimum content length
-     */
-    minLength?: number;
-    /**
-     * Maximum content length
-     */
-    maxLength?: number;
-    /**
-     * Media IDs to exclude from results
-     */
-    excludedMediaIds?: Array<number>;
-    /**
-     * Restrict stats to these media IDs (for list-scoped stats)
-     */
-    mediaIds?: Array<number>;
-    /**
-     * Segment status filter
-     */
-    status?: Array<'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG'>;
+    include?: Array<IncludeExpansion>;
 };
 
 /**
- * Search result statistics grouped by media
+ * Search hit statistics for a single media
  */
 export type MediaSearchStats = {
     /**
-     * Unique identifier for the media
+     * Media identifier (look up full details in includes.media)
      */
-    mediaId?: number;
-    category?: Category;
+    mediaId: number;
     /**
-     * Romaji transliteration of the media name
+     * Number of matching segments found in this media
      */
-    nameRomaji?: string;
-    /**
-     * English name of the media
-     */
-    nameEn?: string;
-    /**
-     * Original Japanese name of the media
-     */
-    nameJa?: string;
-    /**
-     * Total number of segments found for this media
-     */
-    segmentCount?: number;
+    matchCount: number;
     /**
      * Mapping of episode numbers to segment hit counts
      */
-    episodeHits?: {
+    episodeHits: {
         [key: string]: number;
     };
 };
@@ -573,43 +635,49 @@ export type CategoryCount = {
 export type SearchStatsResponse = {
     media?: Array<MediaSearchStats>;
     categories?: Array<CategoryCount>;
+    includes?: {
+        /**
+         * Media objects keyed by mediaId
+         */
+        media?: {
+            [key: string]: Media;
+        };
+    };
 };
 
 export type SearchMultipleRequest = {
     /**
-     * List of words to search for
+     * What to search for
      */
-    words: Array<string>;
+    query: {
+        /**
+         * List of words to search for
+         */
+        words: Array<string>;
+        /**
+         * Whether to use exact matching
+         */
+        exactMatch?: boolean;
+    };
+    filters?: SearchFilters;
     /**
-     * Whether to use exact matching
+     * Resources to expand in the response includes block
      */
-    exactMatch?: boolean;
+    include?: Array<IncludeExpansion>;
 };
 
 /**
- * Media entry containing word matches
+ * Media match count entry
  */
 export type WordMatchMedia = {
     /**
-     * Unique identifier for the media
+     * Media identifier (look up full details in includes.media)
      */
-    mediaId?: number;
-    /**
-     * English name of the media
-     */
-    nameEn?: string;
-    /**
-     * Original Japanese name of the media
-     */
-    nameJa?: string;
-    /**
-     * Romaji transliteration of the media name
-     */
-    nameRomaji?: string;
+    mediaId: number;
     /**
      * Number of times the word appears in this media
      */
-    matchCount?: number;
+    matchCount: number;
 };
 
 /**
@@ -636,206 +704,38 @@ export type WordMatch = {
 
 export type SearchMultipleResponse = {
     results?: Array<WordMatch>;
+    includes?: {
+        /**
+         * Media objects keyed by mediaId
+         */
+        media?: {
+            [key: string]: Media;
+        };
+    };
 };
 
 /**
- * Map of external IDs keyed by source. Only sources with values are included.
+ * Resource to expand in media responses
  */
-export type ExternalId = {
-    /**
-     * AniList ID
-     */
-    anilist?: string;
-    /**
-     * IMDB ID
-     */
-    imdb?: string;
-    /**
-     * TVDB ID
-     */
-    tvdb?: string;
-};
+export type MediaIncludeExpansion = 'media' | 'media.characters';
 
 /**
- * Japanese voice actor (seiyuu)
+ * Cursor pagination metadata
  */
-export type Seiyuu = {
-    /**
-     * AniList staff ID
-     */
-    id: number;
-    /**
-     * Japanese name of the voice actor
-     */
-    nameJa: string;
-    /**
-     * English name of the voice actor
-     */
-    nameEn: string;
-    /**
-     * Profile image URL
-     */
-    imageUrl: string;
-};
-
-/**
- * Anime character
- */
-export type Character = {
-    /**
-     * AniList character ID
-     */
-    id: number;
-    /**
-     * Japanese name of the character
-     */
-    nameJa: string;
-    /**
-     * English name of the character
-     */
-    nameEn: string;
-    /**
-     * Character image URL
-     */
-    imageUrl: string;
-    seiyuu: Seiyuu;
-};
-
-/**
- * Character appearing in a media with their role
- */
-export type MediaCharacter = {
-    character: Character;
-    /**
-     * Character's role in the media
-     */
-    role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
-};
-
-/**
- * Media collection list
- */
-export type List = {
-    /**
-     * List ID
-     */
-    id: number;
-    /**
-     * Name of the list
-     */
-    name: string;
-    /**
-     * Type of list
-     */
-    type: 'SERIES' | 'CUSTOM' | 'SEGMENT';
-    /**
-     * User ID who owns the list (1 = admin)
-     */
-    userId: number;
-    /**
-     * Visibility of the list
-     */
-    visibility: 'PUBLIC' | 'PRIVATE';
-};
-
-/**
- * Media entry with full metadata
- */
-export type Media = {
-    /**
-     * Unique identifier for the media
-     */
-    id: number;
-    externalIds?: ExternalId;
-    /**
-     * Original Japanese name of the media
-     */
-    nameJa: string;
-    /**
-     * Romaji transliteration of the media name
-     */
-    nameRomaji: string;
-    /**
-     * English name of the media
-     */
-    nameEn: string;
-    /**
-     * Format of the media release (e.g., TV, OVA, Movie)
-     */
-    airingFormat: string;
-    /**
-     * Current airing status (FINISHED, RELEASING, NOT_YET_RELEASED, CANCELLED)
-     */
-    airingStatus: string;
-    /**
-     * List of genres associated with the media
-     */
-    genres: Array<string>;
-    /**
-     * Full URL to the cover image
-     */
-    coverUrl: string;
-    /**
-     * Full URL to the banner image
-     */
-    bannerUrl: string;
-    /**
-     * Start date of the media (first airing/release)
-     */
-    startDate: string;
-    /**
-     * End date of the media (last airing/release)
-     */
-    endDate?: string;
-    category: Category;
-    /**
-     * Total number of subtitle segments available
-     */
-    segmentCount?: number;
-    /**
-     * Total number of episodes available
-     */
-    episodeCount?: number;
-    /**
-     * Version identifier for the media entry
-     */
-    version: string;
-    /**
-     * Animation studio that produced the media
-     */
-    studio: string;
-    /**
-     * Airing season label for the media
-     */
-    seasonName: string;
-    /**
-     * Airing year for the media
-     */
-    seasonYear: number;
-    /**
-     * Base path for R2/CDN storage (e.g. "media/21459")
-     */
-    storageBasePath?: string;
-    /**
-     * Characters appearing in the media with their voice actors
-     */
-    characters?: Array<MediaCharacter>;
-    /**
-     * Lists that contain this media
-     */
-    lists?: Array<List>;
-};
-
-export type MediaListResponse = {
-    data: Array<Media>;
-    /**
-     * Next cursor for pagination (undefined if no more results)
-     */
-    cursor?: number;
+export type CursorPagination = {
     /**
      * Whether more results are available
      */
-    hasMoreResults: boolean;
+    hasMore: boolean;
+    /**
+     * Cursor for the next page (`null` when `hasMore` is `false`)
+     */
+    cursor: number;
+};
+
+export type MediaListResponse = {
+    media: Array<Media>;
+    pagination: CursorPagination;
 };
 
 /**
@@ -878,32 +778,6 @@ export type CharacterInput = {
      * Voice actor profile image URL
      */
     seiyuuImageUrl: string;
-};
-
-/**
- * List data for adding media to a list
- */
-export type ListInput = {
-    /**
-     * Existing list ID (if adding to existing list)
-     */
-    listId?: number;
-    /**
-     * Name for new list (if creating new list)
-     */
-    listName?: string;
-    /**
-     * Type of list (if creating new list)
-     */
-    listType?: 'SERIES' | 'CUSTOM';
-    /**
-     * Visibility of list (if creating new list)
-     */
-    listVisibility?: 'PUBLIC' | 'PRIVATE';
-    /**
-     * Position/order of media in the list (1-indexed)
-     */
-    position: number;
 };
 
 /**
@@ -979,10 +853,6 @@ export type MediaCreateRequest = {
      * List of characters appearing in the media with their voice actors
      */
     characters?: Array<CharacterInput>;
-    /**
-     * Lists to add this media to (e.g., series, franchise)
-     */
-    lists?: Array<ListInput>;
 };
 
 /**
@@ -1131,10 +1001,6 @@ export type MediaUpdateRequest = {
      */
     characters?: Array<CharacterInput>;
     /**
-     * Lists to add this media to (e.g., series, franchise)
-     */
-    lists?: Array<ListInput>;
-    /**
      * Total number of subtitle segments available
      */
     segmentCount?: number;
@@ -1187,15 +1053,8 @@ export type EpisodeListResponse = {
     /**
      * Array of episode objects
      */
-    data: Array<Episode>;
-    /**
-     * Cursor for pagination (last episode number in current page)
-     */
-    cursor?: number;
-    /**
-     * Whether more results are available
-     */
-    hasMore: boolean;
+    episodes: Array<Episode>;
+    pagination: CursorPagination;
 };
 
 export type EpisodeCreateRequest = {
@@ -1267,115 +1126,6 @@ export type EpisodeUpdateRequest = {
     thumbnailUrl?: string;
 };
 
-/**
- * Japanese content with optional character count
- */
-export type JapaneseContent = {
-    /**
-     * Original Japanese content
-     */
-    content: string;
-    /**
-     * Number of characters in the Japanese content
-     */
-    characterCount?: number;
-};
-
-/**
- * Translation content for a language
- */
-export type TranslationContent = {
-    /**
-     * Translated content
-     */
-    content?: string;
-    /**
-     * Whether the translation was machine-translated
-     */
-    isMachineTranslated: boolean;
-};
-
-export type Segment = {
-    /**
-     * Auto-generated segment ID
-     */
-    id: number;
-    /**
-     * Unique identifier for the segment
-     */
-    uuid: string;
-    /**
-     * Position of the segment within the episode
-     */
-    position: number;
-    /**
-     * Segment status
-     */
-    status: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
-    /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment starts
-     */
-    startTime: string;
-    /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
-     */
-    endTime: string;
-    textJa: JapaneseContent;
-    textEn: TranslationContent;
-    textEs: TranslationContent;
-    /**
-     * Whether the segment contains NSFW content
-     */
-    isNsfw: boolean;
-    /**
-     * URL to segment screenshot/image (generated from storage + hashedId)
-     */
-    imageUrl?: string;
-    /**
-     * URL to segment audio file (generated from storage + hashedId)
-     */
-    audioUrl?: string;
-    /**
-     * URL to segment video file (generated from storage + hashedId)
-     */
-    videoUrl?: string;
-    /**
-     * Episode number this segment belongs to
-     */
-    episode: number;
-    /**
-     * Media ID this segment belongs to
-     */
-    mediaId: number;
-    /**
-     * Storage backend for segment assets
-     */
-    storage: 'LOCAL' | 'R2';
-    /**
-     * Hash identifier for the segment
-     */
-    hashedId: string;
-    /**
-     * Morphological analysis of the Japanese content
-     */
-    morphemes?: Array<Morpheme>;
-};
-
-export type SegmentListResponse = {
-    /**
-     * Array of segment objects
-     */
-    data: Array<Segment>;
-    /**
-     * Cursor for pagination (last segment ID in current page)
-     */
-    cursor?: number;
-    /**
-     * Whether more results are available
-     */
-    hasMore: boolean;
-};
-
 export type SegmentCreateRequest = {
     /**
      * Position of the segment within the episode
@@ -1386,13 +1136,13 @@ export type SegmentCreateRequest = {
      */
     status?: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
     /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment starts
+     * Start time of the segment in milliseconds from the beginning of the episode
      */
-    startTime: string;
+    startTimeMs: number;
     /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
+     * End time of the segment in milliseconds from the beginning of the episode
      */
-    endTime: string;
+    endTimeMs: number;
     textJa: {
         /**
          * Original Japanese content of the segment
@@ -1419,10 +1169,19 @@ export type SegmentCreateRequest = {
          */
         isMachineTranslated?: boolean;
     };
+    contentRating?: ContentRating;
     /**
-     * Whether the segment contains NSFW content
+     * Raw WD Tagger v3 classifier output used to derive content rating
      */
-    isNsfw?: boolean;
+    ratingAnalysis?: {
+        [key: string]: unknown;
+    };
+    /**
+     * POS tokenization results keyed by engine (sudachi, unidic)
+     */
+    posAnalysis?: {
+        [key: string]: unknown;
+    };
     /**
      * Storage backend for segment assets
      */
@@ -1431,6 +1190,36 @@ export type SegmentCreateRequest = {
      * Hash identifier for the segment (from segment JSON)
      */
     hashedId: string;
+};
+
+/**
+ * Segment with internal fields (for internal API responses)
+ */
+export type SegmentInternal = Segment & {
+    /**
+     * Storage backend for segment assets
+     */
+    storage?: 'LOCAL' | 'R2';
+    /**
+     * Hash identifier for the segment
+     */
+    hashedId?: string;
+    /**
+     * Base path in the storage backend
+     */
+    storageBasePath?: string;
+    /**
+     * Raw WD Tagger v3 classifier output used to derive content rating
+     */
+    ratingAnalysis?: {
+        [key: string]: unknown;
+    };
+    /**
+     * POS tokenization results keyed by engine (sudachi, unidic)
+     */
+    posAnalysis?: {
+        [key: string]: unknown;
+    };
 };
 
 /**
@@ -1446,13 +1235,13 @@ export type SegmentUpdateRequest = {
      */
     status?: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
     /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment starts
+     * Start time of the segment in milliseconds from the beginning of the episode
      */
-    startTime?: string;
+    startTimeMs?: number;
     /**
-     * Timestamp in H:MM:SS.ffffff format indicating when the segment ends
+     * End time of the segment in milliseconds from the beginning of the episode
      */
-    endTime?: string;
+    endTimeMs?: number;
     textJa?: {
         /**
          * Original Japanese content of the segment
@@ -1479,10 +1268,19 @@ export type SegmentUpdateRequest = {
          */
         isMachineTranslated?: boolean;
     };
+    contentRating?: ContentRating;
     /**
-     * Whether the segment contains NSFW content
+     * Raw WD Tagger v3 classifier output used to derive content rating
      */
-    isNsfw?: boolean;
+    ratingAnalysis?: {
+        [key: string]: unknown;
+    };
+    /**
+     * POS tokenization results keyed by engine (sudachi, unidic)
+     */
+    posAnalysis?: {
+        [key: string]: unknown;
+    };
     /**
      * Storage backend for segment assets
      */
@@ -1494,13 +1292,80 @@ export type SegmentUpdateRequest = {
 };
 
 export type SegmentContextResponse = {
-    segments: Array<SearchResult>;
+    segments: Array<Segment>;
+    includes?: {
+        /**
+         * Media objects keyed by mediaId
+         */
+        media?: {
+            [key: string]: Media;
+        };
+    };
 };
 
 /**
- * Character with all media appearances
+ * Ordered media series grouping
  */
-export type CharacterWithMedia = {
+export type Series = {
+    /**
+     * Series ID
+     */
+    id: number;
+    /**
+     * Japanese name of the series
+     */
+    nameJa: string;
+    /**
+     * Romaji name of the series
+     */
+    nameRomaji: string;
+    /**
+     * English name of the series
+     */
+    nameEn: string;
+};
+
+export type SeriesListResponse = {
+    series: Array<Series>;
+    pagination: CursorPagination;
+};
+
+/**
+ * Series with ordered media entries
+ */
+export type SeriesWithMedia = {
+    /**
+     * Series ID
+     */
+    id: number;
+    /**
+     * Japanese name of the series
+     */
+    nameJa: string;
+    /**
+     * Romaji name of the series
+     */
+    nameRomaji: string;
+    /**
+     * English name of the series
+     */
+    nameEn: string;
+    /**
+     * All media in the series, sorted by position
+     */
+    media: Array<{
+        /**
+         * Position in the series (1-indexed)
+         */
+        position?: number;
+        media?: Media;
+    }>;
+};
+
+/**
+ * Anime character
+ */
+export type Character = {
     /**
      * AniList character ID
      */
@@ -1517,6 +1382,12 @@ export type CharacterWithMedia = {
      * Character image URL
      */
     imageUrl: string;
+};
+
+/**
+ * Character with voice actor and all media appearances
+ */
+export type CharacterWithMedia = Character & {
     seiyuu: Seiyuu;
     /**
      * All media this character appears in
@@ -1531,7 +1402,7 @@ export type CharacterWithMedia = {
 };
 
 /**
- * Seiyuu with all voice acting roles
+ * Seiyuu details with optional character appearances
  */
 export type SeiyuuWithRoles = {
     /**
@@ -1551,15 +1422,14 @@ export type SeiyuuWithRoles = {
      */
     imageUrl: string;
     /**
-     * All characters voiced by this seiyuu with their media appearances
+     * Characters voiced by this seiyuu with their media appearances
      */
-    roles: Array<{
-        character?: Character;
-        media?: Media;
+    characters: Array<Character & {
+        media: Media;
         /**
          * Character role in this media
          */
-        role?: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
+        role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
     }>;
 };
 
@@ -1590,6 +1460,59 @@ export type UserQuotaResponse = {
     periodEnd: string;
 };
 
+export type ReportTargetMedia = {
+    /**
+     * Report target type
+     */
+    type: 'MEDIA';
+    /**
+     * Media ID this report targets
+     */
+    mediaId: number;
+};
+
+export type ReportTargetEpisode = {
+    /**
+     * Report target type
+     */
+    type: 'EPISODE';
+    /**
+     * Media ID this report targets
+     */
+    mediaId: number;
+    /**
+     * Episode number this report targets
+     */
+    episodeNumber: number;
+};
+
+export type ReportTargetSegment = {
+    /**
+     * Report target type
+     */
+    type: 'SEGMENT';
+    /**
+     * Media ID this report targets
+     */
+    mediaId: number;
+    /**
+     * Episode number containing the segment
+     */
+    episodeNumber?: number;
+    /**
+     * Segment UUID this report targets
+     */
+    segmentUuid: string;
+};
+
+export type ReportTarget = ({
+    type: 'MEDIA';
+} & ReportTargetMedia) | ({
+    type: 'EPISODE';
+} & ReportTargetEpisode) | ({
+    type: 'SEGMENT';
+} & ReportTargetSegment);
+
 export type Report = {
     /**
      * Report ID
@@ -1599,22 +1522,7 @@ export type Report = {
      * Who created this report
      */
     source: 'USER' | 'AUTO';
-    /**
-     * What level the report targets
-     */
-    targetType: 'SEGMENT' | 'EPISODE' | 'MEDIA';
-    /**
-     * Media ID this report targets
-     */
-    targetMediaId: number;
-    /**
-     * Episode number (for EPISODE/SEGMENT targets)
-     */
-    targetEpisodeNumber?: number;
-    /**
-     * Segment UUID (for SEGMENT targets)
-     */
-    targetSegmentUuid?: string;
+    target: ReportTarget;
     /**
      * ID of the auto-check run that created this report (AUTO only)
      */
@@ -1656,30 +1564,18 @@ export type Report = {
 };
 
 export type ReportListResponse = {
-    data: Array<Report>;
-    /**
-     * Whether more results are available
-     */
-    hasMore: boolean;
-    /**
-     * Cursor for next page
-     */
-    cursor?: number;
+    reports: Array<Report>;
+    pagination: CursorPagination;
 };
 
+export type UserReportTarget = ({
+    type: 'MEDIA';
+} & ReportTargetMedia) | ({
+    type: 'SEGMENT';
+} & ReportTargetSegment);
+
 export type CreateReportRequest = {
-    /**
-     * Type of the entity being reported
-     */
-    targetType: 'SEGMENT' | 'MEDIA';
-    /**
-     * Media ID of the reported entity
-     */
-    targetMediaId: number;
-    /**
-     * Segment UUID (required when targetType is SEGMENT)
-     */
-    targetSegmentUuid?: string;
+    target: UserReportTarget;
     /**
      * Reason for the report
      */
@@ -1701,12 +1597,44 @@ export type UserPreferences = {
      * Preferred language for media names display
      */
     mediaNameLanguage?: 'english' | 'japanese' | 'romaji';
+    /**
+     * Per-category content rating display preferences
+     */
+    contentRatingPreferences?: {
+        suggestive?: 'show' | 'blur' | 'hide';
+        explicit?: 'show' | 'blur' | 'hide';
+    };
     searchHistory?: {
         /**
          * Whether activity tracking is enabled (default true)
          */
         enabled?: boolean;
     };
+    /**
+     * ISO timestamp of when the user last visited the blog page
+     */
+    blogLastVisited?: string;
+    ankiProfiles?: Array<{
+        id: string;
+        name: string;
+        deck?: string;
+        model?: string;
+        fields?: Array<{
+            key: string;
+            value: string;
+        }>;
+        key?: string;
+        serverAddress: string;
+    }>;
+    /**
+     * Media hidden from search results by the user
+     */
+    hiddenMedia?: Array<{
+        mediaId: number;
+        nameEn?: string;
+        nameJa?: string;
+        nameRomaji?: string;
+    }>;
 };
 
 /**
@@ -1723,7 +1651,52 @@ export type UserActivity = {
     createdAt: string;
 };
 
-export type LabFeature = {
+/**
+ * User segment collection
+ */
+export type Collection = {
+    /**
+     * Collection ID
+     */
+    id: number;
+    /**
+     * Name of the collection
+     */
+    name: string;
+    /**
+     * User ID who owns the collection
+     */
+    userId: number;
+    /**
+     * Visibility of the collection
+     */
+    visibility: 'PUBLIC' | 'PRIVATE';
+};
+
+export type UserExportCollection = Collection & {
+    /**
+     * Segment UUIDs in saved order
+     */
+    segmentUuids: Array<string>;
+};
+
+/**
+ * User data export payload (identifier-oriented references)
+ */
+export type UserExportResponse = {
+    profile: {
+        id: number;
+        username: string;
+        email: string;
+        createdAt: string;
+    };
+    preferences: UserPreferences;
+    activity: Array<UserActivity>;
+    collections: Array<UserExportCollection>;
+    reports: Array<Report>;
+};
+
+export type UserLabFeature = {
     /**
      * Unique identifier for the lab feature
      */
@@ -1740,88 +1713,52 @@ export type LabFeature = {
      * Whether the feature is globally available
      */
     enabled: boolean;
+    /**
+     * Whether the user has opted in to this feature
+     */
+    userEnabled: boolean;
 };
 
 /**
- * Request body for creating a new standalone list
+ * Paginated collection list response
  */
-export type ListCreateRequest = {
+export type CollectionListResponse = {
+    collections: Array<Collection>;
+    pagination: CursorPagination;
+};
+
+/**
+ * Request body for creating a new collection
+ */
+export type CollectionRequests = {
     /**
-     * Name of the list
+     * Name of the collection
      */
     name: string;
     /**
-     * Type of list
-     */
-    type?: 'SERIES' | 'CUSTOM' | 'SEGMENT';
-    /**
-     * User ID who owns the list (1 = admin)
-     */
-    userId?: number;
-    /**
-     * Visibility of the list
+     * Visibility of the collection
      */
     visibility?: 'PUBLIC' | 'PRIVATE';
 };
 
 /**
- * List with all media in order
+ * Collection with saved segments (search result format)
  */
-export type ListWithMedia = {
+export type CollectionWithSegments = {
     /**
-     * List ID
+     * Collection ID
      */
     id: number;
     /**
-     * Name of the list
+     * Name of the collection
      */
     name: string;
     /**
-     * Type of list
-     */
-    type: 'SERIES' | 'CUSTOM' | 'SEGMENT';
-    /**
-     * User ID who owns the list (1 = admin)
+     * User ID who owns the collection
      */
     userId: number;
     /**
-     * Visibility of the list
-     */
-    visibility: 'PUBLIC' | 'PRIVATE';
-    /**
-     * All media in the list, sorted by position
-     */
-    media: Array<{
-        /**
-         * Position in the list (1-indexed)
-         */
-        position?: number;
-        media?: Media;
-    }>;
-};
-
-/**
- * List with saved segments (search result format)
- */
-export type ListWithSegments = {
-    /**
-     * List ID
-     */
-    id: number;
-    /**
-     * Name of the list
-     */
-    name: string;
-    /**
-     * Type of list
-     */
-    type: 'SERIES' | 'CUSTOM' | 'SEGMENT';
-    /**
-     * User ID who owns the list
-     */
-    userId: number;
-    /**
-     * Visibility of the list
+     * Visibility of the collection
      */
     visibility: 'PUBLIC' | 'PRIVATE';
     /**
@@ -1829,19 +1766,28 @@ export type ListWithSegments = {
      */
     segments: Array<{
         /**
-         * Position in the list
+         * Position in the collection
          */
         position?: number;
         /**
          * User annotation
          */
         note?: string;
-        result?: SearchResult;
+        result?: Segment;
     }>;
+    includes?: {
+        /**
+         * Media objects keyed by mediaId
+         */
+        media?: {
+            [key: string]: Media;
+        };
+    };
     /**
-     * Total number of segments in the list
+     * Total number of segments in the collection
      */
     totalCount: number;
+    pagination: CursorPagination;
 };
 
 /**
@@ -1926,15 +1872,8 @@ export type AdminReport = Report & {
 };
 
 export type AdminReportListResponse = {
-    data: Array<AdminReport>;
-    /**
-     * Whether more results are available
-     */
-    hasMore: boolean;
-    /**
-     * Cursor for next page
-     */
-    cursor?: number;
+    reports: Array<AdminReport>;
+    pagination: CursorPagination;
 };
 
 export type UpdateReportRequest = {
@@ -2087,43 +2026,6 @@ export type ReviewAllowlist = {
     createdAt: string;
 };
 
-export type HealthCheckData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/health';
-};
-
-export type HealthCheckErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type HealthCheckError = HealthCheckErrors[keyof HealthCheckErrors];
-
-export type HealthCheckResponses = {
-    /**
-     * OK
-     */
-    200: SearchHealthCheckResponse;
-};
-
-export type HealthCheckResponse = HealthCheckResponses[keyof HealthCheckResponses];
-
 export type SearchIndexData = {
     body?: SearchRequest;
     path?: never;
@@ -2267,6 +2169,10 @@ export type MediaIndexData = {
          * Search query for filtering media by name
          */
         query?: string;
+        /**
+         * Resources to expand in the media response (`media.characters` implies `media`)
+         */
+        include?: Array<MediaIncludeExpansion>;
     };
     url: '/v1/media';
 };
@@ -2393,12 +2299,9 @@ export type MediaDestroyError = MediaDestroyErrors[keyof MediaDestroyErrors];
 
 export type MediaDestroyResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: {
-        message?: string;
-        id?: number;
-    };
+    204: void;
 };
 
 export type MediaDestroyResponse = MediaDestroyResponses[keyof MediaDestroyResponses];
@@ -2411,7 +2314,12 @@ export type MediaShowData = {
          */
         id: number;
     };
-    query?: never;
+    query?: {
+        /**
+         * Resources to expand in the media response (`media.characters` implies `media`)
+         */
+        include?: Array<MediaIncludeExpansion>;
+    };
     url: '/v1/media/{id}';
 };
 
@@ -2515,7 +2423,7 @@ export type EpisodeIndexData = {
         /**
          * Maximum number of episodes to return
          */
-        size?: number;
+        limit?: number;
         /**
          * Episode number to start from (for pagination)
          */
@@ -2794,7 +2702,7 @@ export type SegmentIndexData = {
         /**
          * Maximum number of segments to return
          */
-        size?: number;
+        limit?: number;
         /**
          * Segment ID to start from (for pagination)
          */
@@ -2834,9 +2742,15 @@ export type SegmentIndexError = SegmentIndexErrors[keyof SegmentIndexErrors];
 
 export type SegmentIndexResponses = {
     /**
-     * Paginated list of segments
+     * Paginated segment list response
      */
-    200: SegmentListResponse;
+    200: {
+        /**
+         * Array of segment objects
+         */
+        segments: Array<Segment>;
+        pagination: CursorPagination;
+    };
 };
 
 export type SegmentIndexResponse = SegmentIndexResponses[keyof SegmentIndexResponses];
@@ -2892,9 +2806,9 @@ export type SegmentCreateError = SegmentCreateErrors[keyof SegmentCreateErrors];
 
 export type SegmentCreateResponses = {
     /**
-     * Single segment response
+     * Single segment response with internal fields
      */
-    201: Segment;
+    201: SegmentInternal;
 };
 
 export type SegmentCreateResponse = SegmentCreateResponses[keyof SegmentCreateResponses];
@@ -3066,9 +2980,9 @@ export type SegmentUpdateError = SegmentUpdateErrors[keyof SegmentUpdateErrors];
 
 export type SegmentUpdateResponses = {
     /**
-     * Single segment response
+     * Single segment response with internal fields
      */
-    200: Segment;
+    200: SegmentInternal;
 };
 
 export type SegmentUpdateResponse = SegmentUpdateResponses[keyof SegmentUpdateResponses];
@@ -3133,6 +3047,14 @@ export type SegmentContextShowData = {
          * Number of segments to return before and after the target
          */
         limit?: number;
+        /**
+         * Content ratings to include (omit for all ratings)
+         */
+        contentRating?: Array<ContentRating>;
+        /**
+         * Resources to expand in the response includes block
+         */
+        include?: Array<IncludeExpansion>;
     };
     url: '/v1/media/segments/{uuid}/context';
 };
@@ -3174,6 +3096,454 @@ export type SegmentContextShowResponses = {
 };
 
 export type SegmentContextShowResponse = SegmentContextShowResponses[keyof SegmentContextShowResponses];
+
+export type SeriesIndexData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Number of results per page
+         */
+        limit?: number;
+        /**
+         * Pagination cursor offset
+         */
+        cursor?: number;
+        /**
+         * Case-insensitive search across English, Japanese, and Romaji names
+         */
+        query?: string;
+    };
+    url: '/v1/media/series';
+};
+
+export type SeriesIndexErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesIndexError = SeriesIndexErrors[keyof SeriesIndexErrors];
+
+export type SeriesIndexResponses = {
+    /**
+     * OK
+     */
+    200: SeriesListResponse;
+};
+
+export type SeriesIndexResponse = SeriesIndexResponses[keyof SeriesIndexResponses];
+
+export type SeriesCreateData = {
+    body: {
+        /**
+         * Japanese name of the series
+         */
+        nameJa: string;
+        /**
+         * Romaji name of the series
+         */
+        nameRomaji: string;
+        /**
+         * English name of the series
+         */
+        nameEn: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/media/series';
+};
+
+export type SeriesCreateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesCreateError = SeriesCreateErrors[keyof SeriesCreateErrors];
+
+export type SeriesCreateResponses = {
+    /**
+     * Created
+     */
+    201: Series;
+};
+
+export type SeriesCreateResponse = SeriesCreateResponses[keyof SeriesCreateResponses];
+
+export type SeriesDestroyData = {
+    body?: never;
+    path: {
+        /**
+         * Series ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/v1/media/series/{id}';
+};
+
+export type SeriesDestroyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesDestroyError = SeriesDestroyErrors[keyof SeriesDestroyErrors];
+
+export type SeriesDestroyResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type SeriesDestroyResponse = SeriesDestroyResponses[keyof SeriesDestroyResponses];
+
+export type SeriesShowData = {
+    body?: never;
+    path: {
+        /**
+         * Series ID
+         */
+        id: number;
+    };
+    query?: {
+        /**
+         * Resources to expand in the series response (`media.characters` implies `media`)
+         */
+        include?: Array<MediaIncludeExpansion>;
+    };
+    url: '/v1/media/series/{id}';
+};
+
+export type SeriesShowErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesShowError = SeriesShowErrors[keyof SeriesShowErrors];
+
+export type SeriesShowResponses = {
+    /**
+     * OK
+     */
+    200: SeriesWithMedia;
+};
+
+export type SeriesShowResponse = SeriesShowResponses[keyof SeriesShowResponses];
+
+export type SeriesUpdateData = {
+    body: {
+        /**
+         * Updated Japanese name
+         */
+        nameJa?: string;
+        /**
+         * Updated Romaji name
+         */
+        nameRomaji?: string;
+        /**
+         * Updated English name
+         */
+        nameEn?: string;
+    };
+    path: {
+        /**
+         * Series ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/v1/media/series/{id}';
+};
+
+export type SeriesUpdateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesUpdateError = SeriesUpdateErrors[keyof SeriesUpdateErrors];
+
+export type SeriesUpdateResponses = {
+    /**
+     * OK
+     */
+    200: Series;
+};
+
+export type SeriesUpdateResponse = SeriesUpdateResponses[keyof SeriesUpdateResponses];
+
+export type SeriesAddMediaData = {
+    body: {
+        /**
+         * Media ID to add
+         */
+        mediaId: number;
+        /**
+         * Position in the series (1-indexed)
+         */
+        position: number;
+    };
+    path: {
+        /**
+         * Series ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/v1/media/series/{id}/media';
+};
+
+export type SeriesAddMediaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesAddMediaError = SeriesAddMediaErrors[keyof SeriesAddMediaErrors];
+
+export type SeriesAddMediaResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type SeriesAddMediaResponse = SeriesAddMediaResponses[keyof SeriesAddMediaResponses];
+
+export type SeriesRemoveMediaData = {
+    body?: never;
+    path: {
+        /**
+         * Series ID
+         */
+        id: number;
+        /**
+         * Media ID
+         */
+        mediaId: number;
+    };
+    query?: never;
+    url: '/v1/media/series/{id}/media/{mediaId}';
+};
+
+export type SeriesRemoveMediaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesRemoveMediaError = SeriesRemoveMediaErrors[keyof SeriesRemoveMediaErrors];
+
+export type SeriesRemoveMediaResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type SeriesRemoveMediaResponse = SeriesRemoveMediaResponses[keyof SeriesRemoveMediaResponses];
+
+export type SeriesUpdateMediaData = {
+    body: {
+        /**
+         * New position in the series (1-indexed)
+         */
+        position: number;
+    };
+    path: {
+        /**
+         * Series ID
+         */
+        id: number;
+        /**
+         * Media ID
+         */
+        mediaId: number;
+    };
+    query?: never;
+    url: '/v1/media/series/{id}/media/{mediaId}';
+};
+
+export type SeriesUpdateMediaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SeriesUpdateMediaError = SeriesUpdateMediaErrors[keyof SeriesUpdateMediaErrors];
+
+export type SeriesUpdateMediaResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type SeriesUpdateMediaResponse = SeriesUpdateMediaResponses[keyof SeriesUpdateMediaResponses];
 
 export type CharacterShowData = {
     body?: never;
@@ -3233,7 +3603,12 @@ export type SeiyuuShowData = {
          */
         id: number;
     };
-    query?: never;
+    query?: {
+        /**
+         * Resources to expand in the response (`character` is included by default)
+         */
+        include?: Array<'character'>;
+    };
     url: '/v1/media/seiyuu/{id}';
 };
 
@@ -3288,6 +3663,10 @@ export type UserQuotaShowErrors = {
      */
     401: Error401;
     /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -3315,7 +3694,7 @@ export type UserReportIndexData = {
         /**
          * Number of results per page
          */
-        size?: number;
+        limit?: number;
         /**
          * Filter by report status
          */
@@ -3489,11 +3868,15 @@ export type UserActivityIndexData = {
         /**
          * Number of results per page
          */
-        size?: number;
+        limit?: number;
         /**
          * Filter by activity type
          */
         activityType?: ActivityType;
+        /**
+         * Filter activities to a specific date (YYYY-MM-DD)
+         */
+        date?: string;
     };
     url: '/v1/user/activity';
 };
@@ -3516,18 +3899,67 @@ export type UserActivityIndexResponses = {
      * OK
      */
     200: {
-        data: Array<UserActivity>;
-        hasMore: boolean;
-        cursor?: number;
+        activities: Array<UserActivity>;
+        pagination: CursorPagination;
     };
 };
 
 export type UserActivityIndexResponse = UserActivityIndexResponses[keyof UserActivityIndexResponses];
 
+export type UserActivityHeatmapShowData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Number of days to include in the heatmap
+         */
+        days?: number;
+        /**
+         * Filter by activity type
+         */
+        activityType?: ActivityType;
+    };
+    url: '/v1/user/activity/heatmap';
+};
+
+export type UserActivityHeatmapShowErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UserActivityHeatmapShowError = UserActivityHeatmapShowErrors[keyof UserActivityHeatmapShowErrors];
+
+export type UserActivityHeatmapShowResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Map of YYYY-MM-DD date strings to activity counts
+         */
+        counts: {
+            [key: string]: number;
+        };
+    };
+};
+
+export type UserActivityHeatmapShowResponse = UserActivityHeatmapShowResponses[keyof UserActivityHeatmapShowResponses];
+
 export type UserActivityStatsShowData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Only count activities from this date onward (YYYY-MM-DD)
+         */
+        since?: string;
+    };
     url: '/v1/user/activity/stats';
 };
 
@@ -3590,52 +4022,41 @@ export type UserExportShowResponses = {
     /**
      * OK
      */
-    200: {
-        profile: {
-            id?: number;
-            username?: string;
-            email?: string;
-            createdAt?: string;
-        };
-        preferences: UserPreferences;
-        activity: Array<UserActivity>;
-        lists: Array<{
-            [key: string]: unknown;
-        }>;
-        reports: Array<{
-            [key: string]: unknown;
-        }>;
-    };
+    200: UserExportResponse;
 };
 
 export type UserExportShowResponse = UserExportShowResponses[keyof UserExportShowResponses];
 
-export type LabIndexData = {
+export type UserLabsIndexData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/v1/labs';
+    url: '/v1/user/labs';
 };
 
-export type LabIndexErrors = {
+export type UserLabsIndexErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
     /**
      * Internal Server Error
      */
     500: Error500;
 };
 
-export type LabIndexError = LabIndexErrors[keyof LabIndexErrors];
+export type UserLabsIndexError = UserLabsIndexErrors[keyof UserLabsIndexErrors];
 
-export type LabIndexResponses = {
+export type UserLabsIndexResponses = {
     /**
      * OK
      */
-    200: Array<LabFeature>;
+    200: Array<UserLabFeature>;
 };
 
-export type LabIndexResponse = LabIndexResponses[keyof LabIndexResponses];
+export type UserLabsIndexResponse = UserLabsIndexResponses[keyof UserLabsIndexResponses];
 
-export type ListIndexData = {
+export type CollectionIndexData = {
     body?: never;
     path?: never;
     query?: {
@@ -3644,442 +4065,13 @@ export type ListIndexData = {
          */
         visibility?: 'public' | 'private';
         /**
-         * Filter by list type
+         * Cursor offset for pagination
          */
-        type?: 'SERIES' | 'CUSTOM' | 'SEGMENT';
-        /**
-         * Filter by list owner user ID
-         */
-        userId?: number;
-        /**
-         * Filter lists containing this media ID
-         */
-        mediaId?: number;
-    };
-    url: '/v1/lists';
-};
-
-export type ListIndexErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListIndexError = ListIndexErrors[keyof ListIndexErrors];
-
-export type ListIndexResponses = {
-    /**
-     * OK
-     */
-    200: Array<List>;
-};
-
-export type ListIndexResponse = ListIndexResponses[keyof ListIndexResponses];
-
-export type ListCreateData = {
-    body: ListCreateRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/lists';
-};
-
-export type ListCreateErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListCreateError = ListCreateErrors[keyof ListCreateErrors];
-
-export type ListCreateResponses = {
-    /**
-     * Created
-     */
-    201: List;
-};
-
-export type ListCreateResponse = ListCreateResponses[keyof ListCreateResponses];
-
-export type ListDestroyData = {
-    body?: never;
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/lists/{id}';
-};
-
-export type ListDestroyErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListDestroyError = ListDestroyErrors[keyof ListDestroyErrors];
-
-export type ListDestroyResponses = {
-    /**
-     * OK
-     */
-    200: {
-        message?: string;
-        id?: number;
-    };
-};
-
-export type ListDestroyResponse = ListDestroyResponses[keyof ListDestroyResponses];
-
-export type ListShowData = {
-    body?: never;
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/lists/{id}';
-};
-
-export type ListShowErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListShowError = ListShowErrors[keyof ListShowErrors];
-
-export type ListShowResponses = {
-    /**
-     * OK
-     */
-    200: ListWithMedia;
-};
-
-export type ListShowResponse = ListShowResponses[keyof ListShowResponses];
-
-export type ListUpdateData = {
-    body: {
-        name?: string;
-        visibility?: 'PUBLIC' | 'PRIVATE';
-    };
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/lists/{id}';
-};
-
-export type ListUpdateErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListUpdateError = ListUpdateErrors[keyof ListUpdateErrors];
-
-export type ListUpdateResponses = {
-    /**
-     * OK
-     */
-    200: List;
-};
-
-export type ListUpdateResponse = ListUpdateResponses[keyof ListUpdateResponses];
-
-export type ListAddItemData = {
-    body: {
-        mediaId: number;
-        /**
-         * Position in the list (1-indexed)
-         */
-        position: number;
-    };
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/lists/{id}/items';
-};
-
-export type ListAddItemErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Conflict
-     */
-    409: Error409;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListAddItemError = ListAddItemErrors[keyof ListAddItemErrors];
-
-export type ListAddItemResponses = {
-    /**
-     * Created
-     */
-    201: {
-        message?: string;
-    };
-};
-
-export type ListAddItemResponse = ListAddItemResponses[keyof ListAddItemResponses];
-
-export type ListRemoveItemData = {
-    body?: never;
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-        /**
-         * Media ID
-         */
-        mediaId: number;
-    };
-    query?: never;
-    url: '/v1/lists/{id}/items/{mediaId}';
-};
-
-export type ListRemoveItemErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListRemoveItemError = ListRemoveItemErrors[keyof ListRemoveItemErrors];
-
-export type ListRemoveItemResponses = {
-    /**
-     * OK
-     */
-    200: {
-        message?: string;
-    };
-};
-
-export type ListRemoveItemResponse = ListRemoveItemResponses[keyof ListRemoveItemResponses];
-
-export type ListUpdateItemData = {
-    body: {
-        /**
-         * New position in the list (1-indexed)
-         */
-        position: number;
-    };
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-        /**
-         * Media ID
-         */
-        mediaId: number;
-    };
-    query?: never;
-    url: '/v1/lists/{id}/items/{mediaId}';
-};
-
-export type ListUpdateItemErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListUpdateItemError = ListUpdateItemErrors[keyof ListUpdateItemErrors];
-
-export type ListUpdateItemResponses = {
-    /**
-     * OK
-     */
-    200: {
-        message?: string;
-    };
-};
-
-export type ListUpdateItemResponse = ListUpdateItemResponses[keyof ListUpdateItemResponses];
-
-export type ListGetSegmentsData = {
-    body?: never;
-    path: {
-        /**
-         * List ID
-         */
-        id: number;
-    };
-    query?: {
+        cursor?: number;
         /**
          * Page number (1-indexed)
+         *
+         * @deprecated
          */
         page?: number;
         /**
@@ -4087,10 +4079,97 @@ export type ListGetSegmentsData = {
          */
         limit?: number;
     };
-    url: '/v1/lists/{id}/segments';
+    url: '/v1/collections';
 };
 
-export type ListGetSegmentsErrors = {
+export type CollectionIndexErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CollectionIndexError = CollectionIndexErrors[keyof CollectionIndexErrors];
+
+export type CollectionIndexResponses = {
+    /**
+     * OK
+     */
+    200: CollectionListResponse;
+};
+
+export type CollectionIndexResponse = CollectionIndexResponses[keyof CollectionIndexResponses];
+
+export type CollectionCreateData = {
+    body: CollectionRequests;
+    path?: never;
+    query?: never;
+    url: '/v1/collections';
+};
+
+export type CollectionCreateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CollectionCreateError = CollectionCreateErrors[keyof CollectionCreateErrors];
+
+export type CollectionCreateResponses = {
+    /**
+     * Created
+     */
+    201: Collection;
+};
+
+export type CollectionCreateResponse = CollectionCreateResponses[keyof CollectionCreateResponses];
+
+export type CollectionDestroyData = {
+    body?: never;
+    path: {
+        /**
+         * Collection ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/v1/collections/{id}';
+};
+
+export type CollectionDestroyErrors = {
     /**
      * Bad Request
      */
@@ -4117,18 +4196,136 @@ export type ListGetSegmentsErrors = {
     500: Error500;
 };
 
-export type ListGetSegmentsError = ListGetSegmentsErrors[keyof ListGetSegmentsErrors];
+export type CollectionDestroyError = CollectionDestroyErrors[keyof CollectionDestroyErrors];
 
-export type ListGetSegmentsResponses = {
+export type CollectionDestroyResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type CollectionDestroyResponse = CollectionDestroyResponses[keyof CollectionDestroyResponses];
+
+export type CollectionShowData = {
+    body?: never;
+    path: {
+        /**
+         * Collection ID
+         */
+        id: number;
+    };
+    query?: {
+        /**
+         * Cursor offset for paginated segments
+         */
+        cursor?: number;
+        /**
+         * Page number (1-indexed)
+         *
+         * @deprecated
+         */
+        page?: number;
+        /**
+         * Items per page
+         */
+        limit?: number;
+    };
+    url: '/v1/collections/{id}';
+};
+
+export type CollectionShowErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CollectionShowError = CollectionShowErrors[keyof CollectionShowErrors];
+
+export type CollectionShowResponses = {
     /**
      * OK
      */
-    200: ListWithSegments;
+    200: CollectionWithSegments;
 };
 
-export type ListGetSegmentsResponse = ListGetSegmentsResponses[keyof ListGetSegmentsResponses];
+export type CollectionShowResponse = CollectionShowResponses[keyof CollectionShowResponses];
 
-export type ListAddSegmentData = {
+export type CollectionUpdateData = {
+    body: {
+        name?: string;
+        visibility?: 'PUBLIC' | 'PRIVATE';
+    };
+    path: {
+        /**
+         * Collection ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/v1/collections/{id}';
+};
+
+export type CollectionUpdateErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CollectionUpdateError = CollectionUpdateErrors[keyof CollectionUpdateErrors];
+
+export type CollectionUpdateResponses = {
+    /**
+     * OK
+     */
+    200: Collection;
+};
+
+export type CollectionUpdateResponse = CollectionUpdateResponses[keyof CollectionUpdateResponses];
+
+export type CollectionAddSegmentData = {
     body: {
         /**
          * UUID of the segment to add
@@ -4141,15 +4338,15 @@ export type ListAddSegmentData = {
     };
     path: {
         /**
-         * List ID
+         * Collection ID
          */
         id: number;
     };
     query?: never;
-    url: '/v1/lists/{id}/segments';
+    url: '/v1/collections/{id}/segments';
 };
 
-export type ListAddSegmentErrors = {
+export type CollectionAddSegmentErrors = {
     /**
      * Bad Request
      */
@@ -4167,10 +4364,6 @@ export type ListAddSegmentErrors = {
      */
     404: Error404;
     /**
-     * Conflict
-     */
-    409: Error409;
-    /**
      * Too Many Requests
      */
     429: Error429;
@@ -4180,24 +4373,22 @@ export type ListAddSegmentErrors = {
     500: Error500;
 };
 
-export type ListAddSegmentError = ListAddSegmentErrors[keyof ListAddSegmentErrors];
+export type CollectionAddSegmentError = CollectionAddSegmentErrors[keyof CollectionAddSegmentErrors];
 
-export type ListAddSegmentResponses = {
+export type CollectionAddSegmentResponses = {
     /**
-     * Created
+     * No Content
      */
-    201: {
-        message?: string;
-    };
+    204: void;
 };
 
-export type ListAddSegmentResponse = ListAddSegmentResponses[keyof ListAddSegmentResponses];
+export type CollectionAddSegmentResponse = CollectionAddSegmentResponses[keyof CollectionAddSegmentResponses];
 
-export type ListRemoveSegmentData = {
+export type CollectionRemoveSegmentData = {
     body?: never;
     path: {
         /**
-         * List ID
+         * Collection ID
          */
         id: number;
         /**
@@ -4206,10 +4397,10 @@ export type ListRemoveSegmentData = {
         uuid: string;
     };
     query?: never;
-    url: '/v1/lists/{id}/segments/{uuid}';
+    url: '/v1/collections/{id}/segments/{uuid}';
 };
 
-export type ListRemoveSegmentErrors = {
+export type CollectionRemoveSegmentErrors = {
     /**
      * Bad Request
      */
@@ -4236,23 +4427,21 @@ export type ListRemoveSegmentErrors = {
     500: Error500;
 };
 
-export type ListRemoveSegmentError = ListRemoveSegmentErrors[keyof ListRemoveSegmentErrors];
+export type CollectionRemoveSegmentError = CollectionRemoveSegmentErrors[keyof CollectionRemoveSegmentErrors];
 
-export type ListRemoveSegmentResponses = {
+export type CollectionRemoveSegmentResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: {
-        message?: string;
-    };
+    204: void;
 };
 
-export type ListRemoveSegmentResponse = ListRemoveSegmentResponses[keyof ListRemoveSegmentResponses];
+export type CollectionRemoveSegmentResponse = CollectionRemoveSegmentResponses[keyof CollectionRemoveSegmentResponses];
 
-export type ListUpdateSegmentData = {
+export type CollectionUpdateSegmentData = {
     body: {
         /**
-         * New position in the list
+         * New position in the collection
          */
         position?: number;
         /**
@@ -4262,7 +4451,7 @@ export type ListUpdateSegmentData = {
     };
     path: {
         /**
-         * List ID
+         * Collection ID
          */
         id: number;
         /**
@@ -4271,10 +4460,10 @@ export type ListUpdateSegmentData = {
         uuid: string;
     };
     query?: never;
-    url: '/v1/lists/{id}/segments/{uuid}';
+    url: '/v1/collections/{id}/segments/{uuid}';
 };
 
-export type ListUpdateSegmentErrors = {
+export type CollectionUpdateSegmentErrors = {
     /**
      * Bad Request
      */
@@ -4301,18 +4490,176 @@ export type ListUpdateSegmentErrors = {
     500: Error500;
 };
 
-export type ListUpdateSegmentError = ListUpdateSegmentErrors[keyof ListUpdateSegmentErrors];
+export type CollectionUpdateSegmentError = CollectionUpdateSegmentErrors[keyof CollectionUpdateSegmentErrors];
 
-export type ListUpdateSegmentResponses = {
+export type CollectionUpdateSegmentResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type CollectionUpdateSegmentResponse = CollectionUpdateSegmentResponses[keyof CollectionUpdateSegmentResponses];
+
+export type AdminDashboardShowData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/dashboard';
+};
+
+export type AdminDashboardShowErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type AdminDashboardShowError = AdminDashboardShowErrors[keyof AdminDashboardShowErrors];
+
+export type AdminDashboardShowResponses = {
     /**
      * OK
      */
     200: {
-        message?: string;
+        media: {
+            totalMedia: number;
+            totalEpisodes: number;
+            totalSegments: number;
+            totalCharacters: number;
+            totalSeiyuu: number;
+        };
+        users: {
+            totalUsers: number;
+            /**
+             * Users registered in the last 30 days
+             */
+            recentlyRegisteredCount: number;
+            /**
+             * Users active in the last 30 days
+             */
+            recentlyActiveCount: number;
+        };
+        activity: {
+            totalSearches: number;
+            totalExports: number;
+            totalPlays: number;
+            totalCollectionAdds: number;
+            /**
+             * Unique users who searched in the last 7 days
+             */
+            activeSearchers7d: number;
+            topQueries7d: Array<{
+                query: string;
+                count: number;
+            }>;
+            dailyActivity30d: Array<{
+                date: string;
+                count: number;
+            }>;
+        };
+        system: {
+            status: 'healthy' | 'degraded';
+            app: {
+                version: string;
+            };
+            elasticsearch: {
+                status: 'connected' | 'disconnected';
+                version?: string;
+                clusterName?: string;
+                clusterStatus?: string;
+                indexName?: string;
+                documentCount?: number;
+            };
+            database: {
+                status: 'connected' | 'disconnected';
+                version?: string;
+            };
+            queues: Array<{
+                queue: string;
+                stuckCount: number;
+                failedCount: number;
+            }>;
+        };
     };
 };
 
-export type ListUpdateSegmentResponse = ListUpdateSegmentResponses[keyof ListUpdateSegmentResponses];
+export type AdminDashboardShowResponse = AdminDashboardShowResponses[keyof AdminDashboardShowResponses];
+
+export type AdminHealthShowData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/health';
+};
+
+export type AdminHealthShowErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type AdminHealthShowError = AdminHealthShowErrors[keyof AdminHealthShowErrors];
+
+export type AdminHealthShowResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Overall system status
+         */
+        status: 'healthy' | 'degraded';
+        app: {
+            /**
+             * API version from OpenAPI spec
+             */
+            version: string;
+        };
+        elasticsearch: {
+            status: 'connected' | 'disconnected';
+            version?: string;
+            clusterName?: string;
+            /**
+             * ES cluster health (green, yellow, red)
+             */
+            clusterStatus?: string;
+            indexName?: string;
+            documentCount?: number;
+        };
+        database: {
+            status: 'connected' | 'disconnected';
+            version?: string;
+        };
+    };
+};
+
+export type AdminHealthShowResponse = AdminHealthShowResponses[keyof AdminHealthShowResponses];
 
 export type AdminReindexCreateData = {
     body?: ReindexRequest;
@@ -4452,31 +4799,45 @@ export type AdminQueueShowResponses = {
      * Queue details retrieved successfully
      */
     200: {
-        queue?: string;
-        /**
-         * Current queue size (pending jobs)
-         */
-        size?: number;
-        /**
-         * Total jobs created
-         */
-        created?: number;
-        /**
-         * Total failed jobs
-         */
-        failed?: number;
-        /**
-         * Total completed jobs
-         */
-        complete?: number;
-        /**
-         * Total expired jobs
-         */
-        expired?: number;
-        /**
-         * Total cancelled jobs
-         */
-        cancelled?: number;
+        queue: string;
+        stats: {
+            /**
+             * Jobs scheduled for future execution (`start_after > now()`)
+             */
+            deferred: number;
+            /**
+             * Jobs currently queued and waiting to be processed
+             */
+            queued: number;
+            /**
+             * Jobs currently being processed
+             */
+            active: number;
+            /**
+             * Total jobs currently stored in the queue table
+             */
+            total: number;
+        };
+        metadata: {
+            policy: string;
+            partition: boolean;
+            deadLetter?: string;
+            warningQueueSize?: number;
+            retryLimit?: number;
+            /**
+             * Initial retry delay in seconds
+             */
+            retryDelay?: number;
+            retryBackoff?: boolean;
+            retryDelayMax?: number;
+            expireInSeconds?: number;
+            retentionSeconds?: number;
+            deleteAfterSeconds?: number;
+            createdOn: string;
+            updatedOn: string;
+            singletonsActive: Array<string>;
+            table: string;
+        };
     };
 };
 
@@ -4651,30 +5012,6 @@ export type AdminQueueFailedDestroyResponses = {
 
 export type AdminQueueFailedDestroyResponse = AdminQueueFailedDestroyResponses[keyof AdminQueueFailedDestroyResponses];
 
-export type AdminMorphemeBackfillCreateData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/morpheme-backfill';
-};
-
-export type AdminMorphemeBackfillCreateResponses = {
-    /**
-     * Backfill completed
-     */
-    200: {
-        success: boolean;
-        message: string;
-        stats: {
-            totalSegments: number;
-            successfulAnalyses: number;
-            failedAnalyses: number;
-        };
-    };
-};
-
-export type AdminMorphemeBackfillCreateResponse = AdminMorphemeBackfillCreateResponses[keyof AdminMorphemeBackfillCreateResponses];
-
 export type AdminReportIndexData = {
     body?: never;
     path?: never;
@@ -4686,7 +5023,7 @@ export type AdminReportIndexData = {
         /**
          * Number of results per page
          */
-        size?: number;
+        limit?: number;
         /**
          * Filter by report status
          */
@@ -4698,11 +5035,19 @@ export type AdminReportIndexData = {
         /**
          * Filter by target type
          */
-        targetType?: 'SEGMENT' | 'EPISODE' | 'MEDIA';
+        'target.type'?: 'SEGMENT' | 'EPISODE' | 'MEDIA';
         /**
          * Filter by target media ID
          */
-        targetMediaId?: number;
+        'target.mediaId'?: number;
+        /**
+         * Filter by target episode number
+         */
+        'target.episodeNumber'?: number;
+        /**
+         * Filter by target segment UUID
+         */
+        'target.segmentUuid'?: string;
         /**
          * Filter by review check run ID
          */
@@ -4799,6 +5144,10 @@ export type AdminReviewRunCreateData = {
          * Optional category filter
          */
         category?: 'ANIME' | 'JDRAMA';
+        /**
+         * Optional check name to run a single check instead of all
+         */
+        checkName?: string;
     };
     url: '/v1/admin/review/run';
 };
@@ -4946,7 +5295,7 @@ export type AdminReviewRunIndexData = {
         /**
          * Number of results per page
          */
-        size?: number;
+        limit?: number;
     };
     url: '/v1/admin/review/runs';
 };
@@ -4977,9 +5326,8 @@ export type AdminReviewRunIndexResponses = {
      * OK
      */
     200: {
-        data: Array<ReviewCheckRun>;
-        hasMore: boolean;
-        cursor?: number;
+        runs: Array<ReviewCheckRun>;
+        pagination: CursorPagination;
     };
 };
 

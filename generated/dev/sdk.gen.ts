@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AdminMorphemeBackfillCreateData, AdminMorphemeBackfillCreateResponses, AdminQueueFailedDestroyData, AdminQueueFailedDestroyErrors, AdminQueueFailedDestroyResponses, AdminQueueFailedIndexData, AdminQueueFailedIndexErrors, AdminQueueFailedIndexResponses, AdminQueueRetryCreateData, AdminQueueRetryCreateErrors, AdminQueueRetryCreateResponses, AdminQueueShowData, AdminQueueShowErrors, AdminQueueShowResponses, AdminQueueStatsIndexData, AdminQueueStatsIndexErrors, AdminQueueStatsIndexResponses, AdminReindexCreateData, AdminReindexCreateErrors, AdminReindexCreateResponses, AdminReportIndexData, AdminReportIndexErrors, AdminReportIndexResponses, AdminReportUpdateData, AdminReportUpdateErrors, AdminReportUpdateResponses, AdminReviewAllowlistCreateData, AdminReviewAllowlistCreateErrors, AdminReviewAllowlistCreateResponses, AdminReviewAllowlistDestroyData, AdminReviewAllowlistDestroyErrors, AdminReviewAllowlistDestroyResponses, AdminReviewAllowlistIndexData, AdminReviewAllowlistIndexErrors, AdminReviewAllowlistIndexResponses, AdminReviewCheckIndexData, AdminReviewCheckIndexErrors, AdminReviewCheckIndexResponses, AdminReviewCheckUpdateData, AdminReviewCheckUpdateErrors, AdminReviewCheckUpdateResponses, AdminReviewRunCreateData, AdminReviewRunCreateErrors, AdminReviewRunCreateResponses, AdminReviewRunIndexData, AdminReviewRunIndexErrors, AdminReviewRunIndexResponses, AdminReviewRunShowData, AdminReviewRunShowErrors, AdminReviewRunShowResponses, CharacterShowData, CharacterShowErrors, CharacterShowResponses, EpisodeCreateData, EpisodeCreateErrors, EpisodeCreateResponses, EpisodeDestroyData, EpisodeDestroyErrors, EpisodeDestroyResponses, EpisodeIndexData, EpisodeIndexErrors, EpisodeIndexResponses, EpisodeShowData, EpisodeShowErrors, EpisodeShowResponses, EpisodeUpdateData, EpisodeUpdateErrors, EpisodeUpdateResponses, HealthCheckData, HealthCheckErrors, HealthCheckResponses, LabIndexData, LabIndexErrors, LabIndexResponses, ListAddItemData, ListAddItemErrors, ListAddItemResponses, ListAddSegmentData, ListAddSegmentErrors, ListAddSegmentResponses, ListCreateData, ListCreateErrors, ListCreateResponses, ListDestroyData, ListDestroyErrors, ListDestroyResponses, ListGetSegmentsData, ListGetSegmentsErrors, ListGetSegmentsResponses, ListIndexData, ListIndexErrors, ListIndexResponses, ListRemoveItemData, ListRemoveItemErrors, ListRemoveItemResponses, ListRemoveSegmentData, ListRemoveSegmentErrors, ListRemoveSegmentResponses, ListShowData, ListShowErrors, ListShowResponses, ListUpdateData, ListUpdateErrors, ListUpdateItemData, ListUpdateItemErrors, ListUpdateItemResponses, ListUpdateResponses, ListUpdateSegmentData, ListUpdateSegmentErrors, ListUpdateSegmentResponses, MediaCreateData, MediaCreateErrors, MediaCreateResponses, MediaDestroyData, MediaDestroyErrors, MediaDestroyResponses, MediaIndexData, MediaIndexErrors, MediaIndexResponses, MediaShowData, MediaShowErrors, MediaShowResponses, MediaUpdateData, MediaUpdateErrors, MediaUpdateResponses, SearchIndexData, SearchIndexErrors, SearchIndexResponses, SearchStatsData, SearchStatsErrors, SearchStatsResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, SegmentContextShowData, SegmentContextShowErrors, SegmentContextShowResponses, SegmentCreateData, SegmentCreateErrors, SegmentCreateResponses, SegmentDestroyData, SegmentDestroyErrors, SegmentDestroyResponses, SegmentIndexData, SegmentIndexErrors, SegmentIndexResponses, SegmentShowByUuidData, SegmentShowByUuidErrors, SegmentShowByUuidResponses, SegmentShowData, SegmentShowErrors, SegmentShowResponses, SegmentUpdateData, SegmentUpdateErrors, SegmentUpdateResponses, SeiyuuShowData, SeiyuuShowErrors, SeiyuuShowResponses, UserActivityDestroyData, UserActivityDestroyErrors, UserActivityDestroyResponses, UserActivityIndexData, UserActivityIndexErrors, UserActivityIndexResponses, UserActivityStatsShowData, UserActivityStatsShowErrors, UserActivityStatsShowResponses, UserExportShowData, UserExportShowErrors, UserExportShowResponses, UserPreferencesShowData, UserPreferencesShowErrors, UserPreferencesShowResponses, UserPreferencesUpdateData, UserPreferencesUpdateErrors, UserPreferencesUpdateResponses, UserQuotaShowData, UserQuotaShowErrors, UserQuotaShowResponses, UserReportCreateData, UserReportCreateErrors, UserReportCreateResponses, UserReportIndexData, UserReportIndexErrors, UserReportIndexResponses } from './types.gen';
+import type { AdminDashboardShowData, AdminDashboardShowErrors, AdminDashboardShowResponses, AdminHealthShowData, AdminHealthShowErrors, AdminHealthShowResponses, AdminQueueFailedDestroyData, AdminQueueFailedDestroyErrors, AdminQueueFailedDestroyResponses, AdminQueueFailedIndexData, AdminQueueFailedIndexErrors, AdminQueueFailedIndexResponses, AdminQueueRetryCreateData, AdminQueueRetryCreateErrors, AdminQueueRetryCreateResponses, AdminQueueShowData, AdminQueueShowErrors, AdminQueueShowResponses, AdminQueueStatsIndexData, AdminQueueStatsIndexErrors, AdminQueueStatsIndexResponses, AdminReindexCreateData, AdminReindexCreateErrors, AdminReindexCreateResponses, AdminReportIndexData, AdminReportIndexErrors, AdminReportIndexResponses, AdminReportUpdateData, AdminReportUpdateErrors, AdminReportUpdateResponses, AdminReviewAllowlistCreateData, AdminReviewAllowlistCreateErrors, AdminReviewAllowlistCreateResponses, AdminReviewAllowlistDestroyData, AdminReviewAllowlistDestroyErrors, AdminReviewAllowlistDestroyResponses, AdminReviewAllowlistIndexData, AdminReviewAllowlistIndexErrors, AdminReviewAllowlistIndexResponses, AdminReviewCheckIndexData, AdminReviewCheckIndexErrors, AdminReviewCheckIndexResponses, AdminReviewCheckUpdateData, AdminReviewCheckUpdateErrors, AdminReviewCheckUpdateResponses, AdminReviewRunCreateData, AdminReviewRunCreateErrors, AdminReviewRunCreateResponses, AdminReviewRunIndexData, AdminReviewRunIndexErrors, AdminReviewRunIndexResponses, AdminReviewRunShowData, AdminReviewRunShowErrors, AdminReviewRunShowResponses, CharacterShowData, CharacterShowErrors, CharacterShowResponses, CollectionAddSegmentData, CollectionAddSegmentErrors, CollectionAddSegmentResponses, CollectionCreateData, CollectionCreateErrors, CollectionCreateResponses, CollectionDestroyData, CollectionDestroyErrors, CollectionDestroyResponses, CollectionIndexData, CollectionIndexErrors, CollectionIndexResponses, CollectionRemoveSegmentData, CollectionRemoveSegmentErrors, CollectionRemoveSegmentResponses, CollectionShowData, CollectionShowErrors, CollectionShowResponses, CollectionUpdateData, CollectionUpdateErrors, CollectionUpdateResponses, CollectionUpdateSegmentData, CollectionUpdateSegmentErrors, CollectionUpdateSegmentResponses, EpisodeCreateData, EpisodeCreateErrors, EpisodeCreateResponses, EpisodeDestroyData, EpisodeDestroyErrors, EpisodeDestroyResponses, EpisodeIndexData, EpisodeIndexErrors, EpisodeIndexResponses, EpisodeShowData, EpisodeShowErrors, EpisodeShowResponses, EpisodeUpdateData, EpisodeUpdateErrors, EpisodeUpdateResponses, MediaCreateData, MediaCreateErrors, MediaCreateResponses, MediaDestroyData, MediaDestroyErrors, MediaDestroyResponses, MediaIndexData, MediaIndexErrors, MediaIndexResponses, MediaShowData, MediaShowErrors, MediaShowResponses, MediaUpdateData, MediaUpdateErrors, MediaUpdateResponses, SearchIndexData, SearchIndexErrors, SearchIndexResponses, SearchStatsData, SearchStatsErrors, SearchStatsResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, SegmentContextShowData, SegmentContextShowErrors, SegmentContextShowResponses, SegmentCreateData, SegmentCreateErrors, SegmentCreateResponses, SegmentDestroyData, SegmentDestroyErrors, SegmentDestroyResponses, SegmentIndexData, SegmentIndexErrors, SegmentIndexResponses, SegmentShowByUuidData, SegmentShowByUuidErrors, SegmentShowByUuidResponses, SegmentShowData, SegmentShowErrors, SegmentShowResponses, SegmentUpdateData, SegmentUpdateErrors, SegmentUpdateResponses, SeiyuuShowData, SeiyuuShowErrors, SeiyuuShowResponses, SeriesAddMediaData, SeriesAddMediaErrors, SeriesAddMediaResponses, SeriesCreateData, SeriesCreateErrors, SeriesCreateResponses, SeriesDestroyData, SeriesDestroyErrors, SeriesDestroyResponses, SeriesIndexData, SeriesIndexErrors, SeriesIndexResponses, SeriesRemoveMediaData, SeriesRemoveMediaErrors, SeriesRemoveMediaResponses, SeriesShowData, SeriesShowErrors, SeriesShowResponses, SeriesUpdateData, SeriesUpdateErrors, SeriesUpdateMediaData, SeriesUpdateMediaErrors, SeriesUpdateMediaResponses, SeriesUpdateResponses, UserActivityDestroyData, UserActivityDestroyErrors, UserActivityDestroyResponses, UserActivityHeatmapShowData, UserActivityHeatmapShowErrors, UserActivityHeatmapShowResponses, UserActivityIndexData, UserActivityIndexErrors, UserActivityIndexResponses, UserActivityStatsShowData, UserActivityStatsShowErrors, UserActivityStatsShowResponses, UserExportShowData, UserExportShowErrors, UserExportShowResponses, UserLabsIndexData, UserLabsIndexErrors, UserLabsIndexResponses, UserPreferencesShowData, UserPreferencesShowErrors, UserPreferencesShowResponses, UserPreferencesUpdateData, UserPreferencesUpdateErrors, UserPreferencesUpdateResponses, UserQuotaShowData, UserQuotaShowErrors, UserQuotaShowResponses, UserReportCreateData, UserReportCreateErrors, UserReportCreateResponses, UserReportIndexData, UserReportIndexErrors, UserReportIndexResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -17,20 +17,6 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: Record<string, unknown>;
 };
-
-/**
- * Health check
- *
- * Tests the search service connectivity and functionality by performing a simple search query.
- *
- * **Permissions:** `READ_MEDIA`
- *
- */
-export const healthCheck = <ThrowOnError extends boolean = false>(options?: Options<HealthCheckData, ThrowOnError>) => (options?.client ?? client).get<HealthCheckResponses, HealthCheckErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/health',
-    ...options
-});
 
 /**
  * Search segments by query
@@ -393,6 +379,126 @@ export const segmentContextShow = <ThrowOnError extends boolean = false>(options
 });
 
 /**
+ * List all series
+ *
+ * Returns a paginated list of media series groupings.
+ *
+ */
+export const seriesIndex = <ThrowOnError extends boolean = false>(options?: Options<SeriesIndexData, ThrowOnError>) => (options?.client ?? client).get<SeriesIndexResponses, SeriesIndexErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/media/series',
+    ...options
+});
+
+/**
+ * Create series
+ *
+ * Creates a new media series grouping.
+ *
+ */
+export const seriesCreate = <ThrowOnError extends boolean = false>(options: Options<SeriesCreateData, ThrowOnError>) => (options.client ?? client).post<SeriesCreateResponses, SeriesCreateErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete series
+ *
+ * Deletes a series and all its media associations.
+ *
+ */
+export const seriesDestroy = <ThrowOnError extends boolean = false>(options: Options<SeriesDestroyData, ThrowOnError>) => (options.client ?? client).delete<SeriesDestroyResponses, SeriesDestroyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}',
+    ...options
+});
+
+/**
+ * Get series details
+ *
+ * Returns a series with all media entries sorted by position.
+ *
+ */
+export const seriesShow = <ThrowOnError extends boolean = false>(options: Options<SeriesShowData, ThrowOnError>) => (options.client ?? client).get<SeriesShowResponses, SeriesShowErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/media/series/{id}',
+    ...options
+});
+
+/**
+ * Update series metadata
+ *
+ * Updates series localized names.
+ *
+ */
+export const seriesUpdate = <ThrowOnError extends boolean = false>(options: Options<SeriesUpdateData, ThrowOnError>) => (options.client ?? client).patch<SeriesUpdateResponses, SeriesUpdateErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add media to series
+ *
+ * Adds a media entry to a series at a specific position.
+ *
+ */
+export const seriesAddMedia = <ThrowOnError extends boolean = false>(options: Options<SeriesAddMediaData, ThrowOnError>) => (options.client ?? client).post<SeriesAddMediaResponses, SeriesAddMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}/media',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove media from series
+ *
+ * Removes a media entry from a series.
+ *
+ */
+export const seriesRemoveMedia = <ThrowOnError extends boolean = false>(options: Options<SeriesRemoveMediaData, ThrowOnError>) => (options.client ?? client).delete<SeriesRemoveMediaResponses, SeriesRemoveMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}/media/{mediaId}',
+    ...options
+});
+
+/**
+ * Update media position in series
+ *
+ * Updates the position of a media entry in a series.
+ *
+ */
+export const seriesUpdateMedia = <ThrowOnError extends boolean = false>(options: Options<SeriesUpdateMediaData, ThrowOnError>) => (options.client ?? client).patch<SeriesUpdateMediaResponses, SeriesUpdateMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}/media/{mediaId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Get character details
  *
  * Returns a character with their voice actors (seiyuu) and all media appearances.
@@ -423,9 +529,10 @@ export const seiyuuShow = <ThrowOnError extends boolean = false>(options: Option
 /**
  * Get current monthly API quota
  *
- * Returns the authenticated user's API quota usage for the current billing period.
+ * Returns the API quota usage for the current billing period.
+ * Accepts both session cookie and API key authentication.
  *
- * **Permissions:** Session authentication (cookie-based).
+ * **Permissions:** Session authentication (cookie-based) or API key (`READ_MEDIA`).
  *
  */
 export const userQuotaShow = <ThrowOnError extends boolean = false>(options?: Options<UserQuotaShowData, ThrowOnError>) => (options?.client ?? client).get<UserQuotaShowResponses, UserQuotaShowErrors, ThrowOnError>({
@@ -433,7 +540,7 @@ export const userQuotaShow = <ThrowOnError extends boolean = false>(options?: Op
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
-        }],
+        }, { scheme: 'bearer', type: 'http' }],
     url: '/v1/user/quota',
     ...options
 });
@@ -556,6 +663,25 @@ export const userActivityIndex = <ThrowOnError extends boolean = false>(options?
 });
 
 /**
+ * Get activity heatmap data
+ *
+ * Returns daily activity counts for the authenticated user, grouped by date.
+ * Designed for rendering a GitHub-style contribution heatmap.
+ *
+ * **Permissions:** Session authentication (cookie-based).
+ *
+ */
+export const userActivityHeatmapShow = <ThrowOnError extends boolean = false>(options?: Options<UserActivityHeatmapShowData, ThrowOnError>) => (options?.client ?? client).get<UserActivityHeatmapShowResponses, UserActivityHeatmapShowErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/user/activity/heatmap',
+    ...options
+});
+
+/**
  * Get user activity statistics
  *
  * Returns aggregate statistics about the authenticated user's activity:
@@ -578,7 +704,7 @@ export const userActivityStatsShow = <ThrowOnError extends boolean = false>(opti
  * Export all user data
  *
  * Returns a full JSON export of all user-related data for GDPR data portability.
- * Includes profile, preferences, activity history, lists, and reports.
+ * Includes profile, preferences, activity history, collections, and reports.
  *
  * **Permissions:** Session authentication (cookie-based).
  *
@@ -594,183 +720,54 @@ export const userExportShow = <ThrowOnError extends boolean = false>(options?: O
 });
 
 /**
- * List available lab features
+ * List lab features with user opt-in status
  *
- * Returns all available lab features from the code registry.
- * This is a static, cacheable endpoint that does not require authentication.
+ * Returns all available lab features merged with the authenticated user's
+ * opt-in status. Features gated by role are excluded if the user lacks
+ * the required role.
+ *
+ * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const labIndex = <ThrowOnError extends boolean = false>(options?: Options<LabIndexData, ThrowOnError>) => (options?.client ?? client).get<LabIndexResponses, LabIndexErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
+export const userLabsIndex = <ThrowOnError extends boolean = false>(options?: Options<UserLabsIndexData, ThrowOnError>) => (options?.client ?? client).get<UserLabsIndexResponses, UserLabsIndexErrors, ThrowOnError>({
+    security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/labs',
+    url: '/v1/user/labs',
     ...options
 });
 
 /**
- * List all lists
+ * List user's collections
  *
- * Returns all lists matching the query filters. Can filter by media ID to find lists containing a specific media. Public lists are visible to all users.
- *
- * **Permissions:** `READ_LISTS`
+ * Returns all collections for the authenticated user. Can filter by visibility.
  *
  */
-export const listIndex = <ThrowOnError extends boolean = false>(options?: Options<ListIndexData, ThrowOnError>) => (options?.client ?? client).get<ListIndexResponses, ListIndexErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists',
-    ...options
-});
-
-/**
- * Create new list
- *
- * Creates a new standalone list.
- *
- * **Permissions:** `CREATE_LISTS`
- *
- */
-export const listCreate = <ThrowOnError extends boolean = false>(options: Options<ListCreateData, ThrowOnError>) => (options.client ?? client).post<ListCreateResponses, ListCreateErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Delete list
- *
- * Deletes a list and all its items.
- *
- * **Permissions:** `DELETE_LISTS`
- *
- */
-export const listDestroy = <ThrowOnError extends boolean = false>(options: Options<ListDestroyData, ThrowOnError>) => (options.client ?? client).delete<ListDestroyResponses, ListDestroyErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists/{id}',
-    ...options
-});
-
-/**
- * Get list details
- *
- * Returns a list with all media items sorted by position.
- *
- * **Permissions:** `READ_LISTS`
- *
- */
-export const listShow = <ThrowOnError extends boolean = false>(options: Options<ListShowData, ThrowOnError>) => (options.client ?? client).get<ListShowResponses, ListShowErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists/{id}',
-    ...options
-});
-
-/**
- * Update list metadata
- *
- * Updates list name or visibility.
- *
- * **Permissions:** `UPDATE_LISTS`
- *
- */
-export const listUpdate = <ThrowOnError extends boolean = false>(options: Options<ListUpdateData, ThrowOnError>) => (options.client ?? client).patch<ListUpdateResponses, ListUpdateErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Add media to list
- *
- * Adds a media entry to the list at the specified position.
- *
- * **Permissions:** `UPDATE_LISTS`
- *
- */
-export const listAddItem = <ThrowOnError extends boolean = false>(options: Options<ListAddItemData, ThrowOnError>) => (options.client ?? client).post<ListAddItemResponses, ListAddItemErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists/{id}/items',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Remove media from list
- *
- * Removes a media entry from the list.
- *
- * **Permissions:** `UPDATE_LISTS`
- *
- */
-export const listRemoveItem = <ThrowOnError extends boolean = false>(options: Options<ListRemoveItemData, ThrowOnError>) => (options.client ?? client).delete<ListRemoveItemResponses, ListRemoveItemErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists/{id}/items/{mediaId}',
-    ...options
-});
-
-/**
- * Update media position in list
- *
- * Updates the position of a media entry within the list.
- *
- * **Permissions:** `UPDATE_LISTS`
- *
- */
-export const listUpdateItem = <ThrowOnError extends boolean = false>(options: Options<ListUpdateItemData, ThrowOnError>) => (options.client ?? client).patch<ListUpdateItemResponses, ListUpdateItemErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/lists/{id}/items/{mediaId}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Get segments in list
- *
- * Returns paginated segments in a segment list with full search result data.
- *
- * **Permissions:** `READ_LISTS`
- *
- */
-export const listGetSegments = <ThrowOnError extends boolean = false>(options: Options<ListGetSegmentsData, ThrowOnError>) => (options.client ?? client).get<ListGetSegmentsResponses, ListGetSegmentsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
+export const collectionIndex = <ThrowOnError extends boolean = false>(options?: Options<CollectionIndexData, ThrowOnError>) => (options?.client ?? client).get<CollectionIndexResponses, CollectionIndexErrors, ThrowOnError>({
+    security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/lists/{id}/segments',
+    url: '/v1/collections',
     ...options
 });
 
 /**
- * Add segment to list
+ * Create collection
  *
- * Adds a segment to a segment list. Requires list ownership or admin.
- *
- * **Permissions:** `UPDATE_LISTS`
+ * Creates a new segment collection for the authenticated user.
  *
  */
-export const listAddSegment = <ThrowOnError extends boolean = false>(options: Options<ListAddSegmentData, ThrowOnError>) => (options.client ?? client).post<ListAddSegmentResponses, ListAddSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
+export const collectionCreate = <ThrowOnError extends boolean = false>(options: Options<CollectionCreateData, ThrowOnError>) => (options.client ?? client).post<CollectionCreateResponses, CollectionCreateErrors, ThrowOnError>({
+    security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/lists/{id}/segments',
+    url: '/v1/collections',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -779,43 +776,141 @@ export const listAddSegment = <ThrowOnError extends boolean = false>(options: Op
 });
 
 /**
- * Remove segment from list
+ * Delete collection
  *
- * Removes a segment from a list. Requires list ownership or admin.
- *
- * **Permissions:** `UPDATE_LISTS`
+ * Deletes a collection and all its segment entries. Requires collection ownership.
  *
  */
-export const listRemoveSegment = <ThrowOnError extends boolean = false>(options: Options<ListRemoveSegmentData, ThrowOnError>) => (options.client ?? client).delete<ListRemoveSegmentResponses, ListRemoveSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
+export const collectionDestroy = <ThrowOnError extends boolean = false>(options: Options<CollectionDestroyData, ThrowOnError>) => (options.client ?? client).delete<CollectionDestroyResponses, CollectionDestroyErrors, ThrowOnError>({
+    security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/lists/{id}/segments/{uuid}',
+    url: '/v1/collections/{id}',
     ...options
 });
 
 /**
- * Update segment in list
+ * Get collection details
  *
- * Updates the note or position of a segment in a list. Requires list ownership or admin.
- *
- * **Permissions:** `UPDATE_LISTS`
+ * Returns a collection with paginated segments and their search result data.
  *
  */
-export const listUpdateSegment = <ThrowOnError extends boolean = false>(options: Options<ListUpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<ListUpdateSegmentResponses, ListUpdateSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
+export const collectionShow = <ThrowOnError extends boolean = false>(options: Options<CollectionShowData, ThrowOnError>) => (options.client ?? client).get<CollectionShowResponses, CollectionShowErrors, ThrowOnError>({
+    security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/lists/{id}/segments/{uuid}',
+    url: '/v1/collections/{id}',
+    ...options
+});
+
+/**
+ * Update collection metadata
+ *
+ * Updates collection name or visibility. Requires collection ownership.
+ *
+ */
+export const collectionUpdate = <ThrowOnError extends boolean = false>(options: Options<CollectionUpdateData, ThrowOnError>) => (options.client ?? client).patch<CollectionUpdateResponses, CollectionUpdateErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/collections/{id}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Add segment to collection
+ *
+ * Adds a segment to a collection. Requires collection ownership.
+ *
+ */
+export const collectionAddSegment = <ThrowOnError extends boolean = false>(options: Options<CollectionAddSegmentData, ThrowOnError>) => (options.client ?? client).post<CollectionAddSegmentResponses, CollectionAddSegmentErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/collections/{id}/segments',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove segment from collection
+ *
+ * Removes a segment from a collection. Requires collection ownership.
+ *
+ */
+export const collectionRemoveSegment = <ThrowOnError extends boolean = false>(options: Options<CollectionRemoveSegmentData, ThrowOnError>) => (options.client ?? client).delete<CollectionRemoveSegmentResponses, CollectionRemoveSegmentErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/collections/{id}/segments/{uuid}',
+    ...options
+});
+
+/**
+ * Update segment in collection
+ *
+ * Updates the note or position of a segment in a collection. Requires collection ownership.
+ *
+ */
+export const collectionUpdateSegment = <ThrowOnError extends boolean = false>(options: Options<CollectionUpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<CollectionUpdateSegmentResponses, CollectionUpdateSegmentErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/collections/{id}/segments/{uuid}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Admin dashboard statistics
+ *
+ * Returns at-a-glance statistics for the admin dashboard including media counts,
+ * user counts, and system health information.
+ *
+ * **Permissions:** `ADD_MEDIA`
+ *
+ */
+export const adminDashboardShow = <ThrowOnError extends boolean = false>(options?: Options<AdminDashboardShowData, ThrowOnError>) => (options?.client ?? client).get<AdminDashboardShowResponses, AdminDashboardShowErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/admin/dashboard',
+    ...options
+});
+
+/**
+ * System health check
+ *
+ * Returns connectivity status and version information for all backend subsystems
+ * (Elasticsearch, PostgreSQL, application).
+ *
+ * **Permissions:** `ADD_MEDIA`
+ *
+ */
+export const adminHealthShow = <ThrowOnError extends boolean = false>(options?: Options<AdminHealthShowData, ThrowOnError>) => (options?.client ?? client).get<AdminHealthShowResponses, AdminHealthShowErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/admin/health',
+    ...options
 });
 
 /**
@@ -864,7 +959,7 @@ export const adminQueueStatsIndex = <ThrowOnError extends boolean = false>(optio
 /**
  * Get detailed queue information
  *
- * Returns detailed information about a specific queue including completed, expired, and cancelled jobs.
+ * Returns live queue stats and queue metadata from PgBoss for a specific queue.
  *
  * **Queue names:**
  * - `es-sync-create` - Jobs to create new segments in Elasticsearch
@@ -933,25 +1028,6 @@ export const adminQueueRetryCreate = <ThrowOnError extends boolean = false>(opti
 export const adminQueueFailedDestroy = <ThrowOnError extends boolean = false>(options: Options<AdminQueueFailedDestroyData, ThrowOnError>) => (options.client ?? client).delete<AdminQueueFailedDestroyResponses, AdminQueueFailedDestroyErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/purge',
-    ...options
-});
-
-/**
- * Backfill morpheme analysis for segments
- *
- * Analyzes segments that are missing morpheme data using the Sudachi sidecar service.
- * Returns stats on how many segments were successfully analyzed vs failed.
- *
- * **Permissions:** `ADD_MEDIA`
- *
- */
-export const adminMorphemeBackfillCreate = <ThrowOnError extends boolean = false>(options?: Options<AdminMorphemeBackfillCreateData, ThrowOnError>) => (options?.client ?? client).post<AdminMorphemeBackfillCreateResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/morpheme-backfill',
     ...options
 });
 
