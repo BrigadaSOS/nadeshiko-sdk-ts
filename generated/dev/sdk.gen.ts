@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddMediaToSeriesData, AddMediaToSeriesErrors, AddMediaToSeriesResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, CreateAdminReviewAllowlistEntryData, CreateAdminReviewAllowlistEntryErrors, CreateAdminReviewAllowlistEntryResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateReportData, CreateReportErrors, CreateReportResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSeriesData, CreateSeriesErrors, CreateSeriesResponses, DeleteActivityData, DeleteActivityErrors, DeleteActivityResponses, DeleteAdminReviewAllowlistEntryData, DeleteAdminReviewAllowlistEntryErrors, DeleteAdminReviewAllowlistEntryResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteSegmentData, DeleteSegmentErrors, DeleteSegmentResponses, DeleteSeriesData, DeleteSeriesErrors, DeleteSeriesResponses, ExportDataData, ExportDataErrors, ExportDataResponses, GetActivityHeatmapData, GetActivityHeatmapErrors, GetActivityHeatmapResponses, GetActivityStatsData, GetActivityStatsErrors, GetActivityStatsResponses, GetAdminDashboardData, GetAdminDashboardErrors, GetAdminDashboardResponses, GetAdminHealthData, GetAdminHealthErrors, GetAdminHealthResponses, GetAdminQueueData, GetAdminQueueErrors, GetAdminQueueResponses, GetAdminReviewRunData, GetAdminReviewRunErrors, GetAdminReviewRunResponses, GetCharacterData, GetCharacterErrors, GetCharacterResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetPreferencesData, GetPreferencesErrors, GetPreferencesResponses, GetQuotaData, GetQuotaErrors, GetQuotaResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentByUuidData, GetSegmentByUuidErrors, GetSegmentByUuidResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetSeiyuuData, GetSeiyuuErrors, GetSeiyuuResponses, GetSeriesData, GetSeriesErrors, GetSeriesResponses, ListActivityData, ListActivityErrors, ListActivityResponses, ListAdminQueueFailedData, ListAdminQueueFailedErrors, ListAdminQueueFailedResponses, ListAdminQueueStatsData, ListAdminQueueStatsErrors, ListAdminQueueStatsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAdminReviewAllowlistData, ListAdminReviewAllowlistErrors, ListAdminReviewAllowlistResponses, ListAdminReviewChecksData, ListAdminReviewChecksErrors, ListAdminReviewChecksResponses, ListAdminReviewRunsData, ListAdminReviewRunsErrors, ListAdminReviewRunsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListLabsData, ListLabsErrors, ListLabsResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListReportsData, ListReportsErrors, ListReportsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListSeriesData, ListSeriesErrors, ListSeriesResponses, PurgeAdminQueueFailedData, PurgeAdminQueueFailedErrors, PurgeAdminQueueFailedResponses, RemoveMediaFromSeriesData, RemoveMediaFromSeriesErrors, RemoveMediaFromSeriesResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RetryAdminQueueFailedData, RetryAdminQueueFailedErrors, RetryAdminQueueFailedResponses, RunAdminReviewData, RunAdminReviewErrors, RunAdminReviewResponses, SearchData, SearchErrors, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAdminReviewCheckData, UpdateAdminReviewCheckErrors, UpdateAdminReviewCheckResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdatePreferencesData, UpdatePreferencesErrors, UpdatePreferencesResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateSeriesData, UpdateSeriesErrors, UpdateSeriesMediaData, UpdateSeriesMediaErrors, UpdateSeriesMediaResponses, UpdateSeriesResponses } from './types.gen';
+import type { AddMediaToSeriesData, AddMediaToSeriesErrors, AddMediaToSeriesResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, CreateAdminReviewAllowlistEntryData, CreateAdminReviewAllowlistEntryErrors, CreateAdminReviewAllowlistEntryResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSeriesData, CreateSeriesErrors, CreateSeriesResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReviewAllowlistEntryData, DeleteAdminReviewAllowlistEntryErrors, DeleteAdminReviewAllowlistEntryResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteSegmentData, DeleteSegmentErrors, DeleteSegmentResponses, DeleteSeriesData, DeleteSeriesErrors, DeleteSeriesResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminDashboardData, GetAdminDashboardErrors, GetAdminDashboardResponses, GetAdminHealthData, GetAdminHealthErrors, GetAdminHealthResponses, GetAdminQueueData, GetAdminQueueErrors, GetAdminQueueResponses, GetAdminReviewRunData, GetAdminReviewRunErrors, GetAdminReviewRunResponses, GetCharacterData, GetCharacterErrors, GetCharacterResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentByUuidData, GetSegmentByUuidErrors, GetSegmentByUuidResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetSeiyuuData, GetSeiyuuErrors, GetSeiyuuResponses, GetSeriesData, GetSeriesErrors, GetSeriesResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, GetUserQuotaData, GetUserQuotaErrors, GetUserQuotaResponses, ListAdminQueueFailedData, ListAdminQueueFailedErrors, ListAdminQueueFailedResponses, ListAdminQueueStatsData, ListAdminQueueStatsErrors, ListAdminQueueStatsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAdminReviewAllowlistData, ListAdminReviewAllowlistErrors, ListAdminReviewAllowlistResponses, ListAdminReviewChecksData, ListAdminReviewChecksErrors, ListAdminReviewChecksResponses, ListAdminReviewRunsData, ListAdminReviewRunsErrors, ListAdminReviewRunsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListSeriesData, ListSeriesErrors, ListSeriesResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ListUserLabsData, ListUserLabsErrors, ListUserLabsResponses, ListUserReportsData, ListUserReportsErrors, ListUserReportsResponses, PurgeAdminQueueFailedData, PurgeAdminQueueFailedErrors, PurgeAdminQueueFailedResponses, RemoveMediaFromSeriesData, RemoveMediaFromSeriesErrors, RemoveMediaFromSeriesResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RetryAdminQueueFailedData, RetryAdminQueueFailedErrors, RetryAdminQueueFailedResponses, RunAdminReviewData, RunAdminReviewErrors, RunAdminReviewResponses, SearchData, SearchErrors, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAdminReviewCheckData, UpdateAdminReviewCheckErrors, UpdateAdminReviewCheckResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateSeriesData, UpdateSeriesErrors, UpdateSeriesMediaData, UpdateSeriesMediaErrors, UpdateSeriesMediaResponses, UpdateSeriesResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -535,7 +535,7 @@ export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options
  * **Permissions:** Session authentication (cookie-based) or API key (`READ_MEDIA`).
  *
  */
-export const getQuota = <ThrowOnError extends boolean = false>(options?: Options<GetQuotaData, ThrowOnError>) => (options?.client ?? client).get<GetQuotaResponses, GetQuotaErrors, ThrowOnError>({
+export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Options<GetUserQuotaData, ThrowOnError>) => (options?.client ?? client).get<GetUserQuotaResponses, GetUserQuotaErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -553,7 +553,7 @@ export const getQuota = <ThrowOnError extends boolean = false>(options?: Options
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const listReports = <ThrowOnError extends boolean = false>(options?: Options<ListReportsData, ThrowOnError>) => (options?.client ?? client).get<ListReportsResponses, ListReportsErrors, ThrowOnError>({
+export const listUserReports = <ThrowOnError extends boolean = false>(options?: Options<ListUserReportsData, ThrowOnError>) => (options?.client ?? client).get<ListUserReportsResponses, ListUserReportsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -571,7 +571,7 @@ export const listReports = <ThrowOnError extends boolean = false>(options?: Opti
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const createReport = <ThrowOnError extends boolean = false>(options: Options<CreateReportData, ThrowOnError>) => (options.client ?? client).post<CreateReportResponses, CreateReportErrors, ThrowOnError>({
+export const createUserReport = <ThrowOnError extends boolean = false>(options: Options<CreateUserReportData, ThrowOnError>) => (options.client ?? client).post<CreateUserReportResponses, CreateUserReportErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -593,7 +593,7 @@ export const createReport = <ThrowOnError extends boolean = false>(options: Opti
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const getPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetPreferencesData, ThrowOnError>) => (options?.client ?? client).get<GetPreferencesResponses, GetPreferencesErrors, ThrowOnError>({
+export const getUserPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetUserPreferencesData, ThrowOnError>) => (options?.client ?? client).get<GetUserPreferencesResponses, GetUserPreferencesErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -612,7 +612,7 @@ export const getPreferences = <ThrowOnError extends boolean = false>(options?: O
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const updatePreferences = <ThrowOnError extends boolean = false>(options: Options<UpdatePreferencesData, ThrowOnError>) => (options.client ?? client).patch<UpdatePreferencesResponses, UpdatePreferencesErrors, ThrowOnError>({
+export const updateUserPreferences = <ThrowOnError extends boolean = false>(options: Options<UpdateUserPreferencesData, ThrowOnError>) => (options.client ?? client).patch<UpdateUserPreferencesResponses, UpdateUserPreferencesErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -634,7 +634,7 @@ export const updatePreferences = <ThrowOnError extends boolean = false>(options:
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const deleteActivity = <ThrowOnError extends boolean = false>(options?: Options<DeleteActivityData, ThrowOnError>) => (options?.client ?? client).delete<DeleteActivityResponses, DeleteActivityErrors, ThrowOnError>({
+export const deleteUserActivity = <ThrowOnError extends boolean = false>(options?: Options<DeleteUserActivityData, ThrowOnError>) => (options?.client ?? client).delete<DeleteUserActivityResponses, DeleteUserActivityErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -652,7 +652,7 @@ export const deleteActivity = <ThrowOnError extends boolean = false>(options?: O
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const listActivity = <ThrowOnError extends boolean = false>(options?: Options<ListActivityData, ThrowOnError>) => (options?.client ?? client).get<ListActivityResponses, ListActivityErrors, ThrowOnError>({
+export const listUserActivity = <ThrowOnError extends boolean = false>(options?: Options<ListUserActivityData, ThrowOnError>) => (options?.client ?? client).get<ListUserActivityResponses, ListUserActivityErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -671,7 +671,7 @@ export const listActivity = <ThrowOnError extends boolean = false>(options?: Opt
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const getActivityHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetActivityHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetActivityHeatmapResponses, GetActivityHeatmapErrors, ThrowOnError>({
+export const getUserActivityHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetUserActivityHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetUserActivityHeatmapResponses, GetUserActivityHeatmapErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -690,7 +690,7 @@ export const getActivityHeatmap = <ThrowOnError extends boolean = false>(options
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const getActivityStats = <ThrowOnError extends boolean = false>(options?: Options<GetActivityStatsData, ThrowOnError>) => (options?.client ?? client).get<GetActivityStatsResponses, GetActivityStatsErrors, ThrowOnError>({
+export const getUserActivityStats = <ThrowOnError extends boolean = false>(options?: Options<GetUserActivityStatsData, ThrowOnError>) => (options?.client ?? client).get<GetUserActivityStatsResponses, GetUserActivityStatsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -709,7 +709,7 @@ export const getActivityStats = <ThrowOnError extends boolean = false>(options?:
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const exportData = <ThrowOnError extends boolean = false>(options?: Options<ExportDataData, ThrowOnError>) => (options?.client ?? client).get<ExportDataResponses, ExportDataErrors, ThrowOnError>({
+export const exportUserData = <ThrowOnError extends boolean = false>(options?: Options<ExportUserDataData, ThrowOnError>) => (options?.client ?? client).get<ExportUserDataResponses, ExportUserDataErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -729,7 +729,7 @@ export const exportData = <ThrowOnError extends boolean = false>(options?: Optio
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const listLabs = <ThrowOnError extends boolean = false>(options?: Options<ListLabsData, ThrowOnError>) => (options?.client ?? client).get<ListLabsResponses, ListLabsErrors, ThrowOnError>({
+export const listUserLabs = <ThrowOnError extends boolean = false>(options?: Options<ListUserLabsData, ThrowOnError>) => (options?.client ?? client).get<ListUserLabsResponses, ListUserLabsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',

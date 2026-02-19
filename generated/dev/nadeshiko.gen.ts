@@ -2,7 +2,7 @@
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getMedia, listEpisodes, getEpisode, getSegment, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getQuota, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, updateAdminReport, runAdminReview, listAdminReviewChecks, updateAdminReviewCheck, listAdminReviewRuns, getAdminReviewRun, listAdminReviewAllowlist, createAdminReviewAllowlistEntry, deleteAdminReviewAllowlistEntry, createMedia, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, createReport, listReports, getPreferences, updatePreferences, listActivity, deleteActivity, getActivityHeatmap, getActivityStats, exportData, listLabs, getAdminDashboard, getAdminHealth } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getMedia, listEpisodes, getEpisode, getSegment, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getUserQuota, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, updateAdminReport, runAdminReview, listAdminReviewChecks, updateAdminReviewCheck, listAdminReviewRuns, getAdminReviewRun, listAdminReviewAllowlist, createAdminReviewAllowlistEntry, deleteAdminReviewAllowlistEntry, createMedia, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, createUserReport, listUserReports, getUserPreferences, updateUserPreferences, listUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, exportUserData, listUserLabs, getAdminDashboard, getAdminHealth } from './sdk.gen';
 
 export interface NadeshikoConfig {
   apiKey: string;
@@ -31,7 +31,7 @@ export type NadeshikoClient = {
     getSeries: typeof getSeries;
     getCharacter: typeof getCharacter;
     getSeiyuu: typeof getSeiyuu;
-    getQuota: typeof getQuota;
+    getUserQuota: typeof getUserQuota;
     listCollections: typeof listCollections;
     createCollection: typeof createCollection;
     getCollection: typeof getCollection;
@@ -72,16 +72,16 @@ export type NadeshikoClient = {
     addMediaToSeries: typeof addMediaToSeries;
     updateSeriesMedia: typeof updateSeriesMedia;
     removeMediaFromSeries: typeof removeMediaFromSeries;
-    createReport: typeof createReport;
-    listReports: typeof listReports;
-    getPreferences: typeof getPreferences;
-    updatePreferences: typeof updatePreferences;
-    listActivity: typeof listActivity;
-    deleteActivity: typeof deleteActivity;
-    getActivityHeatmap: typeof getActivityHeatmap;
-    getActivityStats: typeof getActivityStats;
-    exportData: typeof exportData;
-    listLabs: typeof listLabs;
+    createUserReport: typeof createUserReport;
+    listUserReports: typeof listUserReports;
+    getUserPreferences: typeof getUserPreferences;
+    updateUserPreferences: typeof updateUserPreferences;
+    listUserActivity: typeof listUserActivity;
+    deleteUserActivity: typeof deleteUserActivity;
+    getUserActivityHeatmap: typeof getUserActivityHeatmap;
+    getUserActivityStats: typeof getUserActivityStats;
+    exportUserData: typeof exportUserData;
+    listUserLabs: typeof listUserLabs;
     getAdminDashboard: typeof getAdminDashboard;
     getAdminHealth: typeof getAdminHealth;
   };
@@ -114,7 +114,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getSeries: (options?: any) => getSeries({ ...options, client: clientInstance }),
     getCharacter: (options?: any) => getCharacter({ ...options, client: clientInstance }),
     getSeiyuu: (options?: any) => getSeiyuu({ ...options, client: clientInstance }),
-    getQuota: (options?: any) => getQuota({ ...options, client: clientInstance }),
+    getUserQuota: (options?: any) => getUserQuota({ ...options, client: clientInstance }),
     listCollections: (options?: any) => listCollections({ ...options, client: clientInstance }),
     createCollection: (options?: any) => createCollection({ ...options, client: clientInstance }),
     getCollection: (options?: any) => getCollection({ ...options, client: clientInstance }),
@@ -155,16 +155,16 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     addMediaToSeries: (options?: any) => addMediaToSeries({ ...options, client: clientInstance }),
     updateSeriesMedia: (options?: any) => updateSeriesMedia({ ...options, client: clientInstance }),
     removeMediaFromSeries: (options?: any) => removeMediaFromSeries({ ...options, client: clientInstance }),
-    createReport: (options?: any) => createReport({ ...options, client: clientInstance }),
-    listReports: (options?: any) => listReports({ ...options, client: clientInstance }),
-    getPreferences: (options?: any) => getPreferences({ ...options, client: clientInstance }),
-    updatePreferences: (options?: any) => updatePreferences({ ...options, client: clientInstance }),
-    listActivity: (options?: any) => listActivity({ ...options, client: clientInstance }),
-    deleteActivity: (options?: any) => deleteActivity({ ...options, client: clientInstance }),
-    getActivityHeatmap: (options?: any) => getActivityHeatmap({ ...options, client: clientInstance }),
-    getActivityStats: (options?: any) => getActivityStats({ ...options, client: clientInstance }),
-    exportData: (options?: any) => exportData({ ...options, client: clientInstance }),
-    listLabs: (options?: any) => listLabs({ ...options, client: clientInstance }),
+    createUserReport: (options?: any) => createUserReport({ ...options, client: clientInstance }),
+    listUserReports: (options?: any) => listUserReports({ ...options, client: clientInstance }),
+    getUserPreferences: (options?: any) => getUserPreferences({ ...options, client: clientInstance }),
+    updateUserPreferences: (options?: any) => updateUserPreferences({ ...options, client: clientInstance }),
+    listUserActivity: (options?: any) => listUserActivity({ ...options, client: clientInstance }),
+    deleteUserActivity: (options?: any) => deleteUserActivity({ ...options, client: clientInstance }),
+    getUserActivityHeatmap: (options?: any) => getUserActivityHeatmap({ ...options, client: clientInstance }),
+    getUserActivityStats: (options?: any) => getUserActivityStats({ ...options, client: clientInstance }),
+    exportUserData: (options?: any) => exportUserData({ ...options, client: clientInstance }),
+    listUserLabs: (options?: any) => listUserLabs({ ...options, client: clientInstance }),
     getAdminDashboard: (options?: any) => getAdminDashboard({ ...options, client: clientInstance }),
     getAdminHealth: (options?: any) => getAdminHealth({ ...options, client: clientInstance }),
   };

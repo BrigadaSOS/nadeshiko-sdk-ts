@@ -137,6 +137,10 @@ export type SearchRequest = {
  */
 export type Segment = {
     /**
+     * Numeric identifier for the segment
+     */
+    id: number;
+    /**
      * Unique identifier for the segment
      */
     uuid: string;
@@ -3650,14 +3654,14 @@ export type GetSeiyuuResponses = {
 
 export type GetSeiyuuResponse = GetSeiyuuResponses[keyof GetSeiyuuResponses];
 
-export type GetQuotaData = {
+export type GetUserQuotaData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/quota';
 };
 
-export type GetQuotaErrors = {
+export type GetUserQuotaErrors = {
     /**
      * Unauthorized
      */
@@ -3672,18 +3676,18 @@ export type GetQuotaErrors = {
     500: Error500;
 };
 
-export type GetQuotaError = GetQuotaErrors[keyof GetQuotaErrors];
+export type GetUserQuotaError = GetUserQuotaErrors[keyof GetUserQuotaErrors];
 
-export type GetQuotaResponses = {
+export type GetUserQuotaResponses = {
     /**
      * OK
      */
     200: UserQuotaResponse;
 };
 
-export type GetQuotaResponse = GetQuotaResponses[keyof GetQuotaResponses];
+export type GetUserQuotaResponse = GetUserQuotaResponses[keyof GetUserQuotaResponses];
 
-export type ListReportsData = {
+export type ListUserReportsData = {
     body?: never;
     path?: never;
     query?: {
@@ -3703,7 +3707,7 @@ export type ListReportsData = {
     url: '/v1/user/reports';
 };
 
-export type ListReportsErrors = {
+export type ListUserReportsErrors = {
     /**
      * Unauthorized
      */
@@ -3714,25 +3718,25 @@ export type ListReportsErrors = {
     500: Error500;
 };
 
-export type ListReportsError = ListReportsErrors[keyof ListReportsErrors];
+export type ListUserReportsError = ListUserReportsErrors[keyof ListUserReportsErrors];
 
-export type ListReportsResponses = {
+export type ListUserReportsResponses = {
     /**
      * OK
      */
     200: ReportListResponse;
 };
 
-export type ListReportsResponse = ListReportsResponses[keyof ListReportsResponses];
+export type ListUserReportsResponse = ListUserReportsResponses[keyof ListUserReportsResponses];
 
-export type CreateReportData = {
+export type CreateUserReportData = {
     body: CreateReportRequest;
     path?: never;
     query?: never;
     url: '/v1/user/reports';
 };
 
-export type CreateReportErrors = {
+export type CreateUserReportErrors = {
     /**
      * Bad Request
      */
@@ -3751,25 +3755,25 @@ export type CreateReportErrors = {
     500: Error500;
 };
 
-export type CreateReportError = CreateReportErrors[keyof CreateReportErrors];
+export type CreateUserReportError = CreateUserReportErrors[keyof CreateUserReportErrors];
 
-export type CreateReportResponses = {
+export type CreateUserReportResponses = {
     /**
      * Report created successfully
      */
     201: Report;
 };
 
-export type CreateReportResponse = CreateReportResponses[keyof CreateReportResponses];
+export type CreateUserReportResponse = CreateUserReportResponses[keyof CreateUserReportResponses];
 
-export type GetPreferencesData = {
+export type GetUserPreferencesData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/preferences';
 };
 
-export type GetPreferencesErrors = {
+export type GetUserPreferencesErrors = {
     /**
      * Unauthorized
      */
@@ -3780,25 +3784,25 @@ export type GetPreferencesErrors = {
     500: Error500;
 };
 
-export type GetPreferencesError = GetPreferencesErrors[keyof GetPreferencesErrors];
+export type GetUserPreferencesError = GetUserPreferencesErrors[keyof GetUserPreferencesErrors];
 
-export type GetPreferencesResponses = {
+export type GetUserPreferencesResponses = {
     /**
      * OK
      */
     200: UserPreferences;
 };
 
-export type GetPreferencesResponse = GetPreferencesResponses[keyof GetPreferencesResponses];
+export type GetUserPreferencesResponse = GetUserPreferencesResponses[keyof GetUserPreferencesResponses];
 
-export type UpdatePreferencesData = {
+export type UpdateUserPreferencesData = {
     body: UserPreferences;
     path?: never;
     query?: never;
     url: '/v1/user/preferences';
 };
 
-export type UpdatePreferencesErrors = {
+export type UpdateUserPreferencesErrors = {
     /**
      * Unauthorized
      */
@@ -3809,18 +3813,18 @@ export type UpdatePreferencesErrors = {
     500: Error500;
 };
 
-export type UpdatePreferencesError = UpdatePreferencesErrors[keyof UpdatePreferencesErrors];
+export type UpdateUserPreferencesError = UpdateUserPreferencesErrors[keyof UpdateUserPreferencesErrors];
 
-export type UpdatePreferencesResponses = {
+export type UpdateUserPreferencesResponses = {
     /**
      * OK
      */
     200: UserPreferences;
 };
 
-export type UpdatePreferencesResponse = UpdatePreferencesResponses[keyof UpdatePreferencesResponses];
+export type UpdateUserPreferencesResponse = UpdateUserPreferencesResponses[keyof UpdateUserPreferencesResponses];
 
-export type DeleteActivityData = {
+export type DeleteUserActivityData = {
     body?: never;
     path?: never;
     query?: {
@@ -3832,7 +3836,7 @@ export type DeleteActivityData = {
     url: '/v1/user/activity';
 };
 
-export type DeleteActivityErrors = {
+export type DeleteUserActivityErrors = {
     /**
      * Unauthorized
      */
@@ -3843,9 +3847,9 @@ export type DeleteActivityErrors = {
     500: Error500;
 };
 
-export type DeleteActivityError = DeleteActivityErrors[keyof DeleteActivityErrors];
+export type DeleteUserActivityError = DeleteUserActivityErrors[keyof DeleteUserActivityErrors];
 
-export type DeleteActivityResponses = {
+export type DeleteUserActivityResponses = {
     /**
      * OK
      */
@@ -3855,9 +3859,9 @@ export type DeleteActivityResponses = {
     };
 };
 
-export type DeleteActivityResponse = DeleteActivityResponses[keyof DeleteActivityResponses];
+export type DeleteUserActivityResponse = DeleteUserActivityResponses[keyof DeleteUserActivityResponses];
 
-export type ListActivityData = {
+export type ListUserActivityData = {
     body?: never;
     path?: never;
     query?: {
@@ -3881,7 +3885,7 @@ export type ListActivityData = {
     url: '/v1/user/activity';
 };
 
-export type ListActivityErrors = {
+export type ListUserActivityErrors = {
     /**
      * Unauthorized
      */
@@ -3892,9 +3896,9 @@ export type ListActivityErrors = {
     500: Error500;
 };
 
-export type ListActivityError = ListActivityErrors[keyof ListActivityErrors];
+export type ListUserActivityError = ListUserActivityErrors[keyof ListUserActivityErrors];
 
-export type ListActivityResponses = {
+export type ListUserActivityResponses = {
     /**
      * OK
      */
@@ -3904,9 +3908,9 @@ export type ListActivityResponses = {
     };
 };
 
-export type ListActivityResponse = ListActivityResponses[keyof ListActivityResponses];
+export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserActivityResponses];
 
-export type GetActivityHeatmapData = {
+export type GetUserActivityHeatmapData = {
     body?: never;
     path?: never;
     query?: {
@@ -3922,7 +3926,7 @@ export type GetActivityHeatmapData = {
     url: '/v1/user/activity/heatmap';
 };
 
-export type GetActivityHeatmapErrors = {
+export type GetUserActivityHeatmapErrors = {
     /**
      * Unauthorized
      */
@@ -3933,9 +3937,9 @@ export type GetActivityHeatmapErrors = {
     500: Error500;
 };
 
-export type GetActivityHeatmapError = GetActivityHeatmapErrors[keyof GetActivityHeatmapErrors];
+export type GetUserActivityHeatmapError = GetUserActivityHeatmapErrors[keyof GetUserActivityHeatmapErrors];
 
-export type GetActivityHeatmapResponses = {
+export type GetUserActivityHeatmapResponses = {
     /**
      * OK
      */
@@ -3949,9 +3953,9 @@ export type GetActivityHeatmapResponses = {
     };
 };
 
-export type GetActivityHeatmapResponse = GetActivityHeatmapResponses[keyof GetActivityHeatmapResponses];
+export type GetUserActivityHeatmapResponse = GetUserActivityHeatmapResponses[keyof GetUserActivityHeatmapResponses];
 
-export type GetActivityStatsData = {
+export type GetUserActivityStatsData = {
     body?: never;
     path?: never;
     query?: {
@@ -3963,7 +3967,7 @@ export type GetActivityStatsData = {
     url: '/v1/user/activity/stats';
 };
 
-export type GetActivityStatsErrors = {
+export type GetUserActivityStatsErrors = {
     /**
      * Unauthorized
      */
@@ -3974,9 +3978,9 @@ export type GetActivityStatsErrors = {
     500: Error500;
 };
 
-export type GetActivityStatsError = GetActivityStatsErrors[keyof GetActivityStatsErrors];
+export type GetUserActivityStatsError = GetUserActivityStatsErrors[keyof GetUserActivityStatsErrors];
 
-export type GetActivityStatsResponses = {
+export type GetUserActivityStatsResponses = {
     /**
      * OK
      */
@@ -3996,16 +4000,16 @@ export type GetActivityStatsResponses = {
     };
 };
 
-export type GetActivityStatsResponse = GetActivityStatsResponses[keyof GetActivityStatsResponses];
+export type GetUserActivityStatsResponse = GetUserActivityStatsResponses[keyof GetUserActivityStatsResponses];
 
-export type ExportDataData = {
+export type ExportUserDataData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/export';
 };
 
-export type ExportDataErrors = {
+export type ExportUserDataErrors = {
     /**
      * Unauthorized
      */
@@ -4016,25 +4020,25 @@ export type ExportDataErrors = {
     500: Error500;
 };
 
-export type ExportDataError = ExportDataErrors[keyof ExportDataErrors];
+export type ExportUserDataError = ExportUserDataErrors[keyof ExportUserDataErrors];
 
-export type ExportDataResponses = {
+export type ExportUserDataResponses = {
     /**
      * OK
      */
     200: UserExportResponse;
 };
 
-export type ExportDataResponse = ExportDataResponses[keyof ExportDataResponses];
+export type ExportUserDataResponse = ExportUserDataResponses[keyof ExportUserDataResponses];
 
-export type ListLabsData = {
+export type ListUserLabsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/v1/user/labs';
 };
 
-export type ListLabsErrors = {
+export type ListUserLabsErrors = {
     /**
      * Unauthorized
      */
@@ -4045,16 +4049,16 @@ export type ListLabsErrors = {
     500: Error500;
 };
 
-export type ListLabsError = ListLabsErrors[keyof ListLabsErrors];
+export type ListUserLabsError = ListUserLabsErrors[keyof ListUserLabsErrors];
 
-export type ListLabsResponses = {
+export type ListUserLabsResponses = {
     /**
      * OK
      */
     200: Array<UserLabFeature>;
 };
 
-export type ListLabsResponse = ListLabsResponses[keyof ListLabsResponses];
+export type ListUserLabsResponse = ListUserLabsResponses[keyof ListUserLabsResponses];
 
 export type ListCollectionsData = {
     body?: never;
