@@ -2,7 +2,7 @@
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
-import { searchIndex, searchStats, searchWords, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, segmentContextShow, seriesIndex, seriesShow, characterShow, seiyuuShow, userQuotaShow, collectionIndex, collectionCreate, collectionShow, collectionUpdate, collectionDestroy, collectionAddSegment, collectionUpdateSegment, collectionRemoveSegment, adminReindexCreate, adminQueueStatsIndex, adminQueueShow, adminQueueFailedIndex, adminQueueRetryCreate, adminQueueFailedDestroy, adminReportIndex, adminReportUpdate, adminReviewRunCreate, adminReviewCheckIndex, adminReviewCheckUpdate, adminReviewRunIndex, adminReviewRunShow, adminReviewAllowlistIndex, adminReviewAllowlistCreate, adminReviewAllowlistDestroy, mediaCreate, mediaUpdate, mediaDestroy, episodeCreate, episodeUpdate, episodeDestroy, segmentIndex, segmentCreate, segmentUpdate, segmentDestroy, seriesCreate, seriesUpdate, seriesDestroy, seriesAddMedia, seriesUpdateMedia, seriesRemoveMedia, userReportCreate, userReportIndex, userPreferencesShow, userPreferencesUpdate, userActivityIndex, userActivityDestroy, userActivityHeatmapShow, userActivityStatsShow, userExportShow, userLabsIndex, adminDashboardShow, adminHealthShow } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getMedia, listEpisodes, getEpisode, getSegment, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getQuota, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, updateAdminReport, runAdminReview, listAdminReviewChecks, updateAdminReviewCheck, listAdminReviewRuns, getAdminReviewRun, listAdminReviewAllowlist, createAdminReviewAllowlistEntry, deleteAdminReviewAllowlistEntry, createMedia, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, createReport, listReports, getPreferences, updatePreferences, listActivity, deleteActivity, getActivityHeatmap, getActivityStats, exportData, listLabs, getAdminDashboard, getAdminHealth } from './sdk.gen';
 
 export interface NadeshikoConfig {
   apiKey: string;
@@ -17,73 +17,73 @@ const environments = {
 
 export type NadeshikoClient = {
     client: Client;
-    searchIndex: typeof searchIndex;
-    searchStats: typeof searchStats;
+    search: typeof search;
+    getSearchStats: typeof getSearchStats;
     searchWords: typeof searchWords;
-    mediaIndex: typeof mediaIndex;
-    mediaShow: typeof mediaShow;
-    episodeIndex: typeof episodeIndex;
-    episodeShow: typeof episodeShow;
-    segmentShow: typeof segmentShow;
-    segmentShowByUuid: typeof segmentShowByUuid;
-    segmentContextShow: typeof segmentContextShow;
-    seriesIndex: typeof seriesIndex;
-    seriesShow: typeof seriesShow;
-    characterShow: typeof characterShow;
-    seiyuuShow: typeof seiyuuShow;
-    userQuotaShow: typeof userQuotaShow;
-    collectionIndex: typeof collectionIndex;
-    collectionCreate: typeof collectionCreate;
-    collectionShow: typeof collectionShow;
-    collectionUpdate: typeof collectionUpdate;
-    collectionDestroy: typeof collectionDestroy;
-    collectionAddSegment: typeof collectionAddSegment;
-    collectionUpdateSegment: typeof collectionUpdateSegment;
-    collectionRemoveSegment: typeof collectionRemoveSegment;
-    adminReindexCreate: typeof adminReindexCreate;
-    adminQueueStatsIndex: typeof adminQueueStatsIndex;
-    adminQueueShow: typeof adminQueueShow;
-    adminQueueFailedIndex: typeof adminQueueFailedIndex;
-    adminQueueRetryCreate: typeof adminQueueRetryCreate;
-    adminQueueFailedDestroy: typeof adminQueueFailedDestroy;
-    adminReportIndex: typeof adminReportIndex;
-    adminReportUpdate: typeof adminReportUpdate;
-    adminReviewRunCreate: typeof adminReviewRunCreate;
-    adminReviewCheckIndex: typeof adminReviewCheckIndex;
-    adminReviewCheckUpdate: typeof adminReviewCheckUpdate;
-    adminReviewRunIndex: typeof adminReviewRunIndex;
-    adminReviewRunShow: typeof adminReviewRunShow;
-    adminReviewAllowlistIndex: typeof adminReviewAllowlistIndex;
-    adminReviewAllowlistCreate: typeof adminReviewAllowlistCreate;
-    adminReviewAllowlistDestroy: typeof adminReviewAllowlistDestroy;
-    mediaCreate: typeof mediaCreate;
-    mediaUpdate: typeof mediaUpdate;
-    mediaDestroy: typeof mediaDestroy;
-    episodeCreate: typeof episodeCreate;
-    episodeUpdate: typeof episodeUpdate;
-    episodeDestroy: typeof episodeDestroy;
-    segmentIndex: typeof segmentIndex;
-    segmentCreate: typeof segmentCreate;
-    segmentUpdate: typeof segmentUpdate;
-    segmentDestroy: typeof segmentDestroy;
-    seriesCreate: typeof seriesCreate;
-    seriesUpdate: typeof seriesUpdate;
-    seriesDestroy: typeof seriesDestroy;
-    seriesAddMedia: typeof seriesAddMedia;
-    seriesUpdateMedia: typeof seriesUpdateMedia;
-    seriesRemoveMedia: typeof seriesRemoveMedia;
-    userReportCreate: typeof userReportCreate;
-    userReportIndex: typeof userReportIndex;
-    userPreferencesShow: typeof userPreferencesShow;
-    userPreferencesUpdate: typeof userPreferencesUpdate;
-    userActivityIndex: typeof userActivityIndex;
-    userActivityDestroy: typeof userActivityDestroy;
-    userActivityHeatmapShow: typeof userActivityHeatmapShow;
-    userActivityStatsShow: typeof userActivityStatsShow;
-    userExportShow: typeof userExportShow;
-    userLabsIndex: typeof userLabsIndex;
-    adminDashboardShow: typeof adminDashboardShow;
-    adminHealthShow: typeof adminHealthShow;
+    listMedia: typeof listMedia;
+    getMedia: typeof getMedia;
+    listEpisodes: typeof listEpisodes;
+    getEpisode: typeof getEpisode;
+    getSegment: typeof getSegment;
+    getSegmentByUuid: typeof getSegmentByUuid;
+    getSegmentContext: typeof getSegmentContext;
+    listSeries: typeof listSeries;
+    getSeries: typeof getSeries;
+    getCharacter: typeof getCharacter;
+    getSeiyuu: typeof getSeiyuu;
+    getQuota: typeof getQuota;
+    listCollections: typeof listCollections;
+    createCollection: typeof createCollection;
+    getCollection: typeof getCollection;
+    updateCollection: typeof updateCollection;
+    deleteCollection: typeof deleteCollection;
+    addSegmentToCollection: typeof addSegmentToCollection;
+    updateCollectionSegment: typeof updateCollectionSegment;
+    removeSegmentFromCollection: typeof removeSegmentFromCollection;
+    triggerReindex: typeof triggerReindex;
+    listAdminQueueStats: typeof listAdminQueueStats;
+    getAdminQueue: typeof getAdminQueue;
+    listAdminQueueFailed: typeof listAdminQueueFailed;
+    retryAdminQueueFailed: typeof retryAdminQueueFailed;
+    purgeAdminQueueFailed: typeof purgeAdminQueueFailed;
+    listAdminReports: typeof listAdminReports;
+    updateAdminReport: typeof updateAdminReport;
+    runAdminReview: typeof runAdminReview;
+    listAdminReviewChecks: typeof listAdminReviewChecks;
+    updateAdminReviewCheck: typeof updateAdminReviewCheck;
+    listAdminReviewRuns: typeof listAdminReviewRuns;
+    getAdminReviewRun: typeof getAdminReviewRun;
+    listAdminReviewAllowlist: typeof listAdminReviewAllowlist;
+    createAdminReviewAllowlistEntry: typeof createAdminReviewAllowlistEntry;
+    deleteAdminReviewAllowlistEntry: typeof deleteAdminReviewAllowlistEntry;
+    createMedia: typeof createMedia;
+    updateMedia: typeof updateMedia;
+    deleteMedia: typeof deleteMedia;
+    createEpisode: typeof createEpisode;
+    updateEpisode: typeof updateEpisode;
+    deleteEpisode: typeof deleteEpisode;
+    listSegments: typeof listSegments;
+    createSegment: typeof createSegment;
+    updateSegment: typeof updateSegment;
+    deleteSegment: typeof deleteSegment;
+    createSeries: typeof createSeries;
+    updateSeries: typeof updateSeries;
+    deleteSeries: typeof deleteSeries;
+    addMediaToSeries: typeof addMediaToSeries;
+    updateSeriesMedia: typeof updateSeriesMedia;
+    removeMediaFromSeries: typeof removeMediaFromSeries;
+    createReport: typeof createReport;
+    listReports: typeof listReports;
+    getPreferences: typeof getPreferences;
+    updatePreferences: typeof updatePreferences;
+    listActivity: typeof listActivity;
+    deleteActivity: typeof deleteActivity;
+    getActivityHeatmap: typeof getActivityHeatmap;
+    getActivityStats: typeof getActivityStats;
+    exportData: typeof exportData;
+    listLabs: typeof listLabs;
+    getAdminDashboard: typeof getAdminDashboard;
+    getAdminHealth: typeof getAdminHealth;
   };
 
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
@@ -100,73 +100,73 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   return {
     client: clientInstance,
-    searchIndex: (options?: any) => searchIndex({ ...options, client: clientInstance }),
-    searchStats: (options?: any) => searchStats({ ...options, client: clientInstance }),
+    search: (options?: any) => search({ ...options, client: clientInstance }),
+    getSearchStats: (options?: any) => getSearchStats({ ...options, client: clientInstance }),
     searchWords: (options?: any) => searchWords({ ...options, client: clientInstance }),
-    mediaIndex: (options?: any) => mediaIndex({ ...options, client: clientInstance }),
-    mediaShow: (options?: any) => mediaShow({ ...options, client: clientInstance }),
-    episodeIndex: (options?: any) => episodeIndex({ ...options, client: clientInstance }),
-    episodeShow: (options?: any) => episodeShow({ ...options, client: clientInstance }),
-    segmentShow: (options?: any) => segmentShow({ ...options, client: clientInstance }),
-    segmentShowByUuid: (options?: any) => segmentShowByUuid({ ...options, client: clientInstance }),
-    segmentContextShow: (options?: any) => segmentContextShow({ ...options, client: clientInstance }),
-    seriesIndex: (options?: any) => seriesIndex({ ...options, client: clientInstance }),
-    seriesShow: (options?: any) => seriesShow({ ...options, client: clientInstance }),
-    characterShow: (options?: any) => characterShow({ ...options, client: clientInstance }),
-    seiyuuShow: (options?: any) => seiyuuShow({ ...options, client: clientInstance }),
-    userQuotaShow: (options?: any) => userQuotaShow({ ...options, client: clientInstance }),
-    collectionIndex: (options?: any) => collectionIndex({ ...options, client: clientInstance }),
-    collectionCreate: (options?: any) => collectionCreate({ ...options, client: clientInstance }),
-    collectionShow: (options?: any) => collectionShow({ ...options, client: clientInstance }),
-    collectionUpdate: (options?: any) => collectionUpdate({ ...options, client: clientInstance }),
-    collectionDestroy: (options?: any) => collectionDestroy({ ...options, client: clientInstance }),
-    collectionAddSegment: (options?: any) => collectionAddSegment({ ...options, client: clientInstance }),
-    collectionUpdateSegment: (options?: any) => collectionUpdateSegment({ ...options, client: clientInstance }),
-    collectionRemoveSegment: (options?: any) => collectionRemoveSegment({ ...options, client: clientInstance }),
-    adminReindexCreate: (options?: any) => adminReindexCreate({ ...options, client: clientInstance }),
-    adminQueueStatsIndex: (options?: any) => adminQueueStatsIndex({ ...options, client: clientInstance }),
-    adminQueueShow: (options?: any) => adminQueueShow({ ...options, client: clientInstance }),
-    adminQueueFailedIndex: (options?: any) => adminQueueFailedIndex({ ...options, client: clientInstance }),
-    adminQueueRetryCreate: (options?: any) => adminQueueRetryCreate({ ...options, client: clientInstance }),
-    adminQueueFailedDestroy: (options?: any) => adminQueueFailedDestroy({ ...options, client: clientInstance }),
-    adminReportIndex: (options?: any) => adminReportIndex({ ...options, client: clientInstance }),
-    adminReportUpdate: (options?: any) => adminReportUpdate({ ...options, client: clientInstance }),
-    adminReviewRunCreate: (options?: any) => adminReviewRunCreate({ ...options, client: clientInstance }),
-    adminReviewCheckIndex: (options?: any) => adminReviewCheckIndex({ ...options, client: clientInstance }),
-    adminReviewCheckUpdate: (options?: any) => adminReviewCheckUpdate({ ...options, client: clientInstance }),
-    adminReviewRunIndex: (options?: any) => adminReviewRunIndex({ ...options, client: clientInstance }),
-    adminReviewRunShow: (options?: any) => adminReviewRunShow({ ...options, client: clientInstance }),
-    adminReviewAllowlistIndex: (options?: any) => adminReviewAllowlistIndex({ ...options, client: clientInstance }),
-    adminReviewAllowlistCreate: (options?: any) => adminReviewAllowlistCreate({ ...options, client: clientInstance }),
-    adminReviewAllowlistDestroy: (options?: any) => adminReviewAllowlistDestroy({ ...options, client: clientInstance }),
-    mediaCreate: (options?: any) => mediaCreate({ ...options, client: clientInstance }),
-    mediaUpdate: (options?: any) => mediaUpdate({ ...options, client: clientInstance }),
-    mediaDestroy: (options?: any) => mediaDestroy({ ...options, client: clientInstance }),
-    episodeCreate: (options?: any) => episodeCreate({ ...options, client: clientInstance }),
-    episodeUpdate: (options?: any) => episodeUpdate({ ...options, client: clientInstance }),
-    episodeDestroy: (options?: any) => episodeDestroy({ ...options, client: clientInstance }),
-    segmentIndex: (options?: any) => segmentIndex({ ...options, client: clientInstance }),
-    segmentCreate: (options?: any) => segmentCreate({ ...options, client: clientInstance }),
-    segmentUpdate: (options?: any) => segmentUpdate({ ...options, client: clientInstance }),
-    segmentDestroy: (options?: any) => segmentDestroy({ ...options, client: clientInstance }),
-    seriesCreate: (options?: any) => seriesCreate({ ...options, client: clientInstance }),
-    seriesUpdate: (options?: any) => seriesUpdate({ ...options, client: clientInstance }),
-    seriesDestroy: (options?: any) => seriesDestroy({ ...options, client: clientInstance }),
-    seriesAddMedia: (options?: any) => seriesAddMedia({ ...options, client: clientInstance }),
-    seriesUpdateMedia: (options?: any) => seriesUpdateMedia({ ...options, client: clientInstance }),
-    seriesRemoveMedia: (options?: any) => seriesRemoveMedia({ ...options, client: clientInstance }),
-    userReportCreate: (options?: any) => userReportCreate({ ...options, client: clientInstance }),
-    userReportIndex: (options?: any) => userReportIndex({ ...options, client: clientInstance }),
-    userPreferencesShow: (options?: any) => userPreferencesShow({ ...options, client: clientInstance }),
-    userPreferencesUpdate: (options?: any) => userPreferencesUpdate({ ...options, client: clientInstance }),
-    userActivityIndex: (options?: any) => userActivityIndex({ ...options, client: clientInstance }),
-    userActivityDestroy: (options?: any) => userActivityDestroy({ ...options, client: clientInstance }),
-    userActivityHeatmapShow: (options?: any) => userActivityHeatmapShow({ ...options, client: clientInstance }),
-    userActivityStatsShow: (options?: any) => userActivityStatsShow({ ...options, client: clientInstance }),
-    userExportShow: (options?: any) => userExportShow({ ...options, client: clientInstance }),
-    userLabsIndex: (options?: any) => userLabsIndex({ ...options, client: clientInstance }),
-    adminDashboardShow: (options?: any) => adminDashboardShow({ ...options, client: clientInstance }),
-    adminHealthShow: (options?: any) => adminHealthShow({ ...options, client: clientInstance }),
+    listMedia: (options?: any) => listMedia({ ...options, client: clientInstance }),
+    getMedia: (options?: any) => getMedia({ ...options, client: clientInstance }),
+    listEpisodes: (options?: any) => listEpisodes({ ...options, client: clientInstance }),
+    getEpisode: (options?: any) => getEpisode({ ...options, client: clientInstance }),
+    getSegment: (options?: any) => getSegment({ ...options, client: clientInstance }),
+    getSegmentByUuid: (options?: any) => getSegmentByUuid({ ...options, client: clientInstance }),
+    getSegmentContext: (options?: any) => getSegmentContext({ ...options, client: clientInstance }),
+    listSeries: (options?: any) => listSeries({ ...options, client: clientInstance }),
+    getSeries: (options?: any) => getSeries({ ...options, client: clientInstance }),
+    getCharacter: (options?: any) => getCharacter({ ...options, client: clientInstance }),
+    getSeiyuu: (options?: any) => getSeiyuu({ ...options, client: clientInstance }),
+    getQuota: (options?: any) => getQuota({ ...options, client: clientInstance }),
+    listCollections: (options?: any) => listCollections({ ...options, client: clientInstance }),
+    createCollection: (options?: any) => createCollection({ ...options, client: clientInstance }),
+    getCollection: (options?: any) => getCollection({ ...options, client: clientInstance }),
+    updateCollection: (options?: any) => updateCollection({ ...options, client: clientInstance }),
+    deleteCollection: (options?: any) => deleteCollection({ ...options, client: clientInstance }),
+    addSegmentToCollection: (options?: any) => addSegmentToCollection({ ...options, client: clientInstance }),
+    updateCollectionSegment: (options?: any) => updateCollectionSegment({ ...options, client: clientInstance }),
+    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ ...options, client: clientInstance }),
+    triggerReindex: (options?: any) => triggerReindex({ ...options, client: clientInstance }),
+    listAdminQueueStats: (options?: any) => listAdminQueueStats({ ...options, client: clientInstance }),
+    getAdminQueue: (options?: any) => getAdminQueue({ ...options, client: clientInstance }),
+    listAdminQueueFailed: (options?: any) => listAdminQueueFailed({ ...options, client: clientInstance }),
+    retryAdminQueueFailed: (options?: any) => retryAdminQueueFailed({ ...options, client: clientInstance }),
+    purgeAdminQueueFailed: (options?: any) => purgeAdminQueueFailed({ ...options, client: clientInstance }),
+    listAdminReports: (options?: any) => listAdminReports({ ...options, client: clientInstance }),
+    updateAdminReport: (options?: any) => updateAdminReport({ ...options, client: clientInstance }),
+    runAdminReview: (options?: any) => runAdminReview({ ...options, client: clientInstance }),
+    listAdminReviewChecks: (options?: any) => listAdminReviewChecks({ ...options, client: clientInstance }),
+    updateAdminReviewCheck: (options?: any) => updateAdminReviewCheck({ ...options, client: clientInstance }),
+    listAdminReviewRuns: (options?: any) => listAdminReviewRuns({ ...options, client: clientInstance }),
+    getAdminReviewRun: (options?: any) => getAdminReviewRun({ ...options, client: clientInstance }),
+    listAdminReviewAllowlist: (options?: any) => listAdminReviewAllowlist({ ...options, client: clientInstance }),
+    createAdminReviewAllowlistEntry: (options?: any) => createAdminReviewAllowlistEntry({ ...options, client: clientInstance }),
+    deleteAdminReviewAllowlistEntry: (options?: any) => deleteAdminReviewAllowlistEntry({ ...options, client: clientInstance }),
+    createMedia: (options?: any) => createMedia({ ...options, client: clientInstance }),
+    updateMedia: (options?: any) => updateMedia({ ...options, client: clientInstance }),
+    deleteMedia: (options?: any) => deleteMedia({ ...options, client: clientInstance }),
+    createEpisode: (options?: any) => createEpisode({ ...options, client: clientInstance }),
+    updateEpisode: (options?: any) => updateEpisode({ ...options, client: clientInstance }),
+    deleteEpisode: (options?: any) => deleteEpisode({ ...options, client: clientInstance }),
+    listSegments: (options?: any) => listSegments({ ...options, client: clientInstance }),
+    createSegment: (options?: any) => createSegment({ ...options, client: clientInstance }),
+    updateSegment: (options?: any) => updateSegment({ ...options, client: clientInstance }),
+    deleteSegment: (options?: any) => deleteSegment({ ...options, client: clientInstance }),
+    createSeries: (options?: any) => createSeries({ ...options, client: clientInstance }),
+    updateSeries: (options?: any) => updateSeries({ ...options, client: clientInstance }),
+    deleteSeries: (options?: any) => deleteSeries({ ...options, client: clientInstance }),
+    addMediaToSeries: (options?: any) => addMediaToSeries({ ...options, client: clientInstance }),
+    updateSeriesMedia: (options?: any) => updateSeriesMedia({ ...options, client: clientInstance }),
+    removeMediaFromSeries: (options?: any) => removeMediaFromSeries({ ...options, client: clientInstance }),
+    createReport: (options?: any) => createReport({ ...options, client: clientInstance }),
+    listReports: (options?: any) => listReports({ ...options, client: clientInstance }),
+    getPreferences: (options?: any) => getPreferences({ ...options, client: clientInstance }),
+    updatePreferences: (options?: any) => updatePreferences({ ...options, client: clientInstance }),
+    listActivity: (options?: any) => listActivity({ ...options, client: clientInstance }),
+    deleteActivity: (options?: any) => deleteActivity({ ...options, client: clientInstance }),
+    getActivityHeatmap: (options?: any) => getActivityHeatmap({ ...options, client: clientInstance }),
+    getActivityStats: (options?: any) => getActivityStats({ ...options, client: clientInstance }),
+    exportData: (options?: any) => exportData({ ...options, client: clientInstance }),
+    listLabs: (options?: any) => listLabs({ ...options, client: clientInstance }),
+    getAdminDashboard: (options?: any) => getAdminDashboard({ ...options, client: clientInstance }),
+    getAdminHealth: (options?: any) => getAdminHealth({ ...options, client: clientInstance }),
   };
 }
 

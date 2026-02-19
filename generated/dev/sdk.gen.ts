@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AdminDashboardShowData, AdminDashboardShowErrors, AdminDashboardShowResponses, AdminHealthShowData, AdminHealthShowErrors, AdminHealthShowResponses, AdminQueueFailedDestroyData, AdminQueueFailedDestroyErrors, AdminQueueFailedDestroyResponses, AdminQueueFailedIndexData, AdminQueueFailedIndexErrors, AdminQueueFailedIndexResponses, AdminQueueRetryCreateData, AdminQueueRetryCreateErrors, AdminQueueRetryCreateResponses, AdminQueueShowData, AdminQueueShowErrors, AdminQueueShowResponses, AdminQueueStatsIndexData, AdminQueueStatsIndexErrors, AdminQueueStatsIndexResponses, AdminReindexCreateData, AdminReindexCreateErrors, AdminReindexCreateResponses, AdminReportIndexData, AdminReportIndexErrors, AdminReportIndexResponses, AdminReportUpdateData, AdminReportUpdateErrors, AdminReportUpdateResponses, AdminReviewAllowlistCreateData, AdminReviewAllowlistCreateErrors, AdminReviewAllowlistCreateResponses, AdminReviewAllowlistDestroyData, AdminReviewAllowlistDestroyErrors, AdminReviewAllowlistDestroyResponses, AdminReviewAllowlistIndexData, AdminReviewAllowlistIndexErrors, AdminReviewAllowlistIndexResponses, AdminReviewCheckIndexData, AdminReviewCheckIndexErrors, AdminReviewCheckIndexResponses, AdminReviewCheckUpdateData, AdminReviewCheckUpdateErrors, AdminReviewCheckUpdateResponses, AdminReviewRunCreateData, AdminReviewRunCreateErrors, AdminReviewRunCreateResponses, AdminReviewRunIndexData, AdminReviewRunIndexErrors, AdminReviewRunIndexResponses, AdminReviewRunShowData, AdminReviewRunShowErrors, AdminReviewRunShowResponses, CharacterShowData, CharacterShowErrors, CharacterShowResponses, CollectionAddSegmentData, CollectionAddSegmentErrors, CollectionAddSegmentResponses, CollectionCreateData, CollectionCreateErrors, CollectionCreateResponses, CollectionDestroyData, CollectionDestroyErrors, CollectionDestroyResponses, CollectionIndexData, CollectionIndexErrors, CollectionIndexResponses, CollectionRemoveSegmentData, CollectionRemoveSegmentErrors, CollectionRemoveSegmentResponses, CollectionShowData, CollectionShowErrors, CollectionShowResponses, CollectionUpdateData, CollectionUpdateErrors, CollectionUpdateResponses, CollectionUpdateSegmentData, CollectionUpdateSegmentErrors, CollectionUpdateSegmentResponses, EpisodeCreateData, EpisodeCreateErrors, EpisodeCreateResponses, EpisodeDestroyData, EpisodeDestroyErrors, EpisodeDestroyResponses, EpisodeIndexData, EpisodeIndexErrors, EpisodeIndexResponses, EpisodeShowData, EpisodeShowErrors, EpisodeShowResponses, EpisodeUpdateData, EpisodeUpdateErrors, EpisodeUpdateResponses, MediaCreateData, MediaCreateErrors, MediaCreateResponses, MediaDestroyData, MediaDestroyErrors, MediaDestroyResponses, MediaIndexData, MediaIndexErrors, MediaIndexResponses, MediaShowData, MediaShowErrors, MediaShowResponses, MediaUpdateData, MediaUpdateErrors, MediaUpdateResponses, SearchIndexData, SearchIndexErrors, SearchIndexResponses, SearchStatsData, SearchStatsErrors, SearchStatsResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, SegmentContextShowData, SegmentContextShowErrors, SegmentContextShowResponses, SegmentCreateData, SegmentCreateErrors, SegmentCreateResponses, SegmentDestroyData, SegmentDestroyErrors, SegmentDestroyResponses, SegmentIndexData, SegmentIndexErrors, SegmentIndexResponses, SegmentShowByUuidData, SegmentShowByUuidErrors, SegmentShowByUuidResponses, SegmentShowData, SegmentShowErrors, SegmentShowResponses, SegmentUpdateData, SegmentUpdateErrors, SegmentUpdateResponses, SeiyuuShowData, SeiyuuShowErrors, SeiyuuShowResponses, SeriesAddMediaData, SeriesAddMediaErrors, SeriesAddMediaResponses, SeriesCreateData, SeriesCreateErrors, SeriesCreateResponses, SeriesDestroyData, SeriesDestroyErrors, SeriesDestroyResponses, SeriesIndexData, SeriesIndexErrors, SeriesIndexResponses, SeriesRemoveMediaData, SeriesRemoveMediaErrors, SeriesRemoveMediaResponses, SeriesShowData, SeriesShowErrors, SeriesShowResponses, SeriesUpdateData, SeriesUpdateErrors, SeriesUpdateMediaData, SeriesUpdateMediaErrors, SeriesUpdateMediaResponses, SeriesUpdateResponses, UserActivityDestroyData, UserActivityDestroyErrors, UserActivityDestroyResponses, UserActivityHeatmapShowData, UserActivityHeatmapShowErrors, UserActivityHeatmapShowResponses, UserActivityIndexData, UserActivityIndexErrors, UserActivityIndexResponses, UserActivityStatsShowData, UserActivityStatsShowErrors, UserActivityStatsShowResponses, UserExportShowData, UserExportShowErrors, UserExportShowResponses, UserLabsIndexData, UserLabsIndexErrors, UserLabsIndexResponses, UserPreferencesShowData, UserPreferencesShowErrors, UserPreferencesShowResponses, UserPreferencesUpdateData, UserPreferencesUpdateErrors, UserPreferencesUpdateResponses, UserQuotaShowData, UserQuotaShowErrors, UserQuotaShowResponses, UserReportCreateData, UserReportCreateErrors, UserReportCreateResponses, UserReportIndexData, UserReportIndexErrors, UserReportIndexResponses } from './types.gen';
+import type { AddMediaToSeriesData, AddMediaToSeriesErrors, AddMediaToSeriesResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, CreateAdminReviewAllowlistEntryData, CreateAdminReviewAllowlistEntryErrors, CreateAdminReviewAllowlistEntryResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateReportData, CreateReportErrors, CreateReportResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSeriesData, CreateSeriesErrors, CreateSeriesResponses, DeleteActivityData, DeleteActivityErrors, DeleteActivityResponses, DeleteAdminReviewAllowlistEntryData, DeleteAdminReviewAllowlistEntryErrors, DeleteAdminReviewAllowlistEntryResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteSegmentData, DeleteSegmentErrors, DeleteSegmentResponses, DeleteSeriesData, DeleteSeriesErrors, DeleteSeriesResponses, ExportDataData, ExportDataErrors, ExportDataResponses, GetActivityHeatmapData, GetActivityHeatmapErrors, GetActivityHeatmapResponses, GetActivityStatsData, GetActivityStatsErrors, GetActivityStatsResponses, GetAdminDashboardData, GetAdminDashboardErrors, GetAdminDashboardResponses, GetAdminHealthData, GetAdminHealthErrors, GetAdminHealthResponses, GetAdminQueueData, GetAdminQueueErrors, GetAdminQueueResponses, GetAdminReviewRunData, GetAdminReviewRunErrors, GetAdminReviewRunResponses, GetCharacterData, GetCharacterErrors, GetCharacterResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetPreferencesData, GetPreferencesErrors, GetPreferencesResponses, GetQuotaData, GetQuotaErrors, GetQuotaResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentByUuidData, GetSegmentByUuidErrors, GetSegmentByUuidResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetSeiyuuData, GetSeiyuuErrors, GetSeiyuuResponses, GetSeriesData, GetSeriesErrors, GetSeriesResponses, ListActivityData, ListActivityErrors, ListActivityResponses, ListAdminQueueFailedData, ListAdminQueueFailedErrors, ListAdminQueueFailedResponses, ListAdminQueueStatsData, ListAdminQueueStatsErrors, ListAdminQueueStatsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAdminReviewAllowlistData, ListAdminReviewAllowlistErrors, ListAdminReviewAllowlistResponses, ListAdminReviewChecksData, ListAdminReviewChecksErrors, ListAdminReviewChecksResponses, ListAdminReviewRunsData, ListAdminReviewRunsErrors, ListAdminReviewRunsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListLabsData, ListLabsErrors, ListLabsResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListReportsData, ListReportsErrors, ListReportsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListSeriesData, ListSeriesErrors, ListSeriesResponses, PurgeAdminQueueFailedData, PurgeAdminQueueFailedErrors, PurgeAdminQueueFailedResponses, RemoveMediaFromSeriesData, RemoveMediaFromSeriesErrors, RemoveMediaFromSeriesResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RetryAdminQueueFailedData, RetryAdminQueueFailedErrors, RetryAdminQueueFailedResponses, RunAdminReviewData, RunAdminReviewErrors, RunAdminReviewResponses, SearchData, SearchErrors, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAdminReviewCheckData, UpdateAdminReviewCheckErrors, UpdateAdminReviewCheckResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdatePreferencesData, UpdatePreferencesErrors, UpdatePreferencesResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateSeriesData, UpdateSeriesErrors, UpdateSeriesMediaData, UpdateSeriesMediaErrors, UpdateSeriesMediaResponses, UpdateSeriesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -43,7 +43,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const searchIndex = <ThrowOnError extends boolean = false>(options?: Options<SearchIndexData, ThrowOnError>) => (options?.client ?? client).post<SearchIndexResponses, SearchIndexErrors, ThrowOnError>({
+export const search = <ThrowOnError extends boolean = false>(options?: Options<SearchData, ThrowOnError>) => (options?.client ?? client).post<SearchResponses, SearchErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -71,7 +71,7 @@ export const searchIndex = <ThrowOnError extends boolean = false>(options?: Opti
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const searchStats = <ThrowOnError extends boolean = false>(options?: Options<SearchStatsData, ThrowOnError>) => (options?.client ?? client).post<SearchStatsResponses, SearchStatsErrors, ThrowOnError>({
+export const getSearchStats = <ThrowOnError extends boolean = false>(options?: Options<GetSearchStatsData, ThrowOnError>) => (options?.client ?? client).post<GetSearchStatsResponses, GetSearchStatsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -123,7 +123,7 @@ export const searchWords = <ThrowOnError extends boolean = false>(options: Optio
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const mediaIndex = <ThrowOnError extends boolean = false>(options?: Options<MediaIndexData, ThrowOnError>) => (options?.client ?? client).get<MediaIndexResponses, MediaIndexErrors, ThrowOnError>({
+export const listMedia = <ThrowOnError extends boolean = false>(options?: Options<ListMediaData, ThrowOnError>) => (options?.client ?? client).get<ListMediaResponses, ListMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media',
     ...options
@@ -137,7 +137,7 @@ export const mediaIndex = <ThrowOnError extends boolean = false>(options?: Optio
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const mediaCreate = <ThrowOnError extends boolean = false>(options: Options<MediaCreateData, ThrowOnError>) => (options.client ?? client).post<MediaCreateResponses, MediaCreateErrors, ThrowOnError>({
+export const createMedia = <ThrowOnError extends boolean = false>(options: Options<CreateMediaData, ThrowOnError>) => (options.client ?? client).post<CreateMediaResponses, CreateMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media',
     ...options,
@@ -155,7 +155,7 @@ export const mediaCreate = <ThrowOnError extends boolean = false>(options: Optio
  * **Permissions:** `REMOVE_MEDIA`
  *
  */
-export const mediaDestroy = <ThrowOnError extends boolean = false>(options: Options<MediaDestroyData, ThrowOnError>) => (options.client ?? client).delete<MediaDestroyResponses, MediaDestroyErrors, ThrowOnError>({
+export const deleteMedia = <ThrowOnError extends boolean = false>(options: Options<DeleteMediaData, ThrowOnError>) => (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options
@@ -169,7 +169,7 @@ export const mediaDestroy = <ThrowOnError extends boolean = false>(options: Opti
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const mediaShow = <ThrowOnError extends boolean = false>(options: Options<MediaShowData, ThrowOnError>) => (options.client ?? client).get<MediaShowResponses, MediaShowErrors, ThrowOnError>({
+export const getMedia = <ThrowOnError extends boolean = false>(options: Options<GetMediaData, ThrowOnError>) => (options.client ?? client).get<GetMediaResponses, GetMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options
@@ -183,7 +183,7 @@ export const mediaShow = <ThrowOnError extends boolean = false>(options: Options
  * **Permissions:** `UPDATE_MEDIA`
  *
  */
-export const mediaUpdate = <ThrowOnError extends boolean = false>(options: Options<MediaUpdateData, ThrowOnError>) => (options.client ?? client).patch<MediaUpdateResponses, MediaUpdateErrors, ThrowOnError>({
+export const updateMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateMediaResponses, UpdateMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options,
@@ -201,7 +201,7 @@ export const mediaUpdate = <ThrowOnError extends boolean = false>(options: Optio
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const episodeIndex = <ThrowOnError extends boolean = false>(options: Options<EpisodeIndexData, ThrowOnError>) => (options.client ?? client).get<EpisodeIndexResponses, EpisodeIndexErrors, ThrowOnError>({
+export const listEpisodes = <ThrowOnError extends boolean = false>(options: Options<ListEpisodesData, ThrowOnError>) => (options.client ?? client).get<ListEpisodesResponses, ListEpisodesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes',
     ...options
@@ -215,7 +215,7 @@ export const episodeIndex = <ThrowOnError extends boolean = false>(options: Opti
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const episodeCreate = <ThrowOnError extends boolean = false>(options: Options<EpisodeCreateData, ThrowOnError>) => (options.client ?? client).post<EpisodeCreateResponses, EpisodeCreateErrors, ThrowOnError>({
+export const createEpisode = <ThrowOnError extends boolean = false>(options: Options<CreateEpisodeData, ThrowOnError>) => (options.client ?? client).post<CreateEpisodeResponses, CreateEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes',
     ...options,
@@ -233,7 +233,7 @@ export const episodeCreate = <ThrowOnError extends boolean = false>(options: Opt
  * **Permissions:** `REMOVE_MEDIA`
  *
  */
-export const episodeDestroy = <ThrowOnError extends boolean = false>(options: Options<EpisodeDestroyData, ThrowOnError>) => (options.client ?? client).delete<EpisodeDestroyResponses, EpisodeDestroyErrors, ThrowOnError>({
+export const deleteEpisode = <ThrowOnError extends boolean = false>(options: Options<DeleteEpisodeData, ThrowOnError>) => (options.client ?? client).delete<DeleteEpisodeResponses, DeleteEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options
@@ -247,7 +247,7 @@ export const episodeDestroy = <ThrowOnError extends boolean = false>(options: Op
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const episodeShow = <ThrowOnError extends boolean = false>(options: Options<EpisodeShowData, ThrowOnError>) => (options.client ?? client).get<EpisodeShowResponses, EpisodeShowErrors, ThrowOnError>({
+export const getEpisode = <ThrowOnError extends boolean = false>(options: Options<GetEpisodeData, ThrowOnError>) => (options.client ?? client).get<GetEpisodeResponses, GetEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options
@@ -261,7 +261,7 @@ export const episodeShow = <ThrowOnError extends boolean = false>(options: Optio
  * **Permissions:** `UPDATE_MEDIA`
  *
  */
-export const episodeUpdate = <ThrowOnError extends boolean = false>(options: Options<EpisodeUpdateData, ThrowOnError>) => (options.client ?? client).patch<EpisodeUpdateResponses, EpisodeUpdateErrors, ThrowOnError>({
+export const updateEpisode = <ThrowOnError extends boolean = false>(options: Options<UpdateEpisodeData, ThrowOnError>) => (options.client ?? client).patch<UpdateEpisodeResponses, UpdateEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options,
@@ -279,7 +279,7 @@ export const episodeUpdate = <ThrowOnError extends boolean = false>(options: Opt
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const segmentIndex = <ThrowOnError extends boolean = false>(options: Options<SegmentIndexData, ThrowOnError>) => (options.client ?? client).get<SegmentIndexResponses, SegmentIndexErrors, ThrowOnError>({
+export const listSegments = <ThrowOnError extends boolean = false>(options: Options<ListSegmentsData, ThrowOnError>) => (options.client ?? client).get<ListSegmentsResponses, ListSegmentsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments',
     ...options
@@ -293,7 +293,7 @@ export const segmentIndex = <ThrowOnError extends boolean = false>(options: Opti
  * **Permissions:** `UPDATE_MEDIA`
  *
  */
-export const segmentCreate = <ThrowOnError extends boolean = false>(options: Options<SegmentCreateData, ThrowOnError>) => (options.client ?? client).post<SegmentCreateResponses, SegmentCreateErrors, ThrowOnError>({
+export const createSegment = <ThrowOnError extends boolean = false>(options: Options<CreateSegmentData, ThrowOnError>) => (options.client ?? client).post<CreateSegmentResponses, CreateSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments',
     ...options,
@@ -311,7 +311,7 @@ export const segmentCreate = <ThrowOnError extends boolean = false>(options: Opt
  * **Permissions:** `REMOVE_MEDIA`
  *
  */
-export const segmentDestroy = <ThrowOnError extends boolean = false>(options: Options<SegmentDestroyData, ThrowOnError>) => (options.client ?? client).delete<SegmentDestroyResponses, SegmentDestroyErrors, ThrowOnError>({
+export const deleteSegment = <ThrowOnError extends boolean = false>(options: Options<DeleteSegmentData, ThrowOnError>) => (options.client ?? client).delete<DeleteSegmentResponses, DeleteSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options
@@ -325,7 +325,7 @@ export const segmentDestroy = <ThrowOnError extends boolean = false>(options: Op
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const segmentShow = <ThrowOnError extends boolean = false>(options: Options<SegmentShowData, ThrowOnError>) => (options.client ?? client).get<SegmentShowResponses, SegmentShowErrors, ThrowOnError>({
+export const getSegment = <ThrowOnError extends boolean = false>(options: Options<GetSegmentData, ThrowOnError>) => (options.client ?? client).get<GetSegmentResponses, GetSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options
@@ -339,7 +339,7 @@ export const segmentShow = <ThrowOnError extends boolean = false>(options: Optio
  * **Permissions:** `UPDATE_MEDIA`
  *
  */
-export const segmentUpdate = <ThrowOnError extends boolean = false>(options: Options<SegmentUpdateData, ThrowOnError>) => (options.client ?? client).patch<SegmentUpdateResponses, SegmentUpdateErrors, ThrowOnError>({
+export const updateSegment = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentResponses, UpdateSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options,
@@ -357,7 +357,7 @@ export const segmentUpdate = <ThrowOnError extends boolean = false>(options: Opt
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const segmentShowByUuid = <ThrowOnError extends boolean = false>(options: Options<SegmentShowByUuidData, ThrowOnError>) => (options.client ?? client).get<SegmentShowByUuidResponses, SegmentShowByUuidErrors, ThrowOnError>({
+export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<GetSegmentByUuidData, ThrowOnError>) => (options.client ?? client).get<GetSegmentByUuidResponses, GetSegmentByUuidErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}',
     ...options
@@ -372,7 +372,7 @@ export const segmentShowByUuid = <ThrowOnError extends boolean = false>(options:
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const segmentContextShow = <ThrowOnError extends boolean = false>(options: Options<SegmentContextShowData, ThrowOnError>) => (options.client ?? client).get<SegmentContextShowResponses, SegmentContextShowErrors, ThrowOnError>({
+export const getSegmentContext = <ThrowOnError extends boolean = false>(options: Options<GetSegmentContextData, ThrowOnError>) => (options.client ?? client).get<GetSegmentContextResponses, GetSegmentContextErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}/context',
     ...options
@@ -384,7 +384,7 @@ export const segmentContextShow = <ThrowOnError extends boolean = false>(options
  * Returns a paginated list of media series groupings.
  *
  */
-export const seriesIndex = <ThrowOnError extends boolean = false>(options?: Options<SeriesIndexData, ThrowOnError>) => (options?.client ?? client).get<SeriesIndexResponses, SeriesIndexErrors, ThrowOnError>({
+export const listSeries = <ThrowOnError extends boolean = false>(options?: Options<ListSeriesData, ThrowOnError>) => (options?.client ?? client).get<ListSeriesResponses, ListSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -400,7 +400,7 @@ export const seriesIndex = <ThrowOnError extends boolean = false>(options?: Opti
  * Creates a new media series grouping.
  *
  */
-export const seriesCreate = <ThrowOnError extends boolean = false>(options: Options<SeriesCreateData, ThrowOnError>) => (options.client ?? client).post<SeriesCreateResponses, SeriesCreateErrors, ThrowOnError>({
+export const createSeries = <ThrowOnError extends boolean = false>(options: Options<CreateSeriesData, ThrowOnError>) => (options.client ?? client).post<CreateSeriesResponses, CreateSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series',
     ...options,
@@ -416,7 +416,7 @@ export const seriesCreate = <ThrowOnError extends boolean = false>(options: Opti
  * Deletes a series and all its media associations.
  *
  */
-export const seriesDestroy = <ThrowOnError extends boolean = false>(options: Options<SeriesDestroyData, ThrowOnError>) => (options.client ?? client).delete<SeriesDestroyResponses, SeriesDestroyErrors, ThrowOnError>({
+export const deleteSeries = <ThrowOnError extends boolean = false>(options: Options<DeleteSeriesData, ThrowOnError>) => (options.client ?? client).delete<DeleteSeriesResponses, DeleteSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}',
     ...options
@@ -428,7 +428,7 @@ export const seriesDestroy = <ThrowOnError extends boolean = false>(options: Opt
  * Returns a series with all media entries sorted by position.
  *
  */
-export const seriesShow = <ThrowOnError extends boolean = false>(options: Options<SeriesShowData, ThrowOnError>) => (options.client ?? client).get<SeriesShowResponses, SeriesShowErrors, ThrowOnError>({
+export const getSeries = <ThrowOnError extends boolean = false>(options: Options<GetSeriesData, ThrowOnError>) => (options.client ?? client).get<GetSeriesResponses, GetSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }, {
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -444,7 +444,7 @@ export const seriesShow = <ThrowOnError extends boolean = false>(options: Option
  * Updates series localized names.
  *
  */
-export const seriesUpdate = <ThrowOnError extends boolean = false>(options: Options<SeriesUpdateData, ThrowOnError>) => (options.client ?? client).patch<SeriesUpdateResponses, SeriesUpdateErrors, ThrowOnError>({
+export const updateSeries = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesResponses, UpdateSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}',
     ...options,
@@ -460,7 +460,7 @@ export const seriesUpdate = <ThrowOnError extends boolean = false>(options: Opti
  * Adds a media entry to a series at a specific position.
  *
  */
-export const seriesAddMedia = <ThrowOnError extends boolean = false>(options: Options<SeriesAddMediaData, ThrowOnError>) => (options.client ?? client).post<SeriesAddMediaResponses, SeriesAddMediaErrors, ThrowOnError>({
+export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: Options<AddMediaToSeriesData, ThrowOnError>) => (options.client ?? client).post<AddMediaToSeriesResponses, AddMediaToSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}/media',
     ...options,
@@ -476,7 +476,7 @@ export const seriesAddMedia = <ThrowOnError extends boolean = false>(options: Op
  * Removes a media entry from a series.
  *
  */
-export const seriesRemoveMedia = <ThrowOnError extends boolean = false>(options: Options<SeriesRemoveMediaData, ThrowOnError>) => (options.client ?? client).delete<SeriesRemoveMediaResponses, SeriesRemoveMediaErrors, ThrowOnError>({
+export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(options: Options<RemoveMediaFromSeriesData, ThrowOnError>) => (options.client ?? client).delete<RemoveMediaFromSeriesResponses, RemoveMediaFromSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}/media/{mediaId}',
     ...options
@@ -488,7 +488,7 @@ export const seriesRemoveMedia = <ThrowOnError extends boolean = false>(options:
  * Updates the position of a media entry in a series.
  *
  */
-export const seriesUpdateMedia = <ThrowOnError extends boolean = false>(options: Options<SeriesUpdateMediaData, ThrowOnError>) => (options.client ?? client).patch<SeriesUpdateMediaResponses, SeriesUpdateMediaErrors, ThrowOnError>({
+export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesMediaResponses, UpdateSeriesMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}/media/{mediaId}',
     ...options,
@@ -506,7 +506,7 @@ export const seriesUpdateMedia = <ThrowOnError extends boolean = false>(options:
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const characterShow = <ThrowOnError extends boolean = false>(options: Options<CharacterShowData, ThrowOnError>) => (options.client ?? client).get<CharacterShowResponses, CharacterShowErrors, ThrowOnError>({
+export const getCharacter = <ThrowOnError extends boolean = false>(options: Options<GetCharacterData, ThrowOnError>) => (options.client ?? client).get<GetCharacterResponses, GetCharacterErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/characters/{id}',
     ...options
@@ -520,7 +520,7 @@ export const characterShow = <ThrowOnError extends boolean = false>(options: Opt
  * **Permissions:** `READ_MEDIA`
  *
  */
-export const seiyuuShow = <ThrowOnError extends boolean = false>(options: Options<SeiyuuShowData, ThrowOnError>) => (options.client ?? client).get<SeiyuuShowResponses, SeiyuuShowErrors, ThrowOnError>({
+export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options<GetSeiyuuData, ThrowOnError>) => (options.client ?? client).get<GetSeiyuuResponses, GetSeiyuuErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/seiyuu/{id}',
     ...options
@@ -535,7 +535,7 @@ export const seiyuuShow = <ThrowOnError extends boolean = false>(options: Option
  * **Permissions:** Session authentication (cookie-based) or API key (`READ_MEDIA`).
  *
  */
-export const userQuotaShow = <ThrowOnError extends boolean = false>(options?: Options<UserQuotaShowData, ThrowOnError>) => (options?.client ?? client).get<UserQuotaShowResponses, UserQuotaShowErrors, ThrowOnError>({
+export const getQuota = <ThrowOnError extends boolean = false>(options?: Options<GetQuotaData, ThrowOnError>) => (options?.client ?? client).get<GetQuotaResponses, GetQuotaErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -553,7 +553,7 @@ export const userQuotaShow = <ThrowOnError extends boolean = false>(options?: Op
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userReportIndex = <ThrowOnError extends boolean = false>(options?: Options<UserReportIndexData, ThrowOnError>) => (options?.client ?? client).get<UserReportIndexResponses, UserReportIndexErrors, ThrowOnError>({
+export const listReports = <ThrowOnError extends boolean = false>(options?: Options<ListReportsData, ThrowOnError>) => (options?.client ?? client).get<ListReportsResponses, ListReportsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -571,7 +571,7 @@ export const userReportIndex = <ThrowOnError extends boolean = false>(options?: 
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userReportCreate = <ThrowOnError extends boolean = false>(options: Options<UserReportCreateData, ThrowOnError>) => (options.client ?? client).post<UserReportCreateResponses, UserReportCreateErrors, ThrowOnError>({
+export const createReport = <ThrowOnError extends boolean = false>(options: Options<CreateReportData, ThrowOnError>) => (options.client ?? client).post<CreateReportResponses, CreateReportErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -593,7 +593,7 @@ export const userReportCreate = <ThrowOnError extends boolean = false>(options: 
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userPreferencesShow = <ThrowOnError extends boolean = false>(options?: Options<UserPreferencesShowData, ThrowOnError>) => (options?.client ?? client).get<UserPreferencesShowResponses, UserPreferencesShowErrors, ThrowOnError>({
+export const getPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetPreferencesData, ThrowOnError>) => (options?.client ?? client).get<GetPreferencesResponses, GetPreferencesErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -612,7 +612,7 @@ export const userPreferencesShow = <ThrowOnError extends boolean = false>(option
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userPreferencesUpdate = <ThrowOnError extends boolean = false>(options: Options<UserPreferencesUpdateData, ThrowOnError>) => (options.client ?? client).patch<UserPreferencesUpdateResponses, UserPreferencesUpdateErrors, ThrowOnError>({
+export const updatePreferences = <ThrowOnError extends boolean = false>(options: Options<UpdatePreferencesData, ThrowOnError>) => (options.client ?? client).patch<UpdatePreferencesResponses, UpdatePreferencesErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -634,7 +634,7 @@ export const userPreferencesUpdate = <ThrowOnError extends boolean = false>(opti
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userActivityDestroy = <ThrowOnError extends boolean = false>(options?: Options<UserActivityDestroyData, ThrowOnError>) => (options?.client ?? client).delete<UserActivityDestroyResponses, UserActivityDestroyErrors, ThrowOnError>({
+export const deleteActivity = <ThrowOnError extends boolean = false>(options?: Options<DeleteActivityData, ThrowOnError>) => (options?.client ?? client).delete<DeleteActivityResponses, DeleteActivityErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -652,7 +652,7 @@ export const userActivityDestroy = <ThrowOnError extends boolean = false>(option
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userActivityIndex = <ThrowOnError extends boolean = false>(options?: Options<UserActivityIndexData, ThrowOnError>) => (options?.client ?? client).get<UserActivityIndexResponses, UserActivityIndexErrors, ThrowOnError>({
+export const listActivity = <ThrowOnError extends boolean = false>(options?: Options<ListActivityData, ThrowOnError>) => (options?.client ?? client).get<ListActivityResponses, ListActivityErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -671,7 +671,7 @@ export const userActivityIndex = <ThrowOnError extends boolean = false>(options?
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userActivityHeatmapShow = <ThrowOnError extends boolean = false>(options?: Options<UserActivityHeatmapShowData, ThrowOnError>) => (options?.client ?? client).get<UserActivityHeatmapShowResponses, UserActivityHeatmapShowErrors, ThrowOnError>({
+export const getActivityHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetActivityHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetActivityHeatmapResponses, GetActivityHeatmapErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -690,7 +690,7 @@ export const userActivityHeatmapShow = <ThrowOnError extends boolean = false>(op
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userActivityStatsShow = <ThrowOnError extends boolean = false>(options?: Options<UserActivityStatsShowData, ThrowOnError>) => (options?.client ?? client).get<UserActivityStatsShowResponses, UserActivityStatsShowErrors, ThrowOnError>({
+export const getActivityStats = <ThrowOnError extends boolean = false>(options?: Options<GetActivityStatsData, ThrowOnError>) => (options?.client ?? client).get<GetActivityStatsResponses, GetActivityStatsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -709,7 +709,7 @@ export const userActivityStatsShow = <ThrowOnError extends boolean = false>(opti
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userExportShow = <ThrowOnError extends boolean = false>(options?: Options<UserExportShowData, ThrowOnError>) => (options?.client ?? client).get<UserExportShowResponses, UserExportShowErrors, ThrowOnError>({
+export const exportData = <ThrowOnError extends boolean = false>(options?: Options<ExportDataData, ThrowOnError>) => (options?.client ?? client).get<ExportDataResponses, ExportDataErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -729,7 +729,7 @@ export const userExportShow = <ThrowOnError extends boolean = false>(options?: O
  * **Permissions:** Session authentication (cookie-based).
  *
  */
-export const userLabsIndex = <ThrowOnError extends boolean = false>(options?: Options<UserLabsIndexData, ThrowOnError>) => (options?.client ?? client).get<UserLabsIndexResponses, UserLabsIndexErrors, ThrowOnError>({
+export const listLabs = <ThrowOnError extends boolean = false>(options?: Options<ListLabsData, ThrowOnError>) => (options?.client ?? client).get<ListLabsResponses, ListLabsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -745,7 +745,7 @@ export const userLabsIndex = <ThrowOnError extends boolean = false>(options?: Op
  * Returns all collections for the authenticated user. Can filter by visibility.
  *
  */
-export const collectionIndex = <ThrowOnError extends boolean = false>(options?: Options<CollectionIndexData, ThrowOnError>) => (options?.client ?? client).get<CollectionIndexResponses, CollectionIndexErrors, ThrowOnError>({
+export const listCollections = <ThrowOnError extends boolean = false>(options?: Options<ListCollectionsData, ThrowOnError>) => (options?.client ?? client).get<ListCollectionsResponses, ListCollectionsErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -761,7 +761,7 @@ export const collectionIndex = <ThrowOnError extends boolean = false>(options?: 
  * Creates a new segment collection for the authenticated user.
  *
  */
-export const collectionCreate = <ThrowOnError extends boolean = false>(options: Options<CollectionCreateData, ThrowOnError>) => (options.client ?? client).post<CollectionCreateResponses, CollectionCreateErrors, ThrowOnError>({
+export const createCollection = <ThrowOnError extends boolean = false>(options: Options<CreateCollectionData, ThrowOnError>) => (options.client ?? client).post<CreateCollectionResponses, CreateCollectionErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -781,7 +781,7 @@ export const collectionCreate = <ThrowOnError extends boolean = false>(options: 
  * Deletes a collection and all its segment entries. Requires collection ownership.
  *
  */
-export const collectionDestroy = <ThrowOnError extends boolean = false>(options: Options<CollectionDestroyData, ThrowOnError>) => (options.client ?? client).delete<CollectionDestroyResponses, CollectionDestroyErrors, ThrowOnError>({
+export const deleteCollection = <ThrowOnError extends boolean = false>(options: Options<DeleteCollectionData, ThrowOnError>) => (options.client ?? client).delete<DeleteCollectionResponses, DeleteCollectionErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -797,7 +797,7 @@ export const collectionDestroy = <ThrowOnError extends boolean = false>(options:
  * Returns a collection with paginated segments and their search result data.
  *
  */
-export const collectionShow = <ThrowOnError extends boolean = false>(options: Options<CollectionShowData, ThrowOnError>) => (options.client ?? client).get<CollectionShowResponses, CollectionShowErrors, ThrowOnError>({
+export const getCollection = <ThrowOnError extends boolean = false>(options: Options<GetCollectionData, ThrowOnError>) => (options.client ?? client).get<GetCollectionResponses, GetCollectionErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -813,7 +813,7 @@ export const collectionShow = <ThrowOnError extends boolean = false>(options: Op
  * Updates collection name or visibility. Requires collection ownership.
  *
  */
-export const collectionUpdate = <ThrowOnError extends boolean = false>(options: Options<CollectionUpdateData, ThrowOnError>) => (options.client ?? client).patch<CollectionUpdateResponses, CollectionUpdateErrors, ThrowOnError>({
+export const updateCollection = <ThrowOnError extends boolean = false>(options: Options<UpdateCollectionData, ThrowOnError>) => (options.client ?? client).patch<UpdateCollectionResponses, UpdateCollectionErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -833,7 +833,7 @@ export const collectionUpdate = <ThrowOnError extends boolean = false>(options: 
  * Adds a segment to a collection. Requires collection ownership.
  *
  */
-export const collectionAddSegment = <ThrowOnError extends boolean = false>(options: Options<CollectionAddSegmentData, ThrowOnError>) => (options.client ?? client).post<CollectionAddSegmentResponses, CollectionAddSegmentErrors, ThrowOnError>({
+export const addSegmentToCollection = <ThrowOnError extends boolean = false>(options: Options<AddSegmentToCollectionData, ThrowOnError>) => (options.client ?? client).post<AddSegmentToCollectionResponses, AddSegmentToCollectionErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -853,7 +853,7 @@ export const collectionAddSegment = <ThrowOnError extends boolean = false>(optio
  * Removes a segment from a collection. Requires collection ownership.
  *
  */
-export const collectionRemoveSegment = <ThrowOnError extends boolean = false>(options: Options<CollectionRemoveSegmentData, ThrowOnError>) => (options.client ?? client).delete<CollectionRemoveSegmentResponses, CollectionRemoveSegmentErrors, ThrowOnError>({
+export const removeSegmentFromCollection = <ThrowOnError extends boolean = false>(options: Options<RemoveSegmentFromCollectionData, ThrowOnError>) => (options.client ?? client).delete<RemoveSegmentFromCollectionResponses, RemoveSegmentFromCollectionErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -869,7 +869,7 @@ export const collectionRemoveSegment = <ThrowOnError extends boolean = false>(op
  * Updates the note or position of a segment in a collection. Requires collection ownership.
  *
  */
-export const collectionUpdateSegment = <ThrowOnError extends boolean = false>(options: Options<CollectionUpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<CollectionUpdateSegmentResponses, CollectionUpdateSegmentErrors, ThrowOnError>({
+export const updateCollectionSegment = <ThrowOnError extends boolean = false>(options: Options<UpdateCollectionSegmentData, ThrowOnError>) => (options.client ?? client).patch<UpdateCollectionSegmentResponses, UpdateCollectionSegmentErrors, ThrowOnError>({
     security: [{
             in: 'cookie',
             name: 'nadeshiko.session_token',
@@ -892,7 +892,7 @@ export const collectionUpdateSegment = <ThrowOnError extends boolean = false>(op
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminDashboardShow = <ThrowOnError extends boolean = false>(options?: Options<AdminDashboardShowData, ThrowOnError>) => (options?.client ?? client).get<AdminDashboardShowResponses, AdminDashboardShowErrors, ThrowOnError>({
+export const getAdminDashboard = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardResponses, GetAdminDashboardErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/dashboard',
     ...options
@@ -907,7 +907,7 @@ export const adminDashboardShow = <ThrowOnError extends boolean = false>(options
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminHealthShow = <ThrowOnError extends boolean = false>(options?: Options<AdminHealthShowData, ThrowOnError>) => (options?.client ?? client).get<AdminHealthShowResponses, AdminHealthShowErrors, ThrowOnError>({
+export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: Options<GetAdminHealthData, ThrowOnError>) => (options?.client ?? client).get<GetAdminHealthResponses, GetAdminHealthErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/health',
     ...options
@@ -927,7 +927,7 @@ export const adminHealthShow = <ThrowOnError extends boolean = false>(options?: 
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReindexCreate = <ThrowOnError extends boolean = false>(options?: Options<AdminReindexCreateData, ThrowOnError>) => (options?.client ?? client).post<AdminReindexCreateResponses, AdminReindexCreateErrors, ThrowOnError>({
+export const triggerReindex = <ThrowOnError extends boolean = false>(options?: Options<TriggerReindexData, ThrowOnError>) => (options?.client ?? client).post<TriggerReindexResponses, TriggerReindexErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/reindex',
     ...options,
@@ -950,7 +950,7 @@ export const adminReindexCreate = <ThrowOnError extends boolean = false>(options
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminQueueStatsIndex = <ThrowOnError extends boolean = false>(options?: Options<AdminQueueStatsIndexData, ThrowOnError>) => (options?.client ?? client).get<AdminQueueStatsIndexResponses, AdminQueueStatsIndexErrors, ThrowOnError>({
+export const listAdminQueueStats = <ThrowOnError extends boolean = false>(options?: Options<ListAdminQueueStatsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminQueueStatsResponses, ListAdminQueueStatsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/stats',
     ...options
@@ -969,7 +969,7 @@ export const adminQueueStatsIndex = <ThrowOnError extends boolean = false>(optio
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminQueueShow = <ThrowOnError extends boolean = false>(options: Options<AdminQueueShowData, ThrowOnError>) => (options.client ?? client).get<AdminQueueShowResponses, AdminQueueShowErrors, ThrowOnError>({
+export const getAdminQueue = <ThrowOnError extends boolean = false>(options: Options<GetAdminQueueData, ThrowOnError>) => (options.client ?? client).get<GetAdminQueueResponses, GetAdminQueueErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}',
     ...options
@@ -988,7 +988,7 @@ export const adminQueueShow = <ThrowOnError extends boolean = false>(options: Op
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminQueueFailedIndex = <ThrowOnError extends boolean = false>(options: Options<AdminQueueFailedIndexData, ThrowOnError>) => (options.client ?? client).get<AdminQueueFailedIndexResponses, AdminQueueFailedIndexErrors, ThrowOnError>({
+export const listAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<ListAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).get<ListAdminQueueFailedResponses, ListAdminQueueFailedErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/failed',
     ...options
@@ -1006,7 +1006,7 @@ export const adminQueueFailedIndex = <ThrowOnError extends boolean = false>(opti
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminQueueRetryCreate = <ThrowOnError extends boolean = false>(options: Options<AdminQueueRetryCreateData, ThrowOnError>) => (options.client ?? client).post<AdminQueueRetryCreateResponses, AdminQueueRetryCreateErrors, ThrowOnError>({
+export const retryAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<RetryAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).post<RetryAdminQueueFailedResponses, RetryAdminQueueFailedErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/retry',
     ...options
@@ -1025,7 +1025,7 @@ export const adminQueueRetryCreate = <ThrowOnError extends boolean = false>(opti
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminQueueFailedDestroy = <ThrowOnError extends boolean = false>(options: Options<AdminQueueFailedDestroyData, ThrowOnError>) => (options.client ?? client).delete<AdminQueueFailedDestroyResponses, AdminQueueFailedDestroyErrors, ThrowOnError>({
+export const purgeAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<PurgeAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).delete<PurgeAdminQueueFailedResponses, PurgeAdminQueueFailedErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/queues/{queueName}/purge',
     ...options
@@ -1040,7 +1040,7 @@ export const adminQueueFailedDestroy = <ThrowOnError extends boolean = false>(op
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReportIndex = <ThrowOnError extends boolean = false>(options?: Options<AdminReportIndexData, ThrowOnError>) => (options?.client ?? client).get<AdminReportIndexResponses, AdminReportIndexErrors, ThrowOnError>({
+export const listAdminReports = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReportsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReportsResponses, ListAdminReportsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/reports',
     ...options
@@ -1055,7 +1055,7 @@ export const adminReportIndex = <ThrowOnError extends boolean = false>(options?:
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReportUpdate = <ThrowOnError extends boolean = false>(options: Options<AdminReportUpdateData, ThrowOnError>) => (options.client ?? client).patch<AdminReportUpdateResponses, AdminReportUpdateErrors, ThrowOnError>({
+export const updateAdminReport = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminReportData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminReportResponses, UpdateAdminReportErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/reports/{id}',
     ...options,
@@ -1073,7 +1073,7 @@ export const adminReportUpdate = <ThrowOnError extends boolean = false>(options:
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewRunCreate = <ThrowOnError extends boolean = false>(options?: Options<AdminReviewRunCreateData, ThrowOnError>) => (options?.client ?? client).post<AdminReviewRunCreateResponses, AdminReviewRunCreateErrors, ThrowOnError>({
+export const runAdminReview = <ThrowOnError extends boolean = false>(options?: Options<RunAdminReviewData, ThrowOnError>) => (options?.client ?? client).post<RunAdminReviewResponses, RunAdminReviewErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/run',
     ...options
@@ -1087,7 +1087,7 @@ export const adminReviewRunCreate = <ThrowOnError extends boolean = false>(optio
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewCheckIndex = <ThrowOnError extends boolean = false>(options?: Options<AdminReviewCheckIndexData, ThrowOnError>) => (options?.client ?? client).get<AdminReviewCheckIndexResponses, AdminReviewCheckIndexErrors, ThrowOnError>({
+export const listAdminReviewChecks = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReviewChecksData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReviewChecksResponses, ListAdminReviewChecksErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/checks',
     ...options
@@ -1101,7 +1101,7 @@ export const adminReviewCheckIndex = <ThrowOnError extends boolean = false>(opti
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewCheckUpdate = <ThrowOnError extends boolean = false>(options: Options<AdminReviewCheckUpdateData, ThrowOnError>) => (options.client ?? client).patch<AdminReviewCheckUpdateResponses, AdminReviewCheckUpdateErrors, ThrowOnError>({
+export const updateAdminReviewCheck = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminReviewCheckData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminReviewCheckResponses, UpdateAdminReviewCheckErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/checks/{name}',
     ...options,
@@ -1119,7 +1119,7 @@ export const adminReviewCheckUpdate = <ThrowOnError extends boolean = false>(opt
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewRunIndex = <ThrowOnError extends boolean = false>(options?: Options<AdminReviewRunIndexData, ThrowOnError>) => (options?.client ?? client).get<AdminReviewRunIndexResponses, AdminReviewRunIndexErrors, ThrowOnError>({
+export const listAdminReviewRuns = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReviewRunsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReviewRunsResponses, ListAdminReviewRunsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/runs',
     ...options
@@ -1133,7 +1133,7 @@ export const adminReviewRunIndex = <ThrowOnError extends boolean = false>(option
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewRunShow = <ThrowOnError extends boolean = false>(options: Options<AdminReviewRunShowData, ThrowOnError>) => (options.client ?? client).get<AdminReviewRunShowResponses, AdminReviewRunShowErrors, ThrowOnError>({
+export const getAdminReviewRun = <ThrowOnError extends boolean = false>(options: Options<GetAdminReviewRunData, ThrowOnError>) => (options.client ?? client).get<GetAdminReviewRunResponses, GetAdminReviewRunErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/runs/{id}',
     ...options
@@ -1147,7 +1147,7 @@ export const adminReviewRunShow = <ThrowOnError extends boolean = false>(options
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewAllowlistIndex = <ThrowOnError extends boolean = false>(options?: Options<AdminReviewAllowlistIndexData, ThrowOnError>) => (options?.client ?? client).get<AdminReviewAllowlistIndexResponses, AdminReviewAllowlistIndexErrors, ThrowOnError>({
+export const listAdminReviewAllowlist = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReviewAllowlistData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReviewAllowlistResponses, ListAdminReviewAllowlistErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/allowlist',
     ...options
@@ -1161,7 +1161,7 @@ export const adminReviewAllowlistIndex = <ThrowOnError extends boolean = false>(
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewAllowlistCreate = <ThrowOnError extends boolean = false>(options: Options<AdminReviewAllowlistCreateData, ThrowOnError>) => (options.client ?? client).post<AdminReviewAllowlistCreateResponses, AdminReviewAllowlistCreateErrors, ThrowOnError>({
+export const createAdminReviewAllowlistEntry = <ThrowOnError extends boolean = false>(options: Options<CreateAdminReviewAllowlistEntryData, ThrowOnError>) => (options.client ?? client).post<CreateAdminReviewAllowlistEntryResponses, CreateAdminReviewAllowlistEntryErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/allowlist',
     ...options,
@@ -1179,7 +1179,7 @@ export const adminReviewAllowlistCreate = <ThrowOnError extends boolean = false>
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const adminReviewAllowlistDestroy = <ThrowOnError extends boolean = false>(options: Options<AdminReviewAllowlistDestroyData, ThrowOnError>) => (options.client ?? client).delete<AdminReviewAllowlistDestroyResponses, AdminReviewAllowlistDestroyErrors, ThrowOnError>({
+export const deleteAdminReviewAllowlistEntry = <ThrowOnError extends boolean = false>(options: Options<DeleteAdminReviewAllowlistEntryData, ThrowOnError>) => (options.client ?? client).delete<DeleteAdminReviewAllowlistEntryResponses, DeleteAdminReviewAllowlistEntryErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/review/allowlist/{id}',
     ...options
