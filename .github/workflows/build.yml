@@ -35,7 +35,7 @@ jobs:
 
       - name: Smoke test imports
         run: |
-          node -e "import('./build/public/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('sdk esm missing createClient');})"
-          node -e "import('./build/internal/dist/index.js').then((m)=>{if(!m.createClient) throw new Error('internal esm missing createClient');})"
-          node -e "const m=require('./build/public/dist/index.cjs'); if(!m.createClient) throw new Error('sdk cjs missing createClient');"
-          node -e "const m=require('./build/internal/dist/index.cjs'); if(!m.createClient) throw new Error('internal cjs missing createClient');"
+          node -e "import('./build/public/dist/index.js').then((m)=>{if(!m.createNadeshikoClient) throw new Error('sdk esm missing createNadeshikoClient');})"
+          node -e "import('./build/internal/dist/index.js').then((m)=>{if(!m.createNadeshikoClient) throw new Error('internal esm missing createNadeshikoClient');})"
+          node -e "const m=require('./build/public/dist/index.cjs'); if(!m.createNadeshikoClient) throw new Error('sdk cjs missing createNadeshikoClient');"
+          node -e "const m=require('./build/internal/dist/index.cjs'); if(!m.createNadeshikoClient) throw new Error('internal cjs missing createNadeshikoClient');"
