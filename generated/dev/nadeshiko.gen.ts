@@ -3,7 +3,7 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getMedia, listEpisodes, getEpisode, getSegment, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getUserQuota, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, updateAdminReport, runAdminReview, listAdminReviewChecks, updateAdminReviewCheck, listAdminReviewRuns, getAdminReviewRun, listAdminReviewAllowlist, createAdminReviewAllowlistEntry, deleteAdminReviewAllowlistEntry, createMedia, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, createUserReport, listUserReports, getUserPreferences, updateUserPreferences, listUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, exportUserData, listUserLabs, getAdminDashboard, getAdminHealth } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getMedia, listEpisodes, getEpisode, getSegment, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getUserQuota, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, updateAdminReport, runAdminReview, listAdminReviewChecks, updateAdminReviewCheck, listAdminReviewRuns, getAdminReviewRun, listAdminReviewAllowlist, createAdminReviewAllowlistEntry, deleteAdminReviewAllowlistEntry, createMedia, autocompleteMedia, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, createUserReport, listUserReports, getUserPreferences, updateUserPreferences, listUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, exportUserData, listUserLabs, getAdminDashboard, getAdminHealth } from './sdk.gen';
 
 export interface NadeshikoConfig {
   /**
@@ -68,6 +68,7 @@ export type NadeshikoClient = {
     createAdminReviewAllowlistEntry: typeof createAdminReviewAllowlistEntry;
     deleteAdminReviewAllowlistEntry: typeof deleteAdminReviewAllowlistEntry;
     createMedia: typeof createMedia;
+    autocompleteMedia: typeof autocompleteMedia;
     updateMedia: typeof updateMedia;
     deleteMedia: typeof deleteMedia;
     createEpisode: typeof createEpisode;
@@ -164,6 +165,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     createAdminReviewAllowlistEntry: (options?: any) => createAdminReviewAllowlistEntry({ ...options, client: clientInstance }),
     deleteAdminReviewAllowlistEntry: (options?: any) => deleteAdminReviewAllowlistEntry({ ...options, client: clientInstance }),
     createMedia: (options?: any) => createMedia({ ...options, client: clientInstance }),
+    autocompleteMedia: (options?: any) => autocompleteMedia({ ...options, client: clientInstance }),
     updateMedia: (options?: any) => updateMedia({ ...options, client: clientInstance }),
     deleteMedia: (options?: any) => deleteMedia({ ...options, client: clientInstance }),
     createEpisode: (options?: any) => createEpisode({ ...options, client: clientInstance }),

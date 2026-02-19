@@ -83,6 +83,15 @@ export type SearchFilters = {
          */
         max?: number;
     };
+    /**
+     * Language inclusion/exclusion for search matching
+     */
+    languages?: {
+        /**
+         * Language codes to exclude from search matching (e.g., ["en"], ["es"], ["en","es"])
+         */
+        exclude?: Array<'en' | 'es'>;
+    };
 };
 
 /**
@@ -893,6 +902,10 @@ export type Error409 = {
     errors?: {
         [key: string]: string;
     };
+};
+
+export type MediaAutocompleteResponse = {
+    media: Array<Media>;
 };
 
 /**
@@ -2273,6 +2286,60 @@ export type CreateMediaResponses = {
 };
 
 export type CreateMediaResponse = CreateMediaResponses[keyof CreateMediaResponses];
+
+export type AutocompleteMediaData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Search term to match against media names (English, Japanese, romaji)
+         */
+        query: string;
+        /**
+         * Maximum number of results to return
+         */
+        limit?: number;
+        /**
+         * Filter by media category
+         */
+        category?: 'ANIME' | 'JDRAMA';
+    };
+    url: '/v1/media/autocomplete';
+};
+
+export type AutocompleteMediaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type AutocompleteMediaError = AutocompleteMediaErrors[keyof AutocompleteMediaErrors];
+
+export type AutocompleteMediaResponses = {
+    /**
+     * OK
+     */
+    200: MediaAutocompleteResponse;
+};
+
+export type AutocompleteMediaResponse = AutocompleteMediaResponses[keyof AutocompleteMediaResponses];
 
 export type DeleteMediaData = {
     body?: never;
