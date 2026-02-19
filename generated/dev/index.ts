@@ -4,7 +4,7 @@
 export { search, getSearchStats, searchWords, listMedia, getMedia, listEpisodes, getEpisode, getSegment, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getUserQuota, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, updateAdminReport, runAdminReview, listAdminReviewChecks, updateAdminReviewCheck, listAdminReviewRuns, getAdminReviewRun, listAdminReviewAllowlist, createAdminReviewAllowlistEntry, deleteAdminReviewAllowlistEntry, createMedia, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, createUserReport, listUserReports, getUserPreferences, updateUserPreferences, listUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, exportUserData, listUserLabs, getAdminDashboard, getAdminHealth, type Options } from './sdk.gen';
 
 // Re-export client factory
-export { createClient, createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
+export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
 
 // Re-export singleton client
 export { client } from './client.gen';

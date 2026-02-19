@@ -4,7 +4,7 @@
 export { searchSegments, getSearchStats, searchWords, getSegmentContext, browseMedia, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, getUserQuota, createReport, getUserReports, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs, morphemeBackfill, getAdminReports, updateReport, healthCheck, mediaCreate, mediaUpdate, mediaDestroy, episodeCreate, episodeUpdate, episodeDestroy, segmentIndex, segmentCreate, segmentUpdate, segmentDestroy, listCreate, listUpdate, listDestroy, listAddItem, listUpdateItem, listRemoveItem, type Options } from './sdk.gen';
 
 // Re-export client factory
-export { createClient, createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
+export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
 
 // Re-export singleton client
 export { client } from './client.gen';

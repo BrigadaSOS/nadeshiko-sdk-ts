@@ -14,14 +14,16 @@ Install the internal build (includes internal endpoints) via the `internal` dist
 bun add @brigadasos/nadeshiko-sdk@internal
 ```
 
-## Use the public SDK
+## Authentication
 
-The client sends your API key as `Authorization: Bearer <apiKey>`.
+### API key (server-to-server)
+
+Use an API key for endpoints that don't require a user session. The key is sent as `Authorization: Bearer <apiKey>`.
 
 ```typescript
-import { createClient, searchSegments } from '@brigadasos/nadeshiko-sdk';
+import { createNadeshikoClient, searchSegments } from '@brigadasos/nadeshiko-sdk';
 
-const client = createClient({
+const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
   baseUrl: 'PRODUCTION',
 });
@@ -30,22 +32,44 @@ const result = await searchSegments({
   client,
   body: { query: '彼女' },
 });
+```
 
-if (result.error) {
-  console.error(result.error.code, result.error.detail);
-} else {
-  console.log(result.data);
+### Session token (user-authenticated endpoints)
+
+Endpoints under `/v1/user/*` and `/v1/collections/*` require a user session. Pass a `sessionToken` getter that returns the value of the `nadeshiko.session_token` cookie — called fresh on every request.
+
+**Nuxt / Nitro server routes:**
+
+```typescript
+// server/utils/nadeshiko.ts
+import { createNadeshikoClient } from '@brigadasos/nadeshiko-sdk';
+import type { H3Event } from 'h3';
+
+export function useNadeshikoClient(event: H3Event) {
+  return createNadeshikoClient({
+    sessionToken: () => getCookie(event, 'nadeshiko.session_token'),
+  });
 }
 ```
+
+```typescript
+// server/api/preferences.get.ts
+export default defineEventHandler(async (event) => {
+  const client = useNadeshikoClient(event);
+  return client.getUserPreferences();
+});
+```
+
+**Browser (no configuration needed):** the default `sessionToken` getter reads `nadeshiko.session_token` from `document.cookie` automatically.
 
 ### Error handling
 
 Every response returns a discriminated union with either `data` or `error`. The `error` object follows the [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details format, so you always get a machine-readable `code` and a human-readable `detail`.
 
 ```typescript
-import { createClient, searchSegments } from '@brigadasos/nadeshiko-sdk';
+import { createNadeshikoClient, searchSegments } from '@brigadasos/nadeshiko-sdk';
 
-const client = createClient({
+const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
   baseUrl: 'PRODUCTION',
 });

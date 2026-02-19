@@ -6,7 +6,7 @@
  */
 
 import {
-  createClient,
+  createNadeshikoClient,
   searchSegments,
   searchWords,
   getSearchStats,
@@ -25,7 +25,7 @@ import {
 // Client setup
 // ---------------------------------------------------------------------------
 
-const client = createClient({
+const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
   baseUrl: 'PRODUCTION', // 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | custom URL
 });
@@ -449,7 +449,7 @@ async function throwOnErrorMode() {
 // ---------------------------------------------------------------------------
 
 async function nadeshikoClientWrapper() {
-  const nadeshiko = createClient({
+  const nadeshiko = createNadeshikoClient({
     apiKey: process.env.NADESHIKO_API_KEY!,
     baseUrl: 'PRODUCTION',
   });

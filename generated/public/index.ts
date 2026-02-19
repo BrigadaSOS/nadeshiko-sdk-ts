@@ -234,7 +234,7 @@ export type {
 } from './types.gen';
 
 // Re-export client factory
-export { createClient, createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
+export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
 
 // Re-export singleton client
 export { client } from './client.gen';

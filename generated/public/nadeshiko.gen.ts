@@ -14,9 +14,10 @@ export interface NadeshikoConfig {
   /**
    * Session token for cookie-based authentication.
    * Used for user-specific endpoints (e.g. /v1/user/*).
-   * Pass the value of the `nadeshiko.session_token` cookie.
+   * A function that returns the session token for cookie-based authentication.
+   * Defaults to reading the `nadeshiko.session_token` cookie from `document.cookie`.
    */
-  sessionToken?: string;
+  sessionToken?: () => string | undefined | Promise<string | undefined>;
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
 }
 
@@ -76,6 +77,12 @@ export type NadeshikoClient = {
     removeFromReviewAllowlist: typeof removeFromReviewAllowlist;
   };
 
+const defaultSessionTokenGetter = (): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(/(?:^|;\s*)nadeshiko\.session_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : undefined;
+};
+
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
   const baseUrl = config.baseUrl
     ? (config.baseUrl in environments
@@ -83,11 +90,13 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
         : config.baseUrl)
     : environments.PRODUCTION;
 
+  const getSessionToken = config.sessionToken ?? defaultSessionTokenGetter;
+
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
     auth: (auth: Auth) => {
       if (auth.in === 'cookie') {
-        return config.sessionToken;
+        return getSessionToken();
       }
       return config.apiKey;
     },
@@ -144,5 +153,3 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
   };
 }
 
-// Alias for convenience
-export const createClient = createNadeshikoClient;
