@@ -21,14 +21,14 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Search segments by query
  *
- * The primary search endpoint for finding Japanese segments and their translations across indexed media (anime, J-Drama, audiobooks).
+ * The primary search endpoint for finding Japanese segments and their translations across indexed media (anime, J-Drama).
  *
  * This endpoint uses Elasticsearch with advanced Japanese text analysis supporting multiple input types (romaji, kanji, kana) and providing intelligent field-based boosting.
  *
  * **Query Features**
  * - **Multi-language Support:** Search using Japanese (kanji/kana), Romaji, or English/Spanish
  * - **Boolean Operators:** `AND`, `OR`, `NOT` supported (e.g., `(cat OR dog) AND bird`)
- * - **Phrase Matching:** Use quotes for exact phrases (e.g., `"good morning"`), or pass `exact_match: true` to the request body
+ * - **Phrase Matching:** Use quotes for exact phrases (e.g., `"good morning"`), or pass `exactMatch: true` to the request body
  * - **Wildcards:** `te*t` format (leading wildcards not supported)
  * - **Smart Field Selection:** Automatically chooses optimal search fields based on input type
  *
@@ -44,11 +44,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  *
  */
 export const search = <ThrowOnError extends boolean = false>(options?: Options<SearchData, ThrowOnError>) => (options?.client ?? client).post<SearchResponses, SearchErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search',
     ...options,
     headers: {
@@ -72,11 +68,7 @@ export const search = <ThrowOnError extends boolean = false>(options?: Options<S
  *
  */
 export const getSearchStats = <ThrowOnError extends boolean = false>(options?: Options<GetSearchStatsData, ThrowOnError>) => (options?.client ?? client).post<GetSearchStatsResponses, GetSearchStatsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search/stats',
     ...options,
     headers: {
@@ -101,11 +93,7 @@ export const getSearchStats = <ThrowOnError extends boolean = false>(options?: O
  *
  */
 export const searchWords = <ThrowOnError extends boolean = false>(options: Options<SearchWordsData, ThrowOnError>) => (options.client ?? client).post<SearchWordsResponses, SearchWordsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search/words',
     ...options,
     headers: {
@@ -220,13 +208,11 @@ export const getSegmentContext = <ThrowOnError extends boolean = false>(options:
  *
  * Returns a paginated list of media series groupings.
  *
+ * **Permissions:** `READ_MEDIA`
+ *
  */
 export const listSeries = <ThrowOnError extends boolean = false>(options?: Options<ListSeriesData, ThrowOnError>) => (options?.client ?? client).get<ListSeriesResponses, ListSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series',
     ...options
 });
@@ -235,6 +221,8 @@ export const listSeries = <ThrowOnError extends boolean = false>(options?: Optio
  * Create series
  *
  * Creates a new media series grouping.
+ *
+ * **Permissions:** `ADD_MEDIA`
  *
  */
 export const createSeries = <ThrowOnError extends boolean = false>(options: Options<CreateSeriesData, ThrowOnError>) => (options.client ?? client).post<CreateSeriesResponses, CreateSeriesErrors, ThrowOnError>({
@@ -252,6 +240,8 @@ export const createSeries = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Deletes a series and all its media associations.
  *
+ * **Permissions:** `REMOVE_MEDIA`
+ *
  */
 export const deleteSeries = <ThrowOnError extends boolean = false>(options: Options<DeleteSeriesData, ThrowOnError>) => (options.client ?? client).delete<DeleteSeriesResponses, DeleteSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -264,13 +254,11 @@ export const deleteSeries = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Returns a series with all media entries sorted by position.
  *
+ * **Permissions:** `READ_MEDIA`
+ *
  */
 export const getSeries = <ThrowOnError extends boolean = false>(options: Options<GetSeriesData, ThrowOnError>) => (options.client ?? client).get<GetSeriesResponses, GetSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}',
     ...options
 });
@@ -279,6 +267,8 @@ export const getSeries = <ThrowOnError extends boolean = false>(options: Options
  * Update series metadata
  *
  * Updates series localized names.
+ *
+ * **Permissions:** `UPDATE_MEDIA`
  *
  */
 export const updateSeries = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesResponses, UpdateSeriesErrors, ThrowOnError>({
@@ -296,6 +286,8 @@ export const updateSeries = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Adds a media entry to a series at a specific position.
  *
+ * **Permissions:** `UPDATE_MEDIA`
+ *
  */
 export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: Options<AddMediaToSeriesData, ThrowOnError>) => (options.client ?? client).post<AddMediaToSeriesResponses, AddMediaToSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -312,6 +304,8 @@ export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: 
  *
  * Removes a media entry from a series.
  *
+ * **Permissions:** `REMOVE_MEDIA`
+ *
  */
 export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(options: Options<RemoveMediaFromSeriesData, ThrowOnError>) => (options.client ?? client).delete<RemoveMediaFromSeriesResponses, RemoveMediaFromSeriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -323,6 +317,8 @@ export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(opti
  * Update media position in series
  *
  * Updates the position of a media entry in a series.
+ *
+ * **Permissions:** `UPDATE_MEDIA`
  *
  */
 export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesMediaResponses, UpdateSeriesMediaErrors, ThrowOnError>({
@@ -569,9 +565,8 @@ export const updateSegment = <ThrowOnError extends boolean = false>(options: Opt
  * Get current monthly API quota
  *
  * Returns the API quota usage for the current billing period.
- * Accepts both session cookie and API key authentication.
  *
- * **Permissions:** Session authentication (cookie-based) or API key (`READ_MEDIA`).
+ * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Options<GetUserQuotaData, ThrowOnError>) => (options?.client ?? client).get<GetUserQuotaResponses, GetUserQuotaErrors, ThrowOnError>({
@@ -579,7 +574,7 @@ export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Opt
             in: 'cookie',
             name: 'nadeshiko.session_token',
             type: 'apiKey'
-        }, { scheme: 'bearer', type: 'http' }],
+        }],
     url: '/v1/user/quota',
     ...options
 });
@@ -1067,12 +1062,12 @@ export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: O
  * Reindex database into Elasticsearch
  *
  * Reindexes segments from the PostgreSQL database into Elasticsearch.
- * Allows filtering by specific media IDs or episodes.
+ * Allows filtering by specific media entries and episodes.
  *
  * **Behavior:**
  * - If no filters provided, reindexes all segments
- * - If `mediaIds` provided, reindexes all segments from those media
- * - If `episodes` provided, reindexes only the specified episodes
+ * - If `media` is provided, reindexes segments from those media entries
+ * - If a media item includes `episodes`, only those episodes are reindexed for that media
  *
  * **Permissions:** `ADD_MEDIA`
  *
