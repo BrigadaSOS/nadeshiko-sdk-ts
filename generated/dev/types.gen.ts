@@ -2324,7 +2324,7 @@ export type GetSegmentByUuidErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (API key or session)
      */
     401: Error401;
     /**
@@ -2433,7 +2433,7 @@ export type GetSegmentContextErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (API key or session)
      */
     401: Error401;
     /**
@@ -4847,7 +4847,7 @@ export type GetAdminDashboardData = {
 
 export type GetAdminDashboardErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -4944,7 +4944,7 @@ export type GetAdminHealthData = {
 
 export type GetAdminHealthErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5011,7 +5011,7 @@ export type TriggerReindexErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5052,7 +5052,7 @@ export type ListAdminQueueStatsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5108,7 +5108,7 @@ export type GetAdminQueueErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5198,7 +5198,7 @@ export type ListAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5261,7 +5261,7 @@ export type RetryAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5314,7 +5314,7 @@ export type PurgeAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5357,10 +5357,6 @@ export type ClearAdminImpersonationData = {
 };
 
 export type ClearAdminImpersonationErrors = {
-    /**
-     * Unauthorized (session)
-     */
-    401: Error401;
     /**
      * Forbidden
      */
@@ -5405,10 +5401,6 @@ export type ImpersonateAdminUserErrors = {
      * Bad Request
      */
     400: Error400;
-    /**
-     * Unauthorized (session)
-     */
-    401: Error401;
     /**
      * Forbidden
      */
@@ -5491,7 +5483,7 @@ export type ListAdminReportsData = {
 
 export type ListAdminReportsErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5537,7 +5529,7 @@ export type UpdateAdminReportErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5578,7 +5570,7 @@ export type ListAdminMediaAuditsData = {
 
 export type ListAdminMediaAuditsErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5635,7 +5627,7 @@ export type UpdateAdminMediaAuditErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5686,7 +5678,7 @@ export type RunAdminMediaAuditData = {
 
 export type RunAdminMediaAuditErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5740,7 +5732,7 @@ export type ListAdminMediaAuditRunsData = {
 
 export type ListAdminMediaAuditRunsErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5785,7 +5777,7 @@ export type GetAdminMediaAuditRunData = {
 
 export type GetAdminMediaAuditRunErrors = {
     /**
-     * Unauthorized (API key)
+     * Unauthorized (session)
      */
     401: Error401;
     /**

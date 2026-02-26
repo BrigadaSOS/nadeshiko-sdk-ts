@@ -156,11 +156,15 @@ export const autocompleteMedia = <ThrowOnError extends boolean = false>(options:
  *
  * Returns a specific segment by its UUID. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
  *
- * **Permissions:** `READ_MEDIA`
+ * **Permissions:** `UPDATE_MEDIA` (API key) or admin session
  *
  */
 export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<GetSegmentByUuidData, ThrowOnError>) => (options.client ?? client).get<GetSegmentByUuidResponses, GetSegmentByUuidErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/media/segments/{uuid}',
     ...options
 });
@@ -194,11 +198,15 @@ export const updateSegmentByUuid = <ThrowOnError extends boolean = false>(option
  * Retrieves segments surrounding a specific segment within an episode.
  * Returns segments both before and after the target, providing dialogue context for how a sentence is used.
  *
- * **Permissions:** `READ_MEDIA`
+ * **Permissions:** `UPDATE_MEDIA` (API key) or admin session
  *
  */
 export const getSegmentContext = <ThrowOnError extends boolean = false>(options: Options<GetSegmentContextData, ThrowOnError>) => (options.client ?? client).get<GetSegmentContextResponses, GetSegmentContextErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/media/segments/{uuid}/context',
     ...options
 });
@@ -1038,7 +1046,11 @@ export const getCollectionStats = <ThrowOnError extends boolean = false>(options
  *
  */
 export const getAdminDashboard = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardResponses, GetAdminDashboardErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/dashboard',
     ...options
 });
@@ -1053,7 +1065,11 @@ export const getAdminDashboard = <ThrowOnError extends boolean = false>(options?
  *
  */
 export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: Options<GetAdminHealthData, ThrowOnError>) => (options?.client ?? client).get<GetAdminHealthResponses, GetAdminHealthErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/health',
     ...options
 });
@@ -1073,7 +1089,11 @@ export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: O
  *
  */
 export const triggerReindex = <ThrowOnError extends boolean = false>(options?: Options<TriggerReindexData, ThrowOnError>) => (options?.client ?? client).post<TriggerReindexResponses, TriggerReindexErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/reindex',
     ...options,
     headers: {
@@ -1096,7 +1116,11 @@ export const triggerReindex = <ThrowOnError extends boolean = false>(options?: O
  *
  */
 export const listAdminQueueStats = <ThrowOnError extends boolean = false>(options?: Options<ListAdminQueueStatsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminQueueStatsResponses, ListAdminQueueStatsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/queues/stats',
     ...options
 });
@@ -1115,7 +1139,11 @@ export const listAdminQueueStats = <ThrowOnError extends boolean = false>(option
  *
  */
 export const getAdminQueue = <ThrowOnError extends boolean = false>(options: Options<GetAdminQueueData, ThrowOnError>) => (options.client ?? client).get<GetAdminQueueResponses, GetAdminQueueErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/queues/{queueName}',
     ...options
 });
@@ -1134,7 +1162,11 @@ export const getAdminQueue = <ThrowOnError extends boolean = false>(options: Opt
  *
  */
 export const listAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<ListAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).get<ListAdminQueueFailedResponses, ListAdminQueueFailedErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/queues/{queueName}/failed',
     ...options
 });
@@ -1152,7 +1184,11 @@ export const listAdminQueueFailed = <ThrowOnError extends boolean = false>(optio
  *
  */
 export const retryAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<RetryAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).post<RetryAdminQueueFailedResponses, RetryAdminQueueFailedErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/queues/{queueName}/retry',
     ...options
 });
@@ -1171,7 +1207,11 @@ export const retryAdminQueueFailed = <ThrowOnError extends boolean = false>(opti
  *
  */
 export const purgeAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<PurgeAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).delete<PurgeAdminQueueFailedResponses, PurgeAdminQueueFailedErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/queues/{queueName}/purge',
     ...options
 });
@@ -1180,32 +1220,19 @@ export const purgeAdminQueueFailed = <ThrowOnError extends boolean = false>(opti
  * Clear admin impersonation
  *
  * Clears the current impersonation session and related cookies.
- * This endpoint is restricted to admin sessions and only available in local environment.
+ * This endpoint is only available in local environment.
  *
  */
-export const clearAdminImpersonation = <ThrowOnError extends boolean = false>(options?: Options<ClearAdminImpersonationData, ThrowOnError>) => (options?.client ?? client).delete<ClearAdminImpersonationResponses, ClearAdminImpersonationErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/impersonation',
-    ...options
-});
+export const clearAdminImpersonation = <ThrowOnError extends boolean = false>(options?: Options<ClearAdminImpersonationData, ThrowOnError>) => (options?.client ?? client).delete<ClearAdminImpersonationResponses, ClearAdminImpersonationErrors, ThrowOnError>({ url: '/v1/admin/impersonation', ...options });
 
 /**
  * Start admin impersonation
  *
  * Creates an impersonation session for the target user.
- * This endpoint is restricted to admin sessions and only available in local environment.
+ * This endpoint is only available in local environment.
  *
  */
 export const impersonateAdminUser = <ThrowOnError extends boolean = false>(options: Options<ImpersonateAdminUserData, ThrowOnError>) => (options.client ?? client).post<ImpersonateAdminUserResponses, ImpersonateAdminUserErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
     url: '/v1/admin/impersonation',
     ...options,
     headers: {
@@ -1224,7 +1251,11 @@ export const impersonateAdminUser = <ThrowOnError extends boolean = false>(optio
  *
  */
 export const listAdminReports = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReportsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReportsResponses, ListAdminReportsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/reports',
     ...options
 });
@@ -1239,7 +1270,11 @@ export const listAdminReports = <ThrowOnError extends boolean = false>(options?:
  *
  */
 export const updateAdminReport = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminReportData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminReportResponses, UpdateAdminReportErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/reports/{id}',
     ...options,
     headers: {
@@ -1257,7 +1292,11 @@ export const updateAdminReport = <ThrowOnError extends boolean = false>(options:
  *
  */
 export const listAdminMediaAudits = <ThrowOnError extends boolean = false>(options?: Options<ListAdminMediaAuditsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminMediaAuditsResponses, ListAdminMediaAuditsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/media/audits',
     ...options
 });
@@ -1271,7 +1310,11 @@ export const listAdminMediaAudits = <ThrowOnError extends boolean = false>(optio
  *
  */
 export const updateAdminMediaAudit = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminMediaAuditData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminMediaAuditResponses, UpdateAdminMediaAuditErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/media/audits/{name}',
     ...options,
     headers: {
@@ -1289,7 +1332,11 @@ export const updateAdminMediaAudit = <ThrowOnError extends boolean = false>(opti
  *
  */
 export const runAdminMediaAudit = <ThrowOnError extends boolean = false>(options: Options<RunAdminMediaAuditData, ThrowOnError>) => (options.client ?? client).post<RunAdminMediaAuditResponses, RunAdminMediaAuditErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/media/audits/{name}/run',
     ...options
 });
@@ -1303,7 +1350,11 @@ export const runAdminMediaAudit = <ThrowOnError extends boolean = false>(options
  *
  */
 export const listAdminMediaAuditRuns = <ThrowOnError extends boolean = false>(options?: Options<ListAdminMediaAuditRunsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminMediaAuditRunsResponses, ListAdminMediaAuditRunsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/media/audits/runs',
     ...options
 });
@@ -1317,7 +1368,11 @@ export const listAdminMediaAuditRuns = <ThrowOnError extends boolean = false>(op
  *
  */
 export const getAdminMediaAuditRun = <ThrowOnError extends boolean = false>(options: Options<GetAdminMediaAuditRunData, ThrowOnError>) => (options.client ?? client).get<GetAdminMediaAuditRunResponses, GetAdminMediaAuditRunErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
     url: '/v1/admin/media/audits/runs/{id}',
     ...options
 });
