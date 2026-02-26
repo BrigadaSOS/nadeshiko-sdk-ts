@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddMediaToSeriesData, AddMediaToSeriesErrors, AddMediaToSeriesResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, AutocompleteMediaData, AutocompleteMediaErrors, AutocompleteMediaResponses, CreateAdminReviewAllowlistEntryData, CreateAdminReviewAllowlistEntryErrors, CreateAdminReviewAllowlistEntryResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSeriesData, CreateSeriesErrors, CreateSeriesResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReviewAllowlistEntryData, DeleteAdminReviewAllowlistEntryErrors, DeleteAdminReviewAllowlistEntryResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteSegmentData, DeleteSegmentErrors, DeleteSegmentResponses, DeleteSeriesData, DeleteSeriesErrors, DeleteSeriesResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminDashboardData, GetAdminDashboardErrors, GetAdminDashboardResponses, GetAdminHealthData, GetAdminHealthErrors, GetAdminHealthResponses, GetAdminQueueData, GetAdminQueueErrors, GetAdminQueueResponses, GetAdminReviewRunData, GetAdminReviewRunErrors, GetAdminReviewRunResponses, GetCharacterData, GetCharacterErrors, GetCharacterResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentByUuidData, GetSegmentByUuidErrors, GetSegmentByUuidResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetSeiyuuData, GetSeiyuuErrors, GetSeiyuuResponses, GetSeriesData, GetSeriesErrors, GetSeriesResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, GetUserQuotaData, GetUserQuotaErrors, GetUserQuotaResponses, ListAdminQueueFailedData, ListAdminQueueFailedErrors, ListAdminQueueFailedResponses, ListAdminQueueStatsData, ListAdminQueueStatsErrors, ListAdminQueueStatsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAdminReviewAllowlistData, ListAdminReviewAllowlistErrors, ListAdminReviewAllowlistResponses, ListAdminReviewChecksData, ListAdminReviewChecksErrors, ListAdminReviewChecksResponses, ListAdminReviewRunsData, ListAdminReviewRunsErrors, ListAdminReviewRunsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListSeriesData, ListSeriesErrors, ListSeriesResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ListUserLabsData, ListUserLabsErrors, ListUserLabsResponses, ListUserReportsData, ListUserReportsErrors, ListUserReportsResponses, PurgeAdminQueueFailedData, PurgeAdminQueueFailedErrors, PurgeAdminQueueFailedResponses, RemoveMediaFromSeriesData, RemoveMediaFromSeriesErrors, RemoveMediaFromSeriesResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RetryAdminQueueFailedData, RetryAdminQueueFailedErrors, RetryAdminQueueFailedResponses, RunAdminReviewData, RunAdminReviewErrors, RunAdminReviewResponses, SearchData, SearchErrors, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAdminReviewCheckData, UpdateAdminReviewCheckErrors, UpdateAdminReviewCheckResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateSeriesData, UpdateSeriesErrors, UpdateSeriesMediaData, UpdateSeriesMediaErrors, UpdateSeriesMediaResponses, UpdateSeriesResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
+import type { AddMediaToSeriesData, AddMediaToSeriesErrors, AddMediaToSeriesResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, AutocompleteMediaData, AutocompleteMediaErrors, AutocompleteMediaResponses, ClearAdminImpersonationData, ClearAdminImpersonationErrors, ClearAdminImpersonationResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSeriesData, CreateSeriesErrors, CreateSeriesResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteSegmentData, DeleteSegmentErrors, DeleteSegmentResponses, DeleteSeriesData, DeleteSeriesErrors, DeleteSeriesResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, EnrollUserLabData, EnrollUserLabErrors, EnrollUserLabResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminDashboardData, GetAdminDashboardErrors, GetAdminDashboardResponses, GetAdminHealthData, GetAdminHealthErrors, GetAdminHealthResponses, GetAdminMediaAuditRunData, GetAdminMediaAuditRunErrors, GetAdminMediaAuditRunResponses, GetAdminQueueData, GetAdminQueueErrors, GetAdminQueueResponses, GetCharacterData, GetCharacterErrors, GetCharacterResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentByUuidData, GetSegmentByUuidErrors, GetSegmentByUuidResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetSeiyuuData, GetSeiyuuErrors, GetSeiyuuResponses, GetSeriesData, GetSeriesErrors, GetSeriesResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, GetUserQuotaData, GetUserQuotaErrors, GetUserQuotaResponses, ImpersonateAdminUserData, ImpersonateAdminUserErrors, ImpersonateAdminUserResponses, ListAdminMediaAuditRunsData, ListAdminMediaAuditRunsErrors, ListAdminMediaAuditRunsResponses, ListAdminMediaAuditsData, ListAdminMediaAuditsErrors, ListAdminMediaAuditsResponses, ListAdminQueueFailedData, ListAdminQueueFailedErrors, ListAdminQueueFailedResponses, ListAdminQueueStatsData, ListAdminQueueStatsErrors, ListAdminQueueStatsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListSeriesData, ListSeriesErrors, ListSeriesResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ListUserLabsData, ListUserLabsErrors, ListUserLabsResponses, PurgeAdminQueueFailedData, PurgeAdminQueueFailedErrors, PurgeAdminQueueFailedResponses, RemoveMediaFromSeriesData, RemoveMediaFromSeriesErrors, RemoveMediaFromSeriesResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RetryAdminQueueFailedData, RetryAdminQueueFailedErrors, RetryAdminQueueFailedResponses, RunAdminMediaAuditData, RunAdminMediaAuditErrors, RunAdminMediaAuditResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UnenrollUserLabData, UnenrollUserLabErrors, UnenrollUserLabResponses, UpdateAdminMediaAuditData, UpdateAdminMediaAuditErrors, UpdateAdminMediaAuditResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentByUuidData, UpdateSegmentByUuidErrors, UpdateSegmentByUuidResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateSeriesData, UpdateSeriesErrors, UpdateSeriesMediaData, UpdateSeriesMediaErrors, UpdateSeriesMediaResponses, UpdateSeriesResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -160,6 +160,206 @@ export const createMedia = <ThrowOnError extends boolean = false>(options: Optio
 export const autocompleteMedia = <ThrowOnError extends boolean = false>(options: Options<AutocompleteMediaData, ThrowOnError>) => (options.client ?? client).get<AutocompleteMediaResponses, AutocompleteMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/autocomplete',
+    ...options
+});
+
+/**
+ * Get segment by UUID
+ *
+ * Returns a specific segment by its UUID. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
+ *
+ * **Permissions:** `READ_MEDIA`
+ *
+ */
+export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<GetSegmentByUuidData, ThrowOnError>) => (options.client ?? client).get<GetSegmentByUuidResponses, GetSegmentByUuidErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/segments/{uuid}',
+    ...options
+});
+
+/**
+ * Update segment by UUID
+ *
+ * Updates an existing segment identified by its UUID. Performs the UUID→segment lookup internally,
+ * then applies the update. Only provided fields will be updated.
+ *
+ * **Permissions:** `UPDATE_MEDIA`
+ *
+ */
+export const updateSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentByUuidData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentByUuidResponses, UpdateSegmentByUuidErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/media/segments/{uuid}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get surrounding context for a segment
+ *
+ * Retrieves segments surrounding a specific segment within an episode.
+ * Returns segments both before and after the target, providing dialogue context for how a sentence is used.
+ *
+ * **Permissions:** `READ_MEDIA`
+ *
+ */
+export const getSegmentContext = <ThrowOnError extends boolean = false>(options: Options<GetSegmentContextData, ThrowOnError>) => (options.client ?? client).get<GetSegmentContextResponses, GetSegmentContextErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/segments/{uuid}/context',
+    ...options
+});
+
+/**
+ * List all series
+ *
+ * Returns a paginated list of media series groupings.
+ *
+ */
+export const listSeries = <ThrowOnError extends boolean = false>(options?: Options<ListSeriesData, ThrowOnError>) => (options?.client ?? client).get<ListSeriesResponses, ListSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/media/series',
+    ...options
+});
+
+/**
+ * Create series
+ *
+ * Creates a new media series grouping.
+ *
+ */
+export const createSeries = <ThrowOnError extends boolean = false>(options: Options<CreateSeriesData, ThrowOnError>) => (options.client ?? client).post<CreateSeriesResponses, CreateSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete series
+ *
+ * Deletes a series and all its media associations.
+ *
+ */
+export const deleteSeries = <ThrowOnError extends boolean = false>(options: Options<DeleteSeriesData, ThrowOnError>) => (options.client ?? client).delete<DeleteSeriesResponses, DeleteSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}',
+    ...options
+});
+
+/**
+ * Get series details
+ *
+ * Returns a series with all media entries sorted by position.
+ *
+ */
+export const getSeries = <ThrowOnError extends boolean = false>(options: Options<GetSeriesData, ThrowOnError>) => (options.client ?? client).get<GetSeriesResponses, GetSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }, {
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/media/series/{id}',
+    ...options
+});
+
+/**
+ * Update series metadata
+ *
+ * Updates series localized names.
+ *
+ */
+export const updateSeries = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesResponses, UpdateSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add media to series
+ *
+ * Adds a media entry to a series at a specific position.
+ *
+ */
+export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: Options<AddMediaToSeriesData, ThrowOnError>) => (options.client ?? client).post<AddMediaToSeriesResponses, AddMediaToSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}/media',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove media from series
+ *
+ * Removes a media entry from a series.
+ *
+ */
+export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(options: Options<RemoveMediaFromSeriesData, ThrowOnError>) => (options.client ?? client).delete<RemoveMediaFromSeriesResponses, RemoveMediaFromSeriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}/media/{mediaId}',
+    ...options
+});
+
+/**
+ * Update media position in series
+ *
+ * Updates the position of a media entry in a series.
+ *
+ */
+export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesMediaResponses, UpdateSeriesMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/series/{id}/media/{mediaId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get character details
+ *
+ * Returns a character with their voice actors (seiyuu) and all media appearances.
+ *
+ * **Permissions:** `READ_MEDIA`
+ *
+ */
+export const getCharacter = <ThrowOnError extends boolean = false>(options: Options<GetCharacterData, ThrowOnError>) => (options.client ?? client).get<GetCharacterResponses, GetCharacterErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/characters/{id}',
+    ...options
+});
+
+/**
+ * Get seiyuu details
+ *
+ * Returns a voice actor (seiyuu) with all characters they voiced and their media appearances.
+ *
+ * **Permissions:** `READ_MEDIA`
+ *
+ */
+export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options<GetSeiyuuData, ThrowOnError>) => (options.client ?? client).get<GetSeiyuuResponses, GetSeiyuuErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/media/seiyuu/{id}',
     ...options
 });
 
@@ -366,183 +566,6 @@ export const updateSegment = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * Get segment by UUID
- *
- * Returns a specific segment by its UUID. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
- *
- * **Permissions:** `READ_MEDIA`
- *
- */
-export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<GetSegmentByUuidData, ThrowOnError>) => (options.client ?? client).get<GetSegmentByUuidResponses, GetSegmentByUuidErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/segments/{uuid}',
-    ...options
-});
-
-/**
- * Get surrounding context for a segment
- *
- * Retrieves segments surrounding a specific segment within an episode.
- * Returns segments both before and after the target, providing dialogue context for how a sentence is used.
- *
- * **Permissions:** `READ_MEDIA`
- *
- */
-export const getSegmentContext = <ThrowOnError extends boolean = false>(options: Options<GetSegmentContextData, ThrowOnError>) => (options.client ?? client).get<GetSegmentContextResponses, GetSegmentContextErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/segments/{uuid}/context',
-    ...options
-});
-
-/**
- * List all series
- *
- * Returns a paginated list of media series groupings.
- *
- */
-export const listSeries = <ThrowOnError extends boolean = false>(options?: Options<ListSeriesData, ThrowOnError>) => (options?.client ?? client).get<ListSeriesResponses, ListSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/media/series',
-    ...options
-});
-
-/**
- * Create series
- *
- * Creates a new media series grouping.
- *
- */
-export const createSeries = <ThrowOnError extends boolean = false>(options: Options<CreateSeriesData, ThrowOnError>) => (options.client ?? client).post<CreateSeriesResponses, CreateSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Delete series
- *
- * Deletes a series and all its media associations.
- *
- */
-export const deleteSeries = <ThrowOnError extends boolean = false>(options: Options<DeleteSeriesData, ThrowOnError>) => (options.client ?? client).delete<DeleteSeriesResponses, DeleteSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}',
-    ...options
-});
-
-/**
- * Get series details
- *
- * Returns a series with all media entries sorted by position.
- *
- */
-export const getSeries = <ThrowOnError extends boolean = false>(options: Options<GetSeriesData, ThrowOnError>) => (options.client ?? client).get<GetSeriesResponses, GetSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/media/series/{id}',
-    ...options
-});
-
-/**
- * Update series metadata
- *
- * Updates series localized names.
- *
- */
-export const updateSeries = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesResponses, UpdateSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Add media to series
- *
- * Adds a media entry to a series at a specific position.
- *
- */
-export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: Options<AddMediaToSeriesData, ThrowOnError>) => (options.client ?? client).post<AddMediaToSeriesResponses, AddMediaToSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}/media',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Remove media from series
- *
- * Removes a media entry from a series.
- *
- */
-export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(options: Options<RemoveMediaFromSeriesData, ThrowOnError>) => (options.client ?? client).delete<RemoveMediaFromSeriesResponses, RemoveMediaFromSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}/media/{mediaId}',
-    ...options
-});
-
-/**
- * Update media position in series
- *
- * Updates the position of a media entry in a series.
- *
- */
-export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesMediaResponses, UpdateSeriesMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}/media/{mediaId}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Get character details
- *
- * Returns a character with their voice actors (seiyuu) and all media appearances.
- *
- * **Permissions:** `READ_MEDIA`
- *
- */
-export const getCharacter = <ThrowOnError extends boolean = false>(options: Options<GetCharacterData, ThrowOnError>) => (options.client ?? client).get<GetCharacterResponses, GetCharacterErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/characters/{id}',
-    ...options
-});
-
-/**
- * Get seiyuu details
- *
- * Returns a voice actor (seiyuu) with all characters they voiced and their media appearances.
- *
- * **Permissions:** `READ_MEDIA`
- *
- */
-export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options<GetSeiyuuData, ThrowOnError>) => (options.client ?? client).get<GetSeiyuuResponses, GetSeiyuuErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/seiyuu/{id}',
-    ...options
-});
-
-/**
  * Get current monthly API quota
  *
  * Returns the API quota usage for the current billing period.
@@ -558,24 +581,6 @@ export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Opt
             type: 'apiKey'
         }, { scheme: 'bearer', type: 'http' }],
     url: '/v1/user/quota',
-    ...options
-});
-
-/**
- * List user's own reports
- *
- * Returns the authenticated user's submitted reports with cursor pagination.
- *
- * **Permissions:** Session authentication (cookie-based).
- *
- */
-export const listUserReports = <ThrowOnError extends boolean = false>(options?: Options<ListUserReportsData, ThrowOnError>) => (options?.client ?? client).get<ListUserReportsResponses, ListUserReportsErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/user/reports',
     ...options
 });
 
@@ -679,9 +684,31 @@ export const listUserActivity = <ThrowOnError extends boolean = false>(options?:
 });
 
 /**
+ * Track user activity
+ *
+ * Records a user activity event (e.g. segment play). Fire-and-forget — always returns 204.
+ *
+ * **Permissions:** Session authentication (cookie-based).
+ *
+ */
+export const trackUserActivity = <ThrowOnError extends boolean = false>(options: Options<TrackUserActivityData, ThrowOnError>) => (options.client ?? client).post<TrackUserActivityResponses, TrackUserActivityErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/user/activity',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Get activity heatmap data
  *
- * Returns daily activity counts for the authenticated user, grouped by date.
+ * Returns daily activity activityByDay for the authenticated user, grouped by date.
  * Designed for rendering a GitHub-style contribution heatmap.
  *
  * **Permissions:** Session authentication (cookie-based).
@@ -701,7 +728,7 @@ export const getUserActivityHeatmap = <ThrowOnError extends boolean = false>(opt
  * Get user activity statistics
  *
  * Returns aggregate statistics about the authenticated user's activity:
- * total searches, exports, plays, and study streak.
+ * total searches, exports, plays, and top media.
  *
  * **Permissions:** Session authentication (cookie-based).
  *
@@ -713,6 +740,42 @@ export const getUserActivityStats = <ThrowOnError extends boolean = false>(optio
             type: 'apiKey'
         }],
     url: '/v1/user/activity/stats',
+    ...options
+});
+
+/**
+ * Delete all activity for a specific date
+ *
+ * Deletes all activity records for the authenticated user on the given date.
+ *
+ * **Permissions:** Session authentication (cookie-based).
+ *
+ */
+export const deleteUserActivityByDate = <ThrowOnError extends boolean = false>(options: Options<DeleteUserActivityByDateData, ThrowOnError>) => (options.client ?? client).delete<DeleteUserActivityByDateResponses, DeleteUserActivityByDateErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/user/activity/date/{date}',
+    ...options
+});
+
+/**
+ * Delete a single activity record
+ *
+ * Deletes a single activity record by ID for the authenticated user.
+ *
+ * **Permissions:** Session authentication (cookie-based).
+ *
+ */
+export const deleteUserActivityById = <ThrowOnError extends boolean = false>(options: Options<DeleteUserActivityByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteUserActivityByIdResponses, DeleteUserActivityByIdErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/user/activity/{id}',
     ...options
 });
 
@@ -752,6 +815,43 @@ export const listUserLabs = <ThrowOnError extends boolean = false>(options?: Opt
             type: 'apiKey'
         }],
     url: '/v1/user/labs',
+    ...options
+});
+
+/**
+ * Unenroll from a lab feature
+ *
+ * Opts the authenticated user out of a lab feature.
+ *
+ * **Permissions:** Session authentication (cookie-based).
+ *
+ */
+export const unenrollUserLab = <ThrowOnError extends boolean = false>(options: Options<UnenrollUserLabData, ThrowOnError>) => (options.client ?? client).delete<UnenrollUserLabResponses, UnenrollUserLabErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/user/labs/{key}',
+    ...options
+});
+
+/**
+ * Enroll in a lab feature
+ *
+ * Opts the authenticated user into a lab feature. The user must be eligible
+ * for the lab (correct role, in allowlist or rollout percentage).
+ *
+ * **Permissions:** Session authentication (cookie-based).
+ *
+ */
+export const enrollUserLab = <ThrowOnError extends boolean = false>(options: Options<EnrollUserLabData, ThrowOnError>) => (options.client ?? client).post<EnrollUserLabResponses, EnrollUserLabErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/user/labs/{key}',
     ...options
 });
 
@@ -897,6 +997,40 @@ export const updateCollectionSegment = <ThrowOnError extends boolean = false>(op
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Search collection segments
+ *
+ * Returns collection segments in search-response format with pagination.
+ * Reshapes the collection data: extracts segment results, includes media, computes pagination.
+ *
+ */
+export const searchCollectionSegments = <ThrowOnError extends boolean = false>(options: Options<SearchCollectionSegmentsData, ThrowOnError>) => (options.client ?? client).get<SearchCollectionSegmentsResponses, SearchCollectionSegmentsErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/collections/{id}/search',
+    ...options
+});
+
+/**
+ * Get collection statistics
+ *
+ * Returns per-media segment counts and per-category counts for all segments in a collection.
+ * Pages through all collection segments internally to compute statistics.
+ *
+ */
+export const getCollectionStats = <ThrowOnError extends boolean = false>(options: Options<GetCollectionStatsData, ThrowOnError>) => (options.client ?? client).get<GetCollectionStatsResponses, GetCollectionStatsErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/collections/{id}/stats',
+    ...options
 });
 
 /**
@@ -1048,6 +1182,44 @@ export const purgeAdminQueueFailed = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
+ * Clear admin impersonation
+ *
+ * Clears the current impersonation session and related cookies.
+ * This endpoint is restricted to admin sessions and only available in local environment.
+ *
+ */
+export const clearAdminImpersonation = <ThrowOnError extends boolean = false>(options?: Options<ClearAdminImpersonationData, ThrowOnError>) => (options?.client ?? client).delete<ClearAdminImpersonationResponses, ClearAdminImpersonationErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/admin/impersonation',
+    ...options
+});
+
+/**
+ * Start admin impersonation
+ *
+ * Creates an impersonation session for the target user.
+ * This endpoint is restricted to admin sessions and only available in local environment.
+ *
+ */
+export const impersonateAdminUser = <ThrowOnError extends boolean = false>(options: Options<ImpersonateAdminUserData, ThrowOnError>) => (options.client ?? client).post<ImpersonateAdminUserResponses, ImpersonateAdminUserErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/admin/impersonation',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * List all reports
  *
  * Returns all reports with filtering and cursor pagination.
@@ -1082,44 +1254,30 @@ export const updateAdminReport = <ThrowOnError extends boolean = false>(options:
 });
 
 /**
- * Run auto-checks
+ * List all media audits
  *
- * Triggers all enabled auto-checks. Creates ReviewCheckRun records and AUTO reports for any findings.
+ * Returns all audit definitions with current config, threshold schema, and latest run info.
  *
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const runAdminReview = <ThrowOnError extends boolean = false>(options?: Options<RunAdminReviewData, ThrowOnError>) => (options?.client ?? client).post<RunAdminReviewResponses, RunAdminReviewErrors, ThrowOnError>({
+export const listAdminMediaAudits = <ThrowOnError extends boolean = false>(options?: Options<ListAdminMediaAuditsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminMediaAuditsResponses, ListAdminMediaAuditsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/run',
+    url: '/v1/admin/media/audits',
     ...options
 });
 
 /**
- * List all review checks
+ * Update a media audit config
  *
- * Returns all check definitions with current config, threshold schema, and latest run info.
- *
- * **Permissions:** `ADD_MEDIA`
- *
- */
-export const listAdminReviewChecks = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReviewChecksData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReviewChecksResponses, ListAdminReviewChecksErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/checks',
-    ...options
-});
-
-/**
- * Update a review check config
- *
- * Updates the threshold values or enabled status of a check.
+ * Updates the threshold values or enabled status of an audit.
  *
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const updateAdminReviewCheck = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminReviewCheckData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminReviewCheckResponses, UpdateAdminReviewCheckErrors, ThrowOnError>({
+export const updateAdminMediaAudit = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminMediaAuditData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminMediaAuditResponses, UpdateAdminMediaAuditErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/checks/{name}',
+    url: '/v1/admin/media/audits/{name}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -1128,75 +1286,43 @@ export const updateAdminReviewCheck = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * List past check runs
+ * Run a media audit
  *
- * Returns past review check runs with summary stats. Supports filtering by check name and cursor pagination.
+ * Triggers all enabled audits (or a specific one). Creates MediaAuditRun records and AUTO reports for any findings.
  *
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const listAdminReviewRuns = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReviewRunsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReviewRunsResponses, ListAdminReviewRunsErrors, ThrowOnError>({
+export const runAdminMediaAudit = <ThrowOnError extends boolean = false>(options: Options<RunAdminMediaAuditData, ThrowOnError>) => (options.client ?? client).post<RunAdminMediaAuditResponses, RunAdminMediaAuditErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/runs',
+    url: '/v1/admin/media/audits/{name}/run',
     ...options
 });
 
 /**
- * Get a specific run's details
+ * List past audit runs
  *
- * Returns a specific review check run record with its linked reports.
+ * Returns past media audit runs with summary stats. Supports filtering by audit name and cursor pagination.
  *
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const getAdminReviewRun = <ThrowOnError extends boolean = false>(options: Options<GetAdminReviewRunData, ThrowOnError>) => (options.client ?? client).get<GetAdminReviewRunResponses, GetAdminReviewRunErrors, ThrowOnError>({
+export const listAdminMediaAuditRuns = <ThrowOnError extends boolean = false>(options?: Options<ListAdminMediaAuditRunsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminMediaAuditRunsResponses, ListAdminMediaAuditRunsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/runs/{id}',
+    url: '/v1/admin/media/audits/runs',
     ...options
 });
 
 /**
- * List allowlisted items
+ * Get a specific audit run's details
  *
- * Returns all allowlisted items (media/episodes) that are excluded from auto-check runs.
- *
- * **Permissions:** `ADD_MEDIA`
- *
- */
-export const listAdminReviewAllowlist = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReviewAllowlistData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReviewAllowlistResponses, ListAdminReviewAllowlistErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/allowlist',
-    ...options
-});
-
-/**
- * Add to allowlist
- *
- * Adds a media or episode to the allowlist for a specific check, excluding it from future auto-check runs.
+ * Returns a specific media audit run record with its linked reports.
  *
  * **Permissions:** `ADD_MEDIA`
  *
  */
-export const createAdminReviewAllowlistEntry = <ThrowOnError extends boolean = false>(options: Options<CreateAdminReviewAllowlistEntryData, ThrowOnError>) => (options.client ?? client).post<CreateAdminReviewAllowlistEntryResponses, CreateAdminReviewAllowlistEntryErrors, ThrowOnError>({
+export const getAdminMediaAuditRun = <ThrowOnError extends boolean = false>(options: Options<GetAdminMediaAuditRunData, ThrowOnError>) => (options.client ?? client).get<GetAdminMediaAuditRunResponses, GetAdminMediaAuditRunErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/allowlist',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Remove from allowlist
- *
- * Removes an item from the review allowlist, re-enabling auto-checks for that media/episode.
- *
- * **Permissions:** `ADD_MEDIA`
- *
- */
-export const deleteAdminReviewAllowlistEntry = <ThrowOnError extends boolean = false>(options: Options<DeleteAdminReviewAllowlistEntryData, ThrowOnError>) => (options.client ?? client).delete<DeleteAdminReviewAllowlistEntryResponses, DeleteAdminReviewAllowlistEntryErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/admin/review/allowlist/{id}',
+    url: '/v1/admin/media/audits/runs/{id}',
     ...options
 });
