@@ -29,8 +29,24 @@ if (!OPENAPI_SPEC_SOURCE) {
 type EndpointInfo = {
   operationId: string;
   tag: string;
+  path: string;
   method: string;
   isInternal: boolean;
+  auth: EndpointAuthInfo;
+};
+
+type OpenApiSecurityScheme = {
+  type?: string;
+  in?: string;
+  scheme?: string;
+};
+
+type OpenApiSecurityRequirement = Record<string, unknown>;
+
+type EndpointAuthInfo = {
+  allowsApiKey: boolean;
+  allowsSession: boolean;
+  allowsUnauthenticated: boolean;
 };
 
 /**
@@ -73,7 +89,83 @@ function getOperationTypeExports(operationIds: string[], availableTypeNames: Set
  * Get the group name for a tag (used for internal namespace organization)
  */
 function getGroupName(tag: string): string {
-  return tag.toLowerCase();
+  const normalized = tag
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+  return normalized || 'default';
+}
+
+function normalizeSecurity(value: unknown): OpenApiSecurityRequirement[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+  return value.filter((entry) => entry && typeof entry === 'object') as OpenApiSecurityRequirement[];
+}
+
+function getAuthSchemeKind(
+  schemeName: string,
+  securitySchemes: Record<string, OpenApiSecurityScheme>,
+): 'apiKey' | 'session' | 'unknown' {
+  const scheme = securitySchemes[schemeName];
+  if (!scheme) {
+    return 'unknown';
+  }
+
+  if (scheme.type === 'apiKey') {
+    return scheme.in === 'cookie' ? 'session' : 'apiKey';
+  }
+
+  if (scheme.type === 'http') {
+    const httpScheme = (scheme.scheme || '').toLowerCase();
+    if (httpScheme === 'bearer') {
+      return 'apiKey';
+    }
+  }
+
+  return 'unknown';
+}
+
+function resolveEndpointAuthInfo(
+  security: OpenApiSecurityRequirement[] | undefined,
+  securitySchemes: Record<string, OpenApiSecurityScheme>,
+): EndpointAuthInfo {
+  if (!security || security.length === 0) {
+    return {
+      allowsApiKey: false,
+      allowsSession: false,
+      allowsUnauthenticated: true,
+    };
+  }
+
+  let allowsApiKey = false;
+  let allowsSession = false;
+  let allowsUnauthenticated = false;
+
+  for (const requirement of security) {
+    const schemeNames = Object.keys(requirement);
+    if (schemeNames.length === 0) {
+      allowsUnauthenticated = true;
+      continue;
+    }
+
+    for (const schemeName of schemeNames) {
+      const schemeKind = getAuthSchemeKind(schemeName, securitySchemes);
+      if (schemeKind === 'apiKey') {
+        allowsApiKey = true;
+      } else if (schemeKind === 'session') {
+        allowsSession = true;
+      }
+    }
+  }
+
+  return {
+    allowsApiKey,
+    allowsSession,
+    allowsUnauthenticated,
+  };
 }
 
 /**
@@ -119,6 +211,8 @@ async function parseOpenApiSpec(): Promise<{
   internalByGroup: Record<string, string[]>;
 }> {
   const spec = await loadOpenApiSpec();
+  const securitySchemes = (spec.components?.securitySchemes || {}) as Record<string, OpenApiSecurityScheme>;
+  const globalSecurity = normalizeSecurity(spec.security);
   const publicEndpoints: EndpointInfo[] = [];
   const internalEndpoints: EndpointInfo[] = [];
   const internalByGroup: Record<string, string[]> = {};
@@ -126,18 +220,27 @@ async function parseOpenApiSpec(): Promise<{
   for (const [path, pathItem] of Object.entries(spec.paths)) {
     for (const [method, operation] of Object.entries(pathItem as any)) {
       if (method === 'parameters' || method === '$ref') continue;
-      if (!operation || !operation.operationId) continue;
+      const operationObj = operation as Record<string, any>;
+      if (!operationObj || !operationObj.operationId) continue;
 
-      const tags = (operation as any).tags || ['Search'];
+      const pathItemObj = pathItem as any;
+      const tags = Array.isArray(operationObj.tags) && operationObj.tags.length > 0
+        ? operationObj.tags.filter((value: unknown): value is string => typeof value === 'string' && value.length > 0)
+        : ['Search'];
       const tag = tags[0] || 'Search';
-      const isInternal = Boolean((operation as any)['x-internal']);
+      const isInternal = Boolean(operationObj['x-internal']);
+      const security = normalizeSecurity(operationObj.security)
+        ?? normalizeSecurity(pathItemObj.security)
+        ?? globalSecurity;
       const groupName = getGroupName(tag);
 
       const endpointInfo: EndpointInfo = {
-        operationId: (operation as any).operationId,
+        operationId: operationObj.operationId,
         tag,
+        path,
         method,
         isInternal,
+        auth: resolveEndpointAuthInfo(security, securitySchemes),
       };
 
       if (isInternal) {
@@ -158,12 +261,12 @@ async function parseOpenApiSpec(): Promise<{
 /**
  * Generate the client factory file
  */
-function generateClientFactory(publicEndpoints: EndpointInfo[]): string {
-  const publicOperationIds = publicEndpoints.map(e => e.operationId);
-  const sdkImports = publicOperationIds.join(', ');
+function generateClientFactory(endpoints: EndpointInfo[], authMode: 'apiKeyOnly' | 'hybrid'): string {
+  const operationIds = endpoints.map(e => e.operationId);
+  const sdkImports = operationIds.join(', ');
 
-  // Build the return type with all public SDK methods
-  const returnTypeParts = publicOperationIds.map(fn => {
+  // Build the return type with all SDK methods
+  const returnTypeParts = operationIds.map(fn => {
     return `    ${fn}: typeof ${fn};`;
   });
 
@@ -173,31 +276,67 @@ ${returnTypeParts.join('\n')}
   };`;
 
   // Build the bound functions return
-  const boundFunctions = publicOperationIds.map(fn => {
+  const boundFunctions = operationIds.map(fn => {
     return `    ${fn}: (options?: any) => ${fn}({ ...options, client: clientInstance }),`;
   }).join('\n');
 
-  return `// This file is auto-generated by scripts/generate.ts
-
-import { createClient as createApiClient, createConfig, type Client } from './client';
-import type { Auth } from './core/auth.gen';
-import type { ClientOptions } from './types.gen';
-import { ${sdkImports} } from './sdk.gen';
-
-export interface NadeshikoConfig {
+  const authImports = authMode === 'hybrid'
+    ? `import type { Auth } from './core/auth.gen';\n`
+    : '';
+  const authTypeHelpers = `type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);`;
+  const authConfig = authMode === 'hybrid'
+    ? `export interface NadeshikoConfig {
   /**
    * API key for Bearer token authentication.
-   * Used for server-side access and endpoints requiring API key scope.
+   * Used for API key protected endpoints.
    */
-  apiKey?: string;
+  apiKey?: ApiKeyProvider;
   /**
    * A function that returns the session token for cookie-based authentication.
-   * Used for user-specific endpoints (e.g. /v1/user/*).
+   * Used for session-protected endpoints (e.g. /v1/user/* and /v1/collections/*).
    * Defaults to reading the \`nadeshiko.session_token\` cookie from \`document.cookie\`.
    */
   sessionToken?: () => string | undefined | Promise<string | undefined>;
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
-}
+}`
+    : `export interface NadeshikoConfig {
+  /**
+   * API key for Bearer token authentication.
+   * Public SDK only supports API key authentication.
+   */
+  apiKey?: ApiKeyProvider;
+  baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+}`;
+  const sessionTokenHelper = authMode === 'hybrid'
+    ? `const defaultSessionTokenGetter = (): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(/(?:^|;\\s*)nadeshiko\\.session_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : undefined;
+};
+`
+    : '';
+  const authResolverConfig = authMode === 'hybrid'
+    ? `  const getSessionToken = config.sessionToken ?? defaultSessionTokenGetter;
+`
+    : '';
+  const authResolverFn = authMode === 'hybrid'
+    ? `    auth: (auth: Auth) => {
+      if (auth.in === 'cookie') {
+        return getSessionToken();
+      }
+      return getApiKey();
+    },`
+    : `    auth: () => getApiKey(),`;
+
+  return `// This file is auto-generated by scripts/generate.ts
+
+import { createClient as createApiClient, createConfig, type Client } from './client';
+${authImports}import type { ClientOptions } from './types.gen';
+import { ${sdkImports} } from './sdk.gen';
+
+${authTypeHelpers}
+
+${authConfig}
 
 const environments = {
   LOCAL: 'http://localhost:5000/api',
@@ -207,29 +346,26 @@ const environments = {
 
 ${returnType}
 
-const defaultSessionTokenGetter = (): string | undefined => {
-  if (typeof document === 'undefined') return undefined;
-  const match = document.cookie.match(/(?:^|;\\s*)nadeshiko\\.session_token=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : undefined;
-};
+${sessionTokenHelper}
 
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
-  const baseUrl = config.baseUrl
-    ? (config.baseUrl in environments
+  const baseUrl = config.baseUrl === undefined
+    ? environments.PRODUCTION
+    : (config.baseUrl in environments
         ? environments[config.baseUrl as keyof typeof environments]
-        : config.baseUrl)
-    : environments.PRODUCTION;
+        : config.baseUrl);
 
-  const getSessionToken = config.sessionToken ?? defaultSessionTokenGetter;
+  const getApiKey = async (): Promise<string | undefined> => {
+    if (typeof config.apiKey === 'function') {
+      return await config.apiKey();
+    }
+    return config.apiKey;
+  };
 
+${authResolverConfig}
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
-    auth: (auth: Auth) => {
-      if (auth.in === 'cookie') {
-        return getSessionToken();
-      }
-      return config.apiKey;
-    },
+${authResolverFn}
   }));
 
   return {
@@ -278,7 +414,7 @@ export { ${exports} } from '../sdk.gen';
 
 /**
  * Generate the public index file
- * NOTE: This is a public SDK for frontend use - internal endpoints are NOT exposed
+ * NOTE: Public SDK exposes only API key-capable operations.
  */
 function generatePublicIndex(publicEndpoints: EndpointInfo[], availableTypeNames: Set<string>): string {
   const publicOperationIds = publicEndpoints.map(e => e.operationId);
@@ -288,7 +424,7 @@ function generatePublicIndex(publicEndpoints: EndpointInfo[], availableTypeNames
     .join(',\n');
 
   return `// This file is auto-generated by scripts/generate.ts
-// Public SDK for frontend use - internal endpoints are NOT included
+// Public SDK exposes only API key-authenticated endpoints
 
 export { ${exports}, type Options } from './sdk.gen';
 export type {
@@ -357,8 +493,13 @@ async function main() {
     // Parse the spec to get endpoint categorization
     console.log('Parsing OpenAPI spec...');
     const { public: publicEndpoints, internal: internalEndpoints, internalByGroup } = await parseOpenApiSpec();
+    const apiKeyPublicEndpoints = publicEndpoints.filter((endpoint) => endpoint.auth.allowsApiKey);
+    const sessionPublicEndpoints = publicEndpoints.filter((endpoint) => endpoint.auth.allowsSession);
 
     console.log(`Found ${publicEndpoints.length} public endpoints, ${internalEndpoints.length} internal endpoints`);
+    console.log(
+      `Public auth split: ${apiKeyPublicEndpoints.length} API key-capable, ${sessionPublicEndpoints.length} session-capable`,
+    );
     console.log(`SDK type: ${SDK_TYPE}`);
     const availableTypeNames = getAvailableGeneratedTypeNames();
 
@@ -367,7 +508,7 @@ async function main() {
 
       // For internal SDK, include both public and internal endpoints
       const allEndpoints = [...publicEndpoints, ...internalEndpoints];
-      const clientFactoryContent = generateClientFactory(allEndpoints);
+      const clientFactoryContent = generateClientFactory(allEndpoints, 'hybrid');
       writeFileSync(join(GENERATED_DIR, 'nadeshiko.gen.ts'), clientFactoryContent);
       console.log(`✓ Generated nadeshiko.gen.ts with ${allEndpoints.length} total endpoints`);
 
@@ -393,15 +534,18 @@ async function main() {
       writeFileSync(join(GENERATED_DIR, 'index.ts'), internalIndexContent);
       console.log(`✓ Generated index.ts (internal)`);
     } else {
-      // For public SDK, only include public endpoints
+      // For public SDK, only include public endpoints that support API key auth
       console.log(`Skipping ${internalEndpoints.length} internal endpoints (public SDK build)`);
+      console.log(
+        `Skipping ${publicEndpoints.length - apiKeyPublicEndpoints.length} public endpoints without API key auth`,
+      );
 
-      const clientFactoryContent = generateClientFactory(publicEndpoints);
+      const clientFactoryContent = generateClientFactory(apiKeyPublicEndpoints, 'apiKeyOnly');
       writeFileSync(join(GENERATED_DIR, 'nadeshiko.gen.ts'), clientFactoryContent);
-      console.log(`✓ Generated nadeshiko.gen.ts with ${publicEndpoints.length} public endpoints`);
+      console.log(`✓ Generated nadeshiko.gen.ts with ${apiKeyPublicEndpoints.length} public API key endpoints`);
 
       // Generate public package index
-      const publicIndexContent = generatePublicIndex(publicEndpoints, availableTypeNames);
+      const publicIndexContent = generatePublicIndex(apiKeyPublicEndpoints, availableTypeNames);
       writeFileSync(join(GENERATED_DIR, 'index.ts'), publicIndexContent);
       console.log(`✓ Generated index.ts (public)`);
     }

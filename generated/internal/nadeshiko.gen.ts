@@ -3,18 +3,19 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
-import { searchSegments, getSearchStats, searchWords, getSegmentContext, browseMedia, mediaIndex, mediaShow, episodeIndex, episodeShow, segmentShow, segmentShowByUuid, characterShow, seiyuuShow, getUserQuota, createReport, getUserReports, listIndex, listShow, listGetSegments, listAddSegment, listUpdateSegment, listRemoveSegment, reindexElasticsearch, getQueueStats, getQueueDetails, getFailedJobs, retryQueueJobs, purgeFailedJobs, morphemeBackfill, getAdminReports, updateReport, healthCheck, mediaCreate, mediaUpdate, mediaDestroy, episodeCreate, episodeUpdate, episodeDestroy, segmentIndex, segmentCreate, segmentUpdate, segmentDestroy, listCreate, listUpdate, listDestroy, listAddItem, listUpdateItem, listRemoveItem } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, createMedia, autocompleteMedia, updateSegmentByUuid, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun } from './sdk.gen';
+
+type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);
 
 export interface NadeshikoConfig {
   /**
    * API key for Bearer token authentication.
-   * Used for server-side access and endpoints requiring API key scope.
+   * Used for API key protected endpoints.
    */
-  apiKey?: string;
+  apiKey?: ApiKeyProvider;
   /**
-   * Session token for cookie-based authentication.
-   * Used for user-specific endpoints (e.g. /v1/user/*).
    * A function that returns the session token for cookie-based authentication.
+   * Used for session-protected endpoints (e.g. /v1/user/* and /v1/collections/*).
    * Defaults to reading the `nadeshiko.session_token` cookie from `document.cookie`.
    */
   sessionToken?: () => string | undefined | Promise<string | undefined>;
@@ -29,54 +30,80 @@ const environments = {
 
 export type NadeshikoClient = {
     client: Client;
-    searchSegments: typeof searchSegments;
+    search: typeof search;
     getSearchStats: typeof getSearchStats;
     searchWords: typeof searchWords;
+    listMedia: typeof listMedia;
+    getSegmentByUuid: typeof getSegmentByUuid;
     getSegmentContext: typeof getSegmentContext;
-    browseMedia: typeof browseMedia;
-    mediaIndex: typeof mediaIndex;
-    mediaShow: typeof mediaShow;
-    episodeIndex: typeof episodeIndex;
-    episodeShow: typeof episodeShow;
-    segmentShow: typeof segmentShow;
-    segmentShowByUuid: typeof segmentShowByUuid;
-    characterShow: typeof characterShow;
-    seiyuuShow: typeof seiyuuShow;
+    listSeries: typeof listSeries;
+    getSeries: typeof getSeries;
+    getCharacter: typeof getCharacter;
+    getSeiyuu: typeof getSeiyuu;
+    getMedia: typeof getMedia;
+    listEpisodes: typeof listEpisodes;
+    getEpisode: typeof getEpisode;
+    getSegment: typeof getSegment;
+    listCollections: typeof listCollections;
+    createCollection: typeof createCollection;
+    getCollection: typeof getCollection;
+    updateCollection: typeof updateCollection;
+    deleteCollection: typeof deleteCollection;
+    addSegmentToCollection: typeof addSegmentToCollection;
+    updateCollectionSegment: typeof updateCollectionSegment;
+    removeSegmentFromCollection: typeof removeSegmentFromCollection;
+    searchCollectionSegments: typeof searchCollectionSegments;
+    getCollectionStats: typeof getCollectionStats;
+    createMedia: typeof createMedia;
+    autocompleteMedia: typeof autocompleteMedia;
+    updateSegmentByUuid: typeof updateSegmentByUuid;
+    createSeries: typeof createSeries;
+    updateSeries: typeof updateSeries;
+    deleteSeries: typeof deleteSeries;
+    addMediaToSeries: typeof addMediaToSeries;
+    updateSeriesMedia: typeof updateSeriesMedia;
+    removeMediaFromSeries: typeof removeMediaFromSeries;
+    updateMedia: typeof updateMedia;
+    deleteMedia: typeof deleteMedia;
+    createEpisode: typeof createEpisode;
+    updateEpisode: typeof updateEpisode;
+    deleteEpisode: typeof deleteEpisode;
+    listSegments: typeof listSegments;
+    createSegment: typeof createSegment;
+    updateSegment: typeof updateSegment;
+    deleteSegment: typeof deleteSegment;
     getUserQuota: typeof getUserQuota;
-    createReport: typeof createReport;
-    getUserReports: typeof getUserReports;
-    listIndex: typeof listIndex;
-    listShow: typeof listShow;
-    listGetSegments: typeof listGetSegments;
-    listAddSegment: typeof listAddSegment;
-    listUpdateSegment: typeof listUpdateSegment;
-    listRemoveSegment: typeof listRemoveSegment;
-    reindexElasticsearch: typeof reindexElasticsearch;
-    getQueueStats: typeof getQueueStats;
-    getQueueDetails: typeof getQueueDetails;
-    getFailedJobs: typeof getFailedJobs;
-    retryQueueJobs: typeof retryQueueJobs;
-    purgeFailedJobs: typeof purgeFailedJobs;
-    morphemeBackfill: typeof morphemeBackfill;
-    getAdminReports: typeof getAdminReports;
-    updateReport: typeof updateReport;
-    healthCheck: typeof healthCheck;
-    mediaCreate: typeof mediaCreate;
-    mediaUpdate: typeof mediaUpdate;
-    mediaDestroy: typeof mediaDestroy;
-    episodeCreate: typeof episodeCreate;
-    episodeUpdate: typeof episodeUpdate;
-    episodeDestroy: typeof episodeDestroy;
-    segmentIndex: typeof segmentIndex;
-    segmentCreate: typeof segmentCreate;
-    segmentUpdate: typeof segmentUpdate;
-    segmentDestroy: typeof segmentDestroy;
-    listCreate: typeof listCreate;
-    listUpdate: typeof listUpdate;
-    listDestroy: typeof listDestroy;
-    listAddItem: typeof listAddItem;
-    listUpdateItem: typeof listUpdateItem;
-    listRemoveItem: typeof listRemoveItem;
+    createUserReport: typeof createUserReport;
+    getUserPreferences: typeof getUserPreferences;
+    updateUserPreferences: typeof updateUserPreferences;
+    listUserActivity: typeof listUserActivity;
+    trackUserActivity: typeof trackUserActivity;
+    deleteUserActivity: typeof deleteUserActivity;
+    getUserActivityHeatmap: typeof getUserActivityHeatmap;
+    getUserActivityStats: typeof getUserActivityStats;
+    deleteUserActivityByDate: typeof deleteUserActivityByDate;
+    deleteUserActivityById: typeof deleteUserActivityById;
+    exportUserData: typeof exportUserData;
+    listUserLabs: typeof listUserLabs;
+    enrollUserLab: typeof enrollUserLab;
+    unenrollUserLab: typeof unenrollUserLab;
+    getAdminDashboard: typeof getAdminDashboard;
+    getAdminHealth: typeof getAdminHealth;
+    triggerReindex: typeof triggerReindex;
+    listAdminQueueStats: typeof listAdminQueueStats;
+    getAdminQueue: typeof getAdminQueue;
+    listAdminQueueFailed: typeof listAdminQueueFailed;
+    retryAdminQueueFailed: typeof retryAdminQueueFailed;
+    purgeAdminQueueFailed: typeof purgeAdminQueueFailed;
+    impersonateAdminUser: typeof impersonateAdminUser;
+    clearAdminImpersonation: typeof clearAdminImpersonation;
+    listAdminReports: typeof listAdminReports;
+    updateAdminReport: typeof updateAdminReport;
+    listAdminMediaAudits: typeof listAdminMediaAudits;
+    updateAdminMediaAudit: typeof updateAdminMediaAudit;
+    runAdminMediaAudit: typeof runAdminMediaAudit;
+    listAdminMediaAuditRuns: typeof listAdminMediaAuditRuns;
+    getAdminMediaAuditRun: typeof getAdminMediaAuditRun;
   };
 
 const defaultSessionTokenGetter = (): string | undefined => {
@@ -85,12 +112,20 @@ const defaultSessionTokenGetter = (): string | undefined => {
   return match ? decodeURIComponent(match[1]) : undefined;
 };
 
+
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
-  const baseUrl = config.baseUrl
-    ? (config.baseUrl in environments
+  const baseUrl = config.baseUrl === undefined
+    ? environments.PRODUCTION
+    : (config.baseUrl in environments
         ? environments[config.baseUrl as keyof typeof environments]
-        : config.baseUrl)
-    : environments.PRODUCTION;
+        : config.baseUrl);
+
+  const getApiKey = async (): Promise<string | undefined> => {
+    if (typeof config.apiKey === 'function') {
+      return await config.apiKey();
+    }
+    return config.apiKey;
+  };
 
   const getSessionToken = config.sessionToken ?? defaultSessionTokenGetter;
 
@@ -100,60 +135,86 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
       if (auth.in === 'cookie') {
         return getSessionToken();
       }
-      return config.apiKey;
+      return getApiKey();
     },
   }));
 
   return {
     client: clientInstance,
-    searchSegments: (options?: any) => searchSegments({ ...options, client: clientInstance }),
+    search: (options?: any) => search({ ...options, client: clientInstance }),
     getSearchStats: (options?: any) => getSearchStats({ ...options, client: clientInstance }),
     searchWords: (options?: any) => searchWords({ ...options, client: clientInstance }),
+    listMedia: (options?: any) => listMedia({ ...options, client: clientInstance }),
+    getSegmentByUuid: (options?: any) => getSegmentByUuid({ ...options, client: clientInstance }),
     getSegmentContext: (options?: any) => getSegmentContext({ ...options, client: clientInstance }),
-    browseMedia: (options?: any) => browseMedia({ ...options, client: clientInstance }),
-    mediaIndex: (options?: any) => mediaIndex({ ...options, client: clientInstance }),
-    mediaShow: (options?: any) => mediaShow({ ...options, client: clientInstance }),
-    episodeIndex: (options?: any) => episodeIndex({ ...options, client: clientInstance }),
-    episodeShow: (options?: any) => episodeShow({ ...options, client: clientInstance }),
-    segmentShow: (options?: any) => segmentShow({ ...options, client: clientInstance }),
-    segmentShowByUuid: (options?: any) => segmentShowByUuid({ ...options, client: clientInstance }),
-    characterShow: (options?: any) => characterShow({ ...options, client: clientInstance }),
-    seiyuuShow: (options?: any) => seiyuuShow({ ...options, client: clientInstance }),
+    listSeries: (options?: any) => listSeries({ ...options, client: clientInstance }),
+    getSeries: (options?: any) => getSeries({ ...options, client: clientInstance }),
+    getCharacter: (options?: any) => getCharacter({ ...options, client: clientInstance }),
+    getSeiyuu: (options?: any) => getSeiyuu({ ...options, client: clientInstance }),
+    getMedia: (options?: any) => getMedia({ ...options, client: clientInstance }),
+    listEpisodes: (options?: any) => listEpisodes({ ...options, client: clientInstance }),
+    getEpisode: (options?: any) => getEpisode({ ...options, client: clientInstance }),
+    getSegment: (options?: any) => getSegment({ ...options, client: clientInstance }),
+    listCollections: (options?: any) => listCollections({ ...options, client: clientInstance }),
+    createCollection: (options?: any) => createCollection({ ...options, client: clientInstance }),
+    getCollection: (options?: any) => getCollection({ ...options, client: clientInstance }),
+    updateCollection: (options?: any) => updateCollection({ ...options, client: clientInstance }),
+    deleteCollection: (options?: any) => deleteCollection({ ...options, client: clientInstance }),
+    addSegmentToCollection: (options?: any) => addSegmentToCollection({ ...options, client: clientInstance }),
+    updateCollectionSegment: (options?: any) => updateCollectionSegment({ ...options, client: clientInstance }),
+    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ ...options, client: clientInstance }),
+    searchCollectionSegments: (options?: any) => searchCollectionSegments({ ...options, client: clientInstance }),
+    getCollectionStats: (options?: any) => getCollectionStats({ ...options, client: clientInstance }),
+    createMedia: (options?: any) => createMedia({ ...options, client: clientInstance }),
+    autocompleteMedia: (options?: any) => autocompleteMedia({ ...options, client: clientInstance }),
+    updateSegmentByUuid: (options?: any) => updateSegmentByUuid({ ...options, client: clientInstance }),
+    createSeries: (options?: any) => createSeries({ ...options, client: clientInstance }),
+    updateSeries: (options?: any) => updateSeries({ ...options, client: clientInstance }),
+    deleteSeries: (options?: any) => deleteSeries({ ...options, client: clientInstance }),
+    addMediaToSeries: (options?: any) => addMediaToSeries({ ...options, client: clientInstance }),
+    updateSeriesMedia: (options?: any) => updateSeriesMedia({ ...options, client: clientInstance }),
+    removeMediaFromSeries: (options?: any) => removeMediaFromSeries({ ...options, client: clientInstance }),
+    updateMedia: (options?: any) => updateMedia({ ...options, client: clientInstance }),
+    deleteMedia: (options?: any) => deleteMedia({ ...options, client: clientInstance }),
+    createEpisode: (options?: any) => createEpisode({ ...options, client: clientInstance }),
+    updateEpisode: (options?: any) => updateEpisode({ ...options, client: clientInstance }),
+    deleteEpisode: (options?: any) => deleteEpisode({ ...options, client: clientInstance }),
+    listSegments: (options?: any) => listSegments({ ...options, client: clientInstance }),
+    createSegment: (options?: any) => createSegment({ ...options, client: clientInstance }),
+    updateSegment: (options?: any) => updateSegment({ ...options, client: clientInstance }),
+    deleteSegment: (options?: any) => deleteSegment({ ...options, client: clientInstance }),
     getUserQuota: (options?: any) => getUserQuota({ ...options, client: clientInstance }),
-    createReport: (options?: any) => createReport({ ...options, client: clientInstance }),
-    getUserReports: (options?: any) => getUserReports({ ...options, client: clientInstance }),
-    listIndex: (options?: any) => listIndex({ ...options, client: clientInstance }),
-    listShow: (options?: any) => listShow({ ...options, client: clientInstance }),
-    listGetSegments: (options?: any) => listGetSegments({ ...options, client: clientInstance }),
-    listAddSegment: (options?: any) => listAddSegment({ ...options, client: clientInstance }),
-    listUpdateSegment: (options?: any) => listUpdateSegment({ ...options, client: clientInstance }),
-    listRemoveSegment: (options?: any) => listRemoveSegment({ ...options, client: clientInstance }),
-    reindexElasticsearch: (options?: any) => reindexElasticsearch({ ...options, client: clientInstance }),
-    getQueueStats: (options?: any) => getQueueStats({ ...options, client: clientInstance }),
-    getQueueDetails: (options?: any) => getQueueDetails({ ...options, client: clientInstance }),
-    getFailedJobs: (options?: any) => getFailedJobs({ ...options, client: clientInstance }),
-    retryQueueJobs: (options?: any) => retryQueueJobs({ ...options, client: clientInstance }),
-    purgeFailedJobs: (options?: any) => purgeFailedJobs({ ...options, client: clientInstance }),
-    morphemeBackfill: (options?: any) => morphemeBackfill({ ...options, client: clientInstance }),
-    getAdminReports: (options?: any) => getAdminReports({ ...options, client: clientInstance }),
-    updateReport: (options?: any) => updateReport({ ...options, client: clientInstance }),
-    healthCheck: (options?: any) => healthCheck({ ...options, client: clientInstance }),
-    mediaCreate: (options?: any) => mediaCreate({ ...options, client: clientInstance }),
-    mediaUpdate: (options?: any) => mediaUpdate({ ...options, client: clientInstance }),
-    mediaDestroy: (options?: any) => mediaDestroy({ ...options, client: clientInstance }),
-    episodeCreate: (options?: any) => episodeCreate({ ...options, client: clientInstance }),
-    episodeUpdate: (options?: any) => episodeUpdate({ ...options, client: clientInstance }),
-    episodeDestroy: (options?: any) => episodeDestroy({ ...options, client: clientInstance }),
-    segmentIndex: (options?: any) => segmentIndex({ ...options, client: clientInstance }),
-    segmentCreate: (options?: any) => segmentCreate({ ...options, client: clientInstance }),
-    segmentUpdate: (options?: any) => segmentUpdate({ ...options, client: clientInstance }),
-    segmentDestroy: (options?: any) => segmentDestroy({ ...options, client: clientInstance }),
-    listCreate: (options?: any) => listCreate({ ...options, client: clientInstance }),
-    listUpdate: (options?: any) => listUpdate({ ...options, client: clientInstance }),
-    listDestroy: (options?: any) => listDestroy({ ...options, client: clientInstance }),
-    listAddItem: (options?: any) => listAddItem({ ...options, client: clientInstance }),
-    listUpdateItem: (options?: any) => listUpdateItem({ ...options, client: clientInstance }),
-    listRemoveItem: (options?: any) => listRemoveItem({ ...options, client: clientInstance }),
+    createUserReport: (options?: any) => createUserReport({ ...options, client: clientInstance }),
+    getUserPreferences: (options?: any) => getUserPreferences({ ...options, client: clientInstance }),
+    updateUserPreferences: (options?: any) => updateUserPreferences({ ...options, client: clientInstance }),
+    listUserActivity: (options?: any) => listUserActivity({ ...options, client: clientInstance }),
+    trackUserActivity: (options?: any) => trackUserActivity({ ...options, client: clientInstance }),
+    deleteUserActivity: (options?: any) => deleteUserActivity({ ...options, client: clientInstance }),
+    getUserActivityHeatmap: (options?: any) => getUserActivityHeatmap({ ...options, client: clientInstance }),
+    getUserActivityStats: (options?: any) => getUserActivityStats({ ...options, client: clientInstance }),
+    deleteUserActivityByDate: (options?: any) => deleteUserActivityByDate({ ...options, client: clientInstance }),
+    deleteUserActivityById: (options?: any) => deleteUserActivityById({ ...options, client: clientInstance }),
+    exportUserData: (options?: any) => exportUserData({ ...options, client: clientInstance }),
+    listUserLabs: (options?: any) => listUserLabs({ ...options, client: clientInstance }),
+    enrollUserLab: (options?: any) => enrollUserLab({ ...options, client: clientInstance }),
+    unenrollUserLab: (options?: any) => unenrollUserLab({ ...options, client: clientInstance }),
+    getAdminDashboard: (options?: any) => getAdminDashboard({ ...options, client: clientInstance }),
+    getAdminHealth: (options?: any) => getAdminHealth({ ...options, client: clientInstance }),
+    triggerReindex: (options?: any) => triggerReindex({ ...options, client: clientInstance }),
+    listAdminQueueStats: (options?: any) => listAdminQueueStats({ ...options, client: clientInstance }),
+    getAdminQueue: (options?: any) => getAdminQueue({ ...options, client: clientInstance }),
+    listAdminQueueFailed: (options?: any) => listAdminQueueFailed({ ...options, client: clientInstance }),
+    retryAdminQueueFailed: (options?: any) => retryAdminQueueFailed({ ...options, client: clientInstance }),
+    purgeAdminQueueFailed: (options?: any) => purgeAdminQueueFailed({ ...options, client: clientInstance }),
+    impersonateAdminUser: (options?: any) => impersonateAdminUser({ ...options, client: clientInstance }),
+    clearAdminImpersonation: (options?: any) => clearAdminImpersonation({ ...options, client: clientInstance }),
+    listAdminReports: (options?: any) => listAdminReports({ ...options, client: clientInstance }),
+    updateAdminReport: (options?: any) => updateAdminReport({ ...options, client: clientInstance }),
+    listAdminMediaAudits: (options?: any) => listAdminMediaAudits({ ...options, client: clientInstance }),
+    updateAdminMediaAudit: (options?: any) => updateAdminMediaAudit({ ...options, client: clientInstance }),
+    runAdminMediaAudit: (options?: any) => runAdminMediaAudit({ ...options, client: clientInstance }),
+    listAdminMediaAuditRuns: (options?: any) => listAdminMediaAuditRuns({ ...options, client: clientInstance }),
+    getAdminMediaAuditRun: (options?: any) => getAdminMediaAuditRun({ ...options, client: clientInstance }),
   };
 }
 

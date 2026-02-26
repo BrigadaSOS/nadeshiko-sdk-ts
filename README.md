@@ -8,7 +8,7 @@ TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co).
 bun add @brigadasos/nadeshiko-sdk
 ```
 
-Install the internal build (includes internal endpoints) via the `internal` dist-tag:
+Install the internal build (includes internal + session-authenticated endpoints) via the `internal` dist-tag:
 
 ```bash
 bun add @brigadasos/nadeshiko-sdk@internal
@@ -21,20 +21,23 @@ bun add @brigadasos/nadeshiko-sdk@internal
 Use an API key for endpoints that don't require a user session. The key is sent as `Authorization: Bearer <apiKey>`.
 
 ```typescript
-import { createNadeshikoClient, searchSegments } from '@brigadasos/nadeshiko-sdk';
+import { createNadeshikoClient, search } from '@brigadasos/nadeshiko-sdk';
 
 const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
   baseUrl: 'PRODUCTION',
 });
 
-const result = await searchSegments({
+const result = await search({
   client,
-  body: { query: '彼女' },
+  body: { query: { search: '彼女' } },
 });
 ```
 
-### Session token (user-authenticated endpoints)
+### Session token (user-authenticated endpoints, internal build only)
+
+The default public package intentionally exposes API-key-capable endpoints only.
+For session-authenticated endpoints (for example `/v1/user/*` and `/v1/collections/*`), use the internal build.
 
 Endpoints under `/v1/user/*` and `/v1/collections/*` require a user session. Pass a `sessionToken` getter that returns the value of the `nadeshiko.session_token` cookie — called fresh on every request.
 
@@ -60,23 +63,23 @@ export default defineEventHandler(async (event) => {
 });
 ```
 
-**Browser (no configuration needed):** the default `sessionToken` getter reads `nadeshiko.session_token` from `document.cookie` automatically.
+**Browser note:** if your session cookie is `HttpOnly`, use same-origin proxy routes and let the browser attach cookies automatically. Prefer server-side session handling for internal endpoints.
 
 ### Error handling
 
 Every response returns a discriminated union with either `data` or `error`. The `error` object follows the [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details format, so you always get a machine-readable `code` and a human-readable `detail`.
 
 ```typescript
-import { createNadeshikoClient, searchSegments } from '@brigadasos/nadeshiko-sdk';
+import { createNadeshikoClient, search } from '@brigadasos/nadeshiko-sdk';
 
 const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
   baseUrl: 'PRODUCTION',
 });
 
-const result = await searchSegments({
+const result = await search({
   client,
-  body: { query: '食べる' },
+  body: { query: { search: '食べる' } },
 });
 
 if (result.error) {
@@ -134,8 +137,8 @@ if (result.error) {
 }
 
 // result.data is fully typed as SearchResponse
-for (const hit of result.data.results ?? []) {
-  console.log(hit.segment.ja.content, '—', hit.media.nameEn);
+for (const segment of result.data.segments ?? []) {
+  console.log(segment.content.ja.content);
 }
 ```
 
@@ -145,13 +148,13 @@ If you prefer exceptions over checking `.error`, pass `throwOnError: true`. The 
 
 ```typescript
 try {
-  const { data } = await searchSegments({
+  const { data } = await search({
     client,
     throwOnError: true,
-    body: { query: '彼女' },
+    body: { query: { search: '彼女' } },
   });
 
-  console.log(data.results);
+  console.log(data.segments);
 } catch (error) {
   console.error('Request failed:', error);
 }
