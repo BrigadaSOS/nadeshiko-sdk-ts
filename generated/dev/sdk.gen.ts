@@ -156,6 +156,8 @@ export const autocompleteMedia = <ThrowOnError extends boolean = false>(options:
  *
  * Returns a specific segment by its UUID. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
  *
+ * Pass `include[]=ratingAnalysis` and/or `include[]=posAnalysis` to receive raw analysis fields alongside the standard segment data.
+ *
  * **Permissions:** `UPDATE_MEDIA` (API key) or admin session
  *
  */
@@ -711,8 +713,8 @@ export const trackUserActivity = <ThrowOnError extends boolean = false>(options:
 /**
  * Get activity heatmap data
  *
- * Returns daily activity activityByDay for the authenticated user, grouped by date.
- * Designed for rendering a GitHub-style contribution heatmap.
+ * Returns daily activity counts for the authenticated user, grouped by date and activity type.
+ * Each day contains per-type counts that can be summed or filtered client-side.
  *
  * **Permissions:** Session authentication (cookie-based).
  *

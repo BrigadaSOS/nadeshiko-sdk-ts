@@ -906,6 +906,38 @@ export type MediaAutocompleteResponse = {
 };
 
 /**
+ * Segment with internal fields. For write operations (create, update) all fields are always populated.
+ * For GET, optional fields are only populated when requested via include[].
+ *
+ */
+export type SegmentInternal = Segment & {
+    /**
+     * Storage backend for segment assets
+     */
+    storage?: 'LOCAL' | 'R2';
+    /**
+     * Hash identifier for the segment
+     */
+    hashedId?: string;
+    /**
+     * Base path in the storage backend
+     */
+    storageBasePath?: string;
+    /**
+     * Raw WD Tagger v3 classifier output used to derive content rating
+     */
+    ratingAnalysis?: {
+        [key: string]: unknown;
+    };
+    /**
+     * POS tokenization results keyed by engine (sudachi, unidic)
+     */
+    posAnalysis?: {
+        [key: string]: unknown;
+    };
+};
+
+/**
  * Not Found error response
  */
 export type Error404 = {
@@ -1008,36 +1040,6 @@ export type SegmentUpdateRequest = {
      * Hash identifier for the segment (from segment JSON)
      */
     hashedId?: string;
-};
-
-/**
- * Segment with internal fields (for internal API responses)
- */
-export type SegmentInternal = Segment & {
-    /**
-     * Storage backend for segment assets
-     */
-    storage: 'LOCAL' | 'R2';
-    /**
-     * Hash identifier for the segment
-     */
-    hashedId: string;
-    /**
-     * Base path in the storage backend
-     */
-    storageBasePath: string;
-    /**
-     * Raw WD Tagger v3 classifier output used to derive content rating
-     */
-    ratingAnalysis: {
-        [key: string]: unknown;
-    };
-    /**
-     * POS tokenization results keyed by engine (sudachi, unidic)
-     */
-    posAnalysis: {
-        [key: string]: unknown;
-    };
 };
 
 export type SegmentContextResponse = {
@@ -1645,7 +1647,7 @@ export type UserPreferences = {
 /**
  * Type of user activity
  */
-export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'LIST_ADD_SEGMENT';
+export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'LIST_ADD_SEGMENT' | 'SHARE';
 
 export type UserActivity = {
     id: number;
@@ -1656,6 +1658,17 @@ export type UserActivity = {
     mediaName: string;
     japaneseText: string;
     createdAt: string;
+};
+
+/**
+ * Activity counts for a single day, broken down by type. Only types with at least 1 event are present.
+ */
+export type HeatmapDayCounts = {
+    SEARCH?: number;
+    SEGMENT_PLAY?: number;
+    ANKI_EXPORT?: number;
+    LIST_ADD_SEGMENT?: number;
+    SHARE?: number;
 };
 
 /**
@@ -2314,7 +2327,12 @@ export type GetSegmentByUuidData = {
          */
         uuid: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Additional internal fields to include in the response
+         */
+        include?: Array<'ratingAnalysis' | 'posAnalysis' | 'hashedId' | 'storageBasePath' | 'storage'>;
+    };
     url: '/v1/media/segments/{uuid}';
 };
 
@@ -2349,9 +2367,9 @@ export type GetSegmentByUuidError = GetSegmentByUuidErrors[keyof GetSegmentByUui
 
 export type GetSegmentByUuidResponses = {
     /**
-     * OK
+     * Single segment response with internal fields
      */
-    200: Segment;
+    200: SegmentInternal;
 };
 
 export type GetSegmentByUuidResponse = GetSegmentByUuidResponses[keyof GetSegmentByUuidResponses];
@@ -3963,7 +3981,7 @@ export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserA
 
 export type TrackUserActivityData = {
     body: {
-        activityType: 'SEGMENT_PLAY';
+        activityType: 'SEGMENT_PLAY' | 'SHARE';
         segmentUuid?: string;
         mediaId?: number;
         mediaName?: string;
@@ -4008,10 +4026,6 @@ export type GetUserActivityHeatmapData = {
          * Number of days to include in the heatmap
          */
         days?: number;
-        /**
-         * Filter by activity type
-         */
-        activityType?: ActivityType;
     };
     url: '/v1/user/activity/heatmap';
 };
@@ -4035,10 +4049,10 @@ export type GetUserActivityHeatmapResponses = {
      */
     200: {
         /**
-         * Map of YYYY-MM-DD date strings to activity activityByDay
+         * Map of YYYY-MM-DD date strings to per-type activity counts
          */
         activityByDay: {
-            [key: string]: number;
+            [key: string]: HeatmapDayCounts;
         };
     };
 };
@@ -4079,6 +4093,7 @@ export type GetUserActivityStatsResponses = {
         totalExports: number;
         totalPlays: number;
         totalListAdds: number;
+        totalShares: number;
         topMedia: Array<{
             mediaId: number;
             count: number;
