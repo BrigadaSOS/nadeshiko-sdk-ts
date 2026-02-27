@@ -901,8 +901,35 @@ export type Error409 = {
     };
 };
 
+/**
+ * Slim media item returned by autocomplete (names + cover only)
+ */
+export type MediaAutocompleteItem = {
+    /**
+     * Unique identifier for the media
+     */
+    id: number;
+    /**
+     * Original Japanese name of the media
+     */
+    nameJa: string;
+    /**
+     * Romaji transliteration of the media name
+     */
+    nameRomaji: string;
+    /**
+     * English name of the media
+     */
+    nameEn: string;
+    /**
+     * Full URL to the cover image
+     */
+    coverUrl: string;
+    category: Category;
+};
+
 export type MediaAutocompleteResponse = {
-    media: Array<Media>;
+    media: Array<MediaAutocompleteItem>;
 };
 
 /**
@@ -1052,6 +1079,31 @@ export type SegmentContextResponse = {
             [key: string]: Media;
         };
     };
+};
+
+export type SegmentRevision = {
+    /**
+     * Revision ID
+     */
+    id: number;
+    /**
+     * Sequential revision number per segment
+     */
+    revisionNumber: number;
+    /**
+     * Snapshot of editable fields at the time of the revision
+     */
+    snapshot: {
+        [key: string]: unknown;
+    };
+    /**
+     * Name of the user who made the change
+     */
+    userName?: string;
+    /**
+     * When the revision was created
+     */
+    createdAt: string;
 };
 
 /**
@@ -1651,7 +1703,7 @@ export type UserPreferences = {
 /**
  * Type of user activity
  */
-export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'LIST_ADD_SEGMENT' | 'SHARE';
+export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'SHARE';
 
 export type UserActivity = {
     id: number;
@@ -1671,7 +1723,6 @@ export type HeatmapDayCounts = {
     SEARCH?: number;
     SEGMENT_PLAY?: number;
     ANKI_EXPORT?: number;
-    LIST_ADD_SEGMENT?: number;
     SHARE?: number;
 };
 
@@ -1687,6 +1738,10 @@ export type Collection = {
      * Name of the collection
      */
     name: string;
+    /**
+     * Type of the collection
+     */
+    type: 'USER' | 'ANKI_EXPORT';
     /**
      * Visibility of the collection
      */
@@ -2486,6 +2541,58 @@ export type GetSegmentContextResponses = {
 };
 
 export type GetSegmentContextResponse = GetSegmentContextResponses[keyof GetSegmentContextResponses];
+
+export type ListSegmentRevisionsData = {
+    body?: never;
+    path: {
+        /**
+         * Segment UUID
+         */
+        uuid: string;
+    };
+    query?: never;
+    url: '/v1/media/segments/{uuid}/revisions';
+};
+
+export type ListSegmentRevisionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (API key or session)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ListSegmentRevisionsError = ListSegmentRevisionsErrors[keyof ListSegmentRevisionsErrors];
+
+export type ListSegmentRevisionsResponses = {
+    /**
+     * List of segment revisions
+     */
+    200: {
+        revisions: Array<SegmentRevision>;
+    };
+};
+
+export type ListSegmentRevisionsResponse = ListSegmentRevisionsResponses[keyof ListSegmentRevisionsResponses];
 
 export type ListSeriesData = {
     body?: never;
