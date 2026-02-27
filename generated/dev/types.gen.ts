@@ -1451,6 +1451,10 @@ export type SegmentCreateRequest = {
     hashedId: string;
 };
 
+export type SegmentBatchCreateRequest = {
+    segments: Array<SegmentCreateRequest>;
+};
+
 export type UserQuotaResponse = {
     /**
      * Number of API requests used in the current billing period.
@@ -3587,6 +3591,69 @@ export type CreateSegmentResponses = {
 };
 
 export type CreateSegmentResponse = CreateSegmentResponses[keyof CreateSegmentResponses];
+
+export type CreateSegmentsBatchData = {
+    body: SegmentBatchCreateRequest;
+    path: {
+        /**
+         * ID of the media
+         */
+        mediaId: number;
+        /**
+         * Episode number
+         */
+        episodeNumber: number;
+    };
+    query?: never;
+    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/batch';
+};
+
+export type CreateSegmentsBatchErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (API key)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CreateSegmentsBatchError = CreateSegmentsBatchErrors[keyof CreateSegmentsBatchErrors];
+
+export type CreateSegmentsBatchResponses = {
+    /**
+     * Batch segment creation result
+     */
+    201: {
+        /**
+         * Number of segments successfully created
+         */
+        created: number;
+        /**
+         * Number of segments skipped due to duplicate UUIDs
+         */
+        skipped: number;
+    };
+};
+
+export type CreateSegmentsBatchResponse = CreateSegmentsBatchResponses[keyof CreateSegmentsBatchResponses];
 
 export type DeleteSegmentData = {
     body?: never;
