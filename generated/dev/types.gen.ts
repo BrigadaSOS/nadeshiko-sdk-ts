@@ -154,6 +154,10 @@ export type Segment = {
      */
     uuid: string;
     /**
+     * Public identifier for the segment (use this instead of uuid in public URLs)
+     */
+    publicId: string;
+    /**
      * Position of the segment within the episode
      */
     position: number;
@@ -261,6 +265,10 @@ export type Seiyuu = {
      * Internal seiyuu ID
      */
     id: number;
+    /**
+     * Public identifier for the seiyuu (use this in public URLs)
+     */
+    publicId: string;
     externalIds: ExternalId;
     /**
      * Japanese name of the voice actor
@@ -308,9 +316,13 @@ export type MediaCharacter = {
  */
 export type Media = {
     /**
-     * Unique identifier for the media
+     * Internal unique identifier for the media
      */
     id: number;
+    /**
+     * Public identifier for the media (use this in public URLs)
+     */
+    publicId: string;
     externalIds: ExternalId;
     /**
      * Original Japanese name of the media
@@ -1173,6 +1185,10 @@ export type Character = {
      * Internal character ID
      */
     id: number;
+    /**
+     * Public identifier for the character (use this in public URLs)
+     */
+    publicId: string;
     externalIds: ExternalId;
     /**
      * Japanese name of the character
@@ -2382,7 +2398,7 @@ export type GetSegmentByUuidData = {
     body?: never;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };
@@ -2437,7 +2453,7 @@ export type UpdateSegmentByUuidData = {
     body: SegmentUpdateRequest;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };
@@ -2487,7 +2503,7 @@ export type GetSegmentContextData = {
     body?: never;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };
@@ -2546,7 +2562,7 @@ export type ListSegmentRevisionsData = {
     body?: never;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };

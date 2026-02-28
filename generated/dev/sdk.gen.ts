@@ -176,9 +176,9 @@ export const autocompleteMedia = <ThrowOnError extends boolean = false>(options:
 });
 
 /**
- * Get segment by UUID
+ * Get segment by UUID or publicId
  *
- * Returns a specific segment by its UUID. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
+ * Returns a specific segment by its UUID or publicId. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
  *
  * Pass `include[]=ratingAnalysis` and/or `include[]=posAnalysis` to receive raw analysis fields alongside the standard segment data.
  *
@@ -196,9 +196,9 @@ export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: 
 });
 
 /**
- * Update segment by UUID
+ * Update segment by UUID or publicId
  *
- * Updates an existing segment identified by its UUID. Performs the UUID→segment lookup internally,
+ * Updates an existing segment identified by its UUID or publicId. Performs the lookup internally,
  * then applies the update. Only provided fields will be updated.
  *
  * **Permissions:** `UPDATE_MEDIA`
