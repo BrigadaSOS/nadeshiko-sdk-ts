@@ -9,9 +9,9 @@ export type ClientOptions = {
  */
 export type MediaFilterItem = {
     /**
-     * Media ID to filter
+     * Media identifier (publicId or AniList external ID)
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Specific episodes (omit for all episodes)
      */
@@ -635,6 +635,10 @@ export type MediaSearchStats = {
      * Media identifier (look up full details in includes.media)
      */
     mediaId: number;
+    /**
+     * Public identifier for use in URLs and filters
+     */
+    publicId: string;
     /**
      * Number of matching segments found in this media
      */
@@ -1561,7 +1565,7 @@ export type ReportTargetMedia = {
     mediaId: number;
 };
 
-export type ReportTargetSegment = {
+export type ReportTargetSegmentInput = {
     /**
      * Report target type
      */
@@ -1575,16 +1579,16 @@ export type ReportTargetSegment = {
      */
     episodeNumber?: number;
     /**
-     * Segment UUID this report targets
+     * Segment public ID or UUID
      */
-    segmentUuid: string;
+    segmentId: string;
 };
 
 export type UserReportTarget = ({
     type: 'MEDIA';
 } & ReportTargetMedia) | ({
     type: 'SEGMENT';
-} & ReportTargetSegment);
+} & ReportTargetSegmentInput);
 
 export type CreateReportRequest = {
     target: UserReportTarget;
@@ -1611,6 +1615,25 @@ export type ReportTargetEpisode = {
      * Episode number this report targets
      */
     episodeNumber: number;
+};
+
+export type ReportTargetSegment = {
+    /**
+     * Report target type
+     */
+    type: 'SEGMENT';
+    /**
+     * Media ID this report targets
+     */
+    mediaId: number;
+    /**
+     * Episode number containing the segment
+     */
+    episodeNumber?: number;
+    /**
+     * Segment ID
+     */
+    segmentId: number;
 };
 
 export type ReportTarget = ({
@@ -1724,7 +1747,7 @@ export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'SHARE';
 export type UserActivity = {
     id: number;
     activityType: ActivityType;
-    segmentUuid: string;
+    segmentId: number;
     mediaId: number;
     searchQuery: string;
     mediaName: string;
@@ -1778,9 +1801,9 @@ export type Collection = {
 
 export type UserExportCollection = Collection & {
     /**
-     * Segment UUIDs in saved order
+     * Segment IDs in saved order
      */
-    segmentUuids: Array<string>;
+    segmentIds: Array<number>;
 };
 
 /**
@@ -4172,7 +4195,7 @@ export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserA
 export type TrackUserActivityData = {
     body: {
         activityType: 'SEGMENT_PLAY' | 'SHARE';
-        segmentUuid?: string;
+        segmentId?: number;
         mediaId?: number;
         mediaName?: string;
         japaneseText?: string;
@@ -4761,9 +4784,9 @@ export type UpdateCollectionResponse = UpdateCollectionResponses[keyof UpdateCol
 export type AddSegmentToCollectionData = {
     body: {
         /**
-         * UUID of the segment to add
+         * Public ID or UUID of the segment to add
          */
-        segmentUuid: string;
+        segmentId: string;
         /**
          * Optional annotation
          */
@@ -4825,12 +4848,12 @@ export type RemoveSegmentFromCollectionData = {
          */
         id: number;
         /**
-         * Segment UUID
+         * Segment ID
          */
-        uuid: string;
+        segmentId: number;
     };
     query?: never;
-    url: '/v1/collections/{id}/segments/{uuid}';
+    url: '/v1/collections/{id}/segments/{segmentId}';
 };
 
 export type RemoveSegmentFromCollectionErrors = {
@@ -4888,12 +4911,12 @@ export type UpdateCollectionSegmentData = {
          */
         id: number;
         /**
-         * Segment UUID
+         * Segment ID
          */
-        uuid: string;
+        segmentId: number;
     };
     query?: never;
-    url: '/v1/collections/{id}/segments/{uuid}';
+    url: '/v1/collections/{id}/segments/{segmentId}';
 };
 
 export type UpdateCollectionSegmentErrors = {
@@ -5675,9 +5698,9 @@ export type ListAdminReportsData = {
          */
         'target.episodeNumber'?: number;
         /**
-         * Filter by target segment UUID
+         * Filter by target segment ID
          */
-        'target.segmentUuid'?: string;
+        'target.segmentId'?: number;
         /**
          * Filter by audit run ID
          */

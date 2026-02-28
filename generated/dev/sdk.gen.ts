@@ -1137,7 +1137,7 @@ export const removeSegmentFromCollection = <ThrowOnError extends boolean = false
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/collections/{id}/segments/{uuid}',
+    url: '/v1/collections/{id}/segments/{segmentId}',
     ...options
 });
 
@@ -1153,7 +1153,7 @@ export const updateCollectionSegment = <ThrowOnError extends boolean = false>(op
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/collections/{id}/segments/{uuid}',
+    url: '/v1/collections/{id}/segments/{segmentId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
