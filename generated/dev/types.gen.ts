@@ -766,6 +766,20 @@ export type OpaqueCursorPagination = {
 export type MediaListResponse = {
     media: Array<Media>;
     pagination: OpaqueCursorPagination;
+    stats: {
+        /**
+         * Total number of media across all pages
+         */
+        totalMedia: number;
+        /**
+         * Total number of non-deleted segments
+         */
+        totalSegments: number;
+        /**
+         * Total number of episodes
+         */
+        totalEpisodes: number;
+    };
 };
 
 /**
