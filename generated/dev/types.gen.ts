@@ -182,6 +182,10 @@ export type Segment = {
      * Media ID this segment belongs to
      */
     mediaId: number;
+    /**
+     * Public ID of the media this segment belongs to
+     */
+    mediaPublicId: string;
     textJa: {
         /**
          * Original Japanese content
@@ -417,7 +421,7 @@ export type SearchResponse = {
     segments: Array<Segment>;
     includes: {
         /**
-         * Media objects keyed by mediaId
+         * Media objects keyed by media publicId
          */
         media: {
             [key: string]: Media;
@@ -667,7 +671,7 @@ export type SearchStatsResponse = {
     categories: Array<CategoryCount>;
     includes: {
         /**
-         * Media objects keyed by mediaId
+         * Media objects keyed by media publicId
          */
         media: {
             [key: string]: Media;
@@ -1145,6 +1149,10 @@ export type Series = {
      */
     id: number;
     /**
+     * Public identifier for the series
+     */
+    publicId: string;
+    /**
      * Japanese name of the series
      */
     nameJa: string;
@@ -1574,9 +1582,9 @@ export type ReportTargetMedia = {
      */
     type: 'MEDIA';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
 };
 
 export type ReportTargetSegmentInput = {
@@ -1585,9 +1593,9 @@ export type ReportTargetSegmentInput = {
      */
     type: 'SEGMENT';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Episode number containing the segment
      */
@@ -1609,7 +1617,7 @@ export type CreateReportRequest = {
     /**
      * Reason for the report
      */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER';
+    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_TITLE' | 'DUPLICATE_MEDIA' | 'WRONG_EPISODE_NUMBER' | 'IMAGE_ISSUE' | 'MISSING_EPISODES' | 'INAPPROPRIATE_CONTENT' | 'OTHER';
     /**
      * Optional description with additional details
      */
@@ -1622,9 +1630,9 @@ export type ReportTargetEpisode = {
      */
     type: 'EPISODE';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Episode number this report targets
      */
@@ -1637,17 +1645,17 @@ export type ReportTargetSegment = {
      */
     type: 'SEGMENT';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Episode number containing the segment
      */
     episodeNumber?: number;
     /**
-     * Segment ID
+     * Segment public ID or UUID
      */
-    segmentId: number;
+    segmentId: string;
 };
 
 export type ReportTarget = ({
@@ -1675,7 +1683,7 @@ export type Report = {
     /**
      * Reason for the report
      */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
+    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'WRONG_TITLE' | 'DUPLICATE_MEDIA' | 'WRONG_EPISODE_NUMBER' | 'IMAGE_ISSUE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
     /**
      * Optional description with additional details
      */
@@ -1787,6 +1795,10 @@ export type Collection = {
      * Collection ID
      */
     id: number;
+    /**
+     * Public identifier for the collection
+     */
+    publicId: string;
     /**
      * Name of the collection
      */
@@ -2759,9 +2771,9 @@ export type DeleteSeriesData = {
     body?: never;
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/series/{id}';
@@ -2809,9 +2821,9 @@ export type GetSeriesData = {
     body?: never;
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -2877,9 +2889,9 @@ export type UpdateSeriesData = {
     };
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/series/{id}';
@@ -2926,9 +2938,9 @@ export type UpdateSeriesResponse = UpdateSeriesResponses[keyof UpdateSeriesRespo
 export type AddMediaToSeriesData = {
     body: {
         /**
-         * Media ID to add
+         * Media public ID to add
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Position in the series (1-indexed)
          */
@@ -2936,9 +2948,9 @@ export type AddMediaToSeriesData = {
     };
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/series/{id}/media';
@@ -2986,13 +2998,13 @@ export type RemoveMediaFromSeriesData = {
     body?: never;
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
         /**
-         * Media ID
+         * Media public ID
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: never;
     url: '/v1/media/series/{id}/media/{mediaId}';
@@ -3045,13 +3057,13 @@ export type UpdateSeriesMediaData = {
     };
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
         /**
-         * Media ID
+         * Media public ID
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: never;
     url: '/v1/media/series/{id}/media/{mediaId}';
@@ -3099,7 +3111,7 @@ export type GetCharacterData = {
     body?: never;
     path: {
         /**
-         * Internal character ID
+         * Character ID
          */
         id: number;
     };
@@ -3199,9 +3211,9 @@ export type DeleteMediaData = {
     body?: never;
     path: {
         /**
-         * Media ID
+         * Media public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/{id}';
@@ -3249,9 +3261,9 @@ export type GetMediaData = {
     body?: never;
     path: {
         /**
-         * Media ID
+         * Media public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -3304,9 +3316,9 @@ export type UpdateMediaData = {
     body: MediaUpdateRequest;
     path: {
         /**
-         * Media ID
+         * Media public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/{id}';
@@ -3354,9 +3366,9 @@ export type ListEpisodesData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: {
         /**
@@ -3413,9 +3425,9 @@ export type CreateEpisodeData = {
     body: EpisodeCreateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: never;
     url: '/v1/media/{mediaId}/episodes';
@@ -3467,9 +3479,9 @@ export type DeleteEpisodeData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3521,9 +3533,9 @@ export type GetEpisodeData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3575,9 +3587,9 @@ export type UpdateEpisodeData = {
     body: EpisodeUpdateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3629,9 +3641,9 @@ export type ListSegmentsData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3698,9 +3710,9 @@ export type CreateSegmentData = {
     body: SegmentCreateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3756,9 +3768,9 @@ export type CreateSegmentsBatchData = {
     body: SegmentBatchCreateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3819,9 +3831,9 @@ export type DeleteSegmentData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3877,9 +3889,9 @@ export type GetSegmentData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3935,9 +3947,9 @@ export type UpdateSegmentData = {
     body: SegmentUpdateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -4637,9 +4649,9 @@ export type DeleteCollectionData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}';
@@ -4687,9 +4699,9 @@ export type GetCollectionData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -4749,9 +4761,9 @@ export type UpdateCollectionData = {
     };
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}';
@@ -4808,9 +4820,9 @@ export type AddSegmentToCollectionData = {
     };
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}/segments';
@@ -4858,9 +4870,9 @@ export type RemoveSegmentFromCollectionData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
         /**
          * Segment ID
          */
@@ -4921,9 +4933,9 @@ export type UpdateCollectionSegmentData = {
     };
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
         /**
          * Segment ID
          */
@@ -4975,9 +4987,9 @@ export type SearchCollectionSegmentsData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -5034,9 +5046,9 @@ export type GetCollectionStatsData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}/stats';
