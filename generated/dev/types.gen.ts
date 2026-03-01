@@ -1609,7 +1609,7 @@ export type CreateReportRequest = {
     /**
      * Reason for the report
      */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER';
+    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER';
     /**
      * Optional description with additional details
      */
@@ -1675,7 +1675,7 @@ export type Report = {
     /**
      * Reason for the report
      */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
+    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
     /**
      * Optional description with additional details
      */
@@ -6053,3 +6053,89 @@ export type GetAdminMediaAuditRunResponses = {
 };
 
 export type GetAdminMediaAuditRunResponse = GetAdminMediaAuditRunResponses[keyof GetAdminMediaAuditRunResponses];
+
+export type GetAnnouncementData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/announcement';
+};
+
+export type GetAnnouncementErrors = {
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAnnouncementError = GetAnnouncementErrors[keyof GetAnnouncementErrors];
+
+export type GetAnnouncementResponses = {
+    /**
+     * OK
+     */
+    200: {
+        message: string;
+        type: 'info' | 'warning' | 'maintenance';
+        active: boolean;
+    };
+    /**
+     * No announcement set
+     */
+    204: void;
+};
+
+export type GetAnnouncementResponse = GetAnnouncementResponses[keyof GetAnnouncementResponses];
+
+export type UpdateAnnouncementData = {
+    body: {
+        message: string;
+        type: 'info' | 'warning' | 'maintenance';
+        active: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/admin/announcement';
+};
+
+export type UpdateAnnouncementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (session)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UpdateAnnouncementError = UpdateAnnouncementErrors[keyof UpdateAnnouncementErrors];
+
+export type UpdateAnnouncementResponses = {
+    /**
+     * Announcement updated
+     */
+    200: {
+        message: string;
+        type: 'info' | 'warning' | 'maintenance';
+        active: boolean;
+    };
+};
+
+export type UpdateAnnouncementResponse = UpdateAnnouncementResponses[keyof UpdateAnnouncementResponses];

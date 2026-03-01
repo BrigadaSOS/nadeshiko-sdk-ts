@@ -3,7 +3,7 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement } from './sdk.gen';
 
 type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);
 
@@ -106,6 +106,8 @@ export type NadeshikoClient = {
     runAdminMediaAudit: typeof runAdminMediaAudit;
     listAdminMediaAuditRuns: typeof listAdminMediaAuditRuns;
     getAdminMediaAuditRun: typeof getAdminMediaAuditRun;
+    getAnnouncement: typeof getAnnouncement;
+    updateAnnouncement: typeof updateAnnouncement;
   };
 
 const defaultSessionTokenGetter = (): string | undefined => {
@@ -219,6 +221,8 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     runAdminMediaAudit: (options?: any) => runAdminMediaAudit({ ...options, client: clientInstance }),
     listAdminMediaAuditRuns: (options?: any) => listAdminMediaAuditRuns({ ...options, client: clientInstance }),
     getAdminMediaAuditRun: (options?: any) => getAdminMediaAuditRun({ ...options, client: clientInstance }),
+    getAnnouncement: (options?: any) => getAnnouncement({ ...options, client: clientInstance }),
+    updateAnnouncement: (options?: any) => updateAnnouncement({ ...options, client: clientInstance }),
   };
 }
 
