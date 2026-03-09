@@ -259,6 +259,10 @@ export type ExternalId = {
      * TVDB ID
      */
     tvdb?: string;
+    /**
+     * TMDB ID
+     */
+    tmdb?: string;
 };
 
 /**
@@ -380,7 +384,7 @@ export type Media = {
     /**
      * Animation studio that produced the media
      */
-    studio: string;
+    studio?: string;
     /**
      * Airing season label for the media
      */
@@ -880,7 +884,7 @@ export type MediaCreateRequest = {
     /**
      * Animation studio that produced the media
      */
-    studio: string;
+    studio?: string;
     /**
      * Airing season label for the media
      */
