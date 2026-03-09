@@ -1773,7 +1773,7 @@ export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'SHARE';
 export type UserActivity = {
     id: number;
     activityType: ActivityType;
-    segmentId: number;
+    segmentId: string;
     mediaId: number;
     searchQuery: string;
     mediaName: string;
@@ -4224,11 +4224,12 @@ export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserA
 
 export type TrackUserActivityData = {
     body: {
-        activityType: 'SEGMENT_PLAY' | 'SHARE';
-        segmentId?: number;
+        activityType: 'SEARCH' | 'SEGMENT_PLAY' | 'SHARE';
+        segmentId?: string;
         mediaId?: number;
         mediaName?: string;
         japaneseText?: string;
+        searchQuery?: string;
     };
     path?: never;
     query?: never;
