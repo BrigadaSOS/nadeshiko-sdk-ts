@@ -3,7 +3,7 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, createMedia, autocompleteMedia, updateSegmentByUuid, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement } from './sdk.gen';
 
 type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);
 
@@ -24,8 +24,9 @@ export interface NadeshikoConfig {
 
 const environments = {
   LOCAL: 'http://localhost:5000/api',
-  DEVELOPMENT: 'https://api.dev.brigadasos.xyz/api',
-  PRODUCTION: 'https://api.brigadasos.xyz/api',
+  DEVELOPMENT: 'https://api-dev.nadeshiko.co',
+  PRODUCTION: 'https://api.nadeshiko.co',
+  PROXY: '',
 } as const;
 
 export type NadeshikoClient = {
@@ -44,19 +45,10 @@ export type NadeshikoClient = {
     listEpisodes: typeof listEpisodes;
     getEpisode: typeof getEpisode;
     getSegment: typeof getSegment;
-    listCollections: typeof listCollections;
-    createCollection: typeof createCollection;
-    getCollection: typeof getCollection;
-    updateCollection: typeof updateCollection;
-    deleteCollection: typeof deleteCollection;
-    addSegmentToCollection: typeof addSegmentToCollection;
-    updateCollectionSegment: typeof updateCollectionSegment;
-    removeSegmentFromCollection: typeof removeSegmentFromCollection;
-    searchCollectionSegments: typeof searchCollectionSegments;
-    getCollectionStats: typeof getCollectionStats;
     createMedia: typeof createMedia;
     autocompleteMedia: typeof autocompleteMedia;
     updateSegmentByUuid: typeof updateSegmentByUuid;
+    listSegmentRevisions: typeof listSegmentRevisions;
     createSeries: typeof createSeries;
     updateSeries: typeof updateSeries;
     deleteSeries: typeof deleteSeries;
@@ -70,6 +62,7 @@ export type NadeshikoClient = {
     deleteEpisode: typeof deleteEpisode;
     listSegments: typeof listSegments;
     createSegment: typeof createSegment;
+    createSegmentsBatch: typeof createSegmentsBatch;
     updateSegment: typeof updateSegment;
     deleteSegment: typeof deleteSegment;
     getUserQuota: typeof getUserQuota;
@@ -87,6 +80,16 @@ export type NadeshikoClient = {
     listUserLabs: typeof listUserLabs;
     enrollUserLab: typeof enrollUserLab;
     unenrollUserLab: typeof unenrollUserLab;
+    listCollections: typeof listCollections;
+    createCollection: typeof createCollection;
+    getCollection: typeof getCollection;
+    updateCollection: typeof updateCollection;
+    deleteCollection: typeof deleteCollection;
+    addSegmentToCollection: typeof addSegmentToCollection;
+    updateCollectionSegment: typeof updateCollectionSegment;
+    removeSegmentFromCollection: typeof removeSegmentFromCollection;
+    searchCollectionSegments: typeof searchCollectionSegments;
+    getCollectionStats: typeof getCollectionStats;
     getAdminDashboard: typeof getAdminDashboard;
     getAdminHealth: typeof getAdminHealth;
     triggerReindex: typeof triggerReindex;
@@ -104,6 +107,8 @@ export type NadeshikoClient = {
     runAdminMediaAudit: typeof runAdminMediaAudit;
     listAdminMediaAuditRuns: typeof listAdminMediaAuditRuns;
     getAdminMediaAuditRun: typeof getAdminMediaAuditRun;
+    getAnnouncement: typeof getAnnouncement;
+    updateAnnouncement: typeof updateAnnouncement;
   };
 
 const defaultSessionTokenGetter = (): string | undefined => {
@@ -155,19 +160,10 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listEpisodes: (options?: any) => listEpisodes({ ...options, client: clientInstance }),
     getEpisode: (options?: any) => getEpisode({ ...options, client: clientInstance }),
     getSegment: (options?: any) => getSegment({ ...options, client: clientInstance }),
-    listCollections: (options?: any) => listCollections({ ...options, client: clientInstance }),
-    createCollection: (options?: any) => createCollection({ ...options, client: clientInstance }),
-    getCollection: (options?: any) => getCollection({ ...options, client: clientInstance }),
-    updateCollection: (options?: any) => updateCollection({ ...options, client: clientInstance }),
-    deleteCollection: (options?: any) => deleteCollection({ ...options, client: clientInstance }),
-    addSegmentToCollection: (options?: any) => addSegmentToCollection({ ...options, client: clientInstance }),
-    updateCollectionSegment: (options?: any) => updateCollectionSegment({ ...options, client: clientInstance }),
-    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ ...options, client: clientInstance }),
-    searchCollectionSegments: (options?: any) => searchCollectionSegments({ ...options, client: clientInstance }),
-    getCollectionStats: (options?: any) => getCollectionStats({ ...options, client: clientInstance }),
     createMedia: (options?: any) => createMedia({ ...options, client: clientInstance }),
     autocompleteMedia: (options?: any) => autocompleteMedia({ ...options, client: clientInstance }),
     updateSegmentByUuid: (options?: any) => updateSegmentByUuid({ ...options, client: clientInstance }),
+    listSegmentRevisions: (options?: any) => listSegmentRevisions({ ...options, client: clientInstance }),
     createSeries: (options?: any) => createSeries({ ...options, client: clientInstance }),
     updateSeries: (options?: any) => updateSeries({ ...options, client: clientInstance }),
     deleteSeries: (options?: any) => deleteSeries({ ...options, client: clientInstance }),
@@ -181,6 +177,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     deleteEpisode: (options?: any) => deleteEpisode({ ...options, client: clientInstance }),
     listSegments: (options?: any) => listSegments({ ...options, client: clientInstance }),
     createSegment: (options?: any) => createSegment({ ...options, client: clientInstance }),
+    createSegmentsBatch: (options?: any) => createSegmentsBatch({ ...options, client: clientInstance }),
     updateSegment: (options?: any) => updateSegment({ ...options, client: clientInstance }),
     deleteSegment: (options?: any) => deleteSegment({ ...options, client: clientInstance }),
     getUserQuota: (options?: any) => getUserQuota({ ...options, client: clientInstance }),
@@ -198,6 +195,16 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listUserLabs: (options?: any) => listUserLabs({ ...options, client: clientInstance }),
     enrollUserLab: (options?: any) => enrollUserLab({ ...options, client: clientInstance }),
     unenrollUserLab: (options?: any) => unenrollUserLab({ ...options, client: clientInstance }),
+    listCollections: (options?: any) => listCollections({ ...options, client: clientInstance }),
+    createCollection: (options?: any) => createCollection({ ...options, client: clientInstance }),
+    getCollection: (options?: any) => getCollection({ ...options, client: clientInstance }),
+    updateCollection: (options?: any) => updateCollection({ ...options, client: clientInstance }),
+    deleteCollection: (options?: any) => deleteCollection({ ...options, client: clientInstance }),
+    addSegmentToCollection: (options?: any) => addSegmentToCollection({ ...options, client: clientInstance }),
+    updateCollectionSegment: (options?: any) => updateCollectionSegment({ ...options, client: clientInstance }),
+    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ ...options, client: clientInstance }),
+    searchCollectionSegments: (options?: any) => searchCollectionSegments({ ...options, client: clientInstance }),
+    getCollectionStats: (options?: any) => getCollectionStats({ ...options, client: clientInstance }),
     getAdminDashboard: (options?: any) => getAdminDashboard({ ...options, client: clientInstance }),
     getAdminHealth: (options?: any) => getAdminHealth({ ...options, client: clientInstance }),
     triggerReindex: (options?: any) => triggerReindex({ ...options, client: clientInstance }),
@@ -215,6 +222,8 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     runAdminMediaAudit: (options?: any) => runAdminMediaAudit({ ...options, client: clientInstance }),
     listAdminMediaAuditRuns: (options?: any) => listAdminMediaAuditRuns({ ...options, client: clientInstance }),
     getAdminMediaAuditRun: (options?: any) => getAdminMediaAuditRun({ ...options, client: clientInstance }),
+    getAnnouncement: (options?: any) => getAnnouncement({ ...options, client: clientInstance }),
+    updateAnnouncement: (options?: any) => updateAnnouncement({ ...options, client: clientInstance }),
   };
 }
 

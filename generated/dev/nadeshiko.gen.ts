@@ -24,8 +24,9 @@ export interface NadeshikoConfig {
 
 const environments = {
   LOCAL: 'http://localhost:5000/api',
-  DEVELOPMENT: 'https://api.dev.brigadasos.xyz/api',
-  PRODUCTION: 'https://api.brigadasos.xyz/api',
+  DEVELOPMENT: 'https://api-dev.nadeshiko.co',
+  PRODUCTION: 'https://api.nadeshiko.co',
+  PROXY: '',
 } as const;
 
 export type NadeshikoClient = {

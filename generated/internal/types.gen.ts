@@ -9,9 +9,9 @@ export type ClientOptions = {
  */
 export type MediaFilterItem = {
     /**
-     * Media ID to filter
+     * Media identifier (publicId or AniList external ID)
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Specific episodes (omit for all episodes)
      */
@@ -154,6 +154,10 @@ export type Segment = {
      */
     uuid: string;
     /**
+     * Public identifier for the segment (use this instead of uuid in public URLs)
+     */
+    publicId: string;
+    /**
      * Position of the segment within the episode
      */
     position: number;
@@ -178,6 +182,10 @@ export type Segment = {
      * Media ID this segment belongs to
      */
     mediaId: number;
+    /**
+     * Public ID of the media this segment belongs to
+     */
+    mediaPublicId: string;
     textJa: {
         /**
          * Original Japanese content
@@ -251,6 +259,10 @@ export type ExternalId = {
      * TVDB ID
      */
     tvdb?: string;
+    /**
+     * TMDB ID
+     */
+    tmdb?: string;
 };
 
 /**
@@ -261,6 +273,10 @@ export type Seiyuu = {
      * Internal seiyuu ID
      */
     id: number;
+    /**
+     * Public identifier for the seiyuu (use this in public URLs)
+     */
+    publicId: string;
     externalIds: ExternalId;
     /**
      * Japanese name of the voice actor
@@ -308,9 +324,13 @@ export type MediaCharacter = {
  */
 export type Media = {
     /**
-     * Unique identifier for the media
+     * Internal unique identifier for the media
      */
     id: number;
+    /**
+     * Public identifier for the media (use this in public URLs)
+     */
+    publicId: string;
     externalIds: ExternalId;
     /**
      * Original Japanese name of the media
@@ -364,7 +384,7 @@ export type Media = {
     /**
      * Animation studio that produced the media
      */
-    studio: string;
+    studio?: string;
     /**
      * Airing season label for the media
      */
@@ -405,7 +425,7 @@ export type SearchResponse = {
     segments: Array<Segment>;
     includes: {
         /**
-         * Media objects keyed by mediaId
+         * Media objects keyed by media publicId
          */
         media: {
             [key: string]: Media;
@@ -624,6 +644,10 @@ export type MediaSearchStats = {
      */
     mediaId: number;
     /**
+     * Public identifier for use in URLs and filters
+     */
+    publicId: string;
+    /**
      * Number of matching segments found in this media
      */
     matchCount: number;
@@ -651,7 +675,7 @@ export type SearchStatsResponse = {
     categories: Array<CategoryCount>;
     includes: {
         /**
-         * Media objects keyed by mediaId
+         * Media objects keyed by media publicId
          */
         media: {
             [key: string]: Media;
@@ -750,6 +774,20 @@ export type OpaqueCursorPagination = {
 export type MediaListResponse = {
     media: Array<Media>;
     pagination: OpaqueCursorPagination;
+    stats: {
+        /**
+         * Total number of media across all pages
+         */
+        totalMedia: number;
+        /**
+         * Total number of non-deleted segments
+         */
+        totalSegments: number;
+        /**
+         * Total number of episodes
+         */
+        totalEpisodes: number;
+    };
 };
 
 /**
@@ -846,7 +884,7 @@ export type MediaCreateRequest = {
     /**
      * Animation studio that produced the media
      */
-    studio: string;
+    studio?: string;
     /**
      * Airing season label for the media
      */
@@ -901,8 +939,67 @@ export type Error409 = {
     };
 };
 
+/**
+ * Slim media item returned by autocomplete (names + cover only)
+ */
+export type MediaAutocompleteItem = {
+    /**
+     * Unique identifier for the media
+     */
+    id: number;
+    /**
+     * Original Japanese name of the media
+     */
+    nameJa: string;
+    /**
+     * Romaji transliteration of the media name
+     */
+    nameRomaji: string;
+    /**
+     * English name of the media
+     */
+    nameEn: string;
+    /**
+     * Full URL to the cover image
+     */
+    coverUrl: string;
+    category: Category;
+};
+
 export type MediaAutocompleteResponse = {
-    media: Array<Media>;
+    media: Array<MediaAutocompleteItem>;
+};
+
+/**
+ * Segment with internal fields. For write operations (create, update) all fields are always populated.
+ * For GET, optional fields are only populated when requested via include[].
+ *
+ */
+export type SegmentInternal = Segment & {
+    /**
+     * Storage backend for segment assets
+     */
+    storage?: 'LOCAL' | 'R2';
+    /**
+     * Hash identifier for the segment
+     */
+    hashedId?: string;
+    /**
+     * Base path in the storage backend
+     */
+    storageBasePath?: string;
+    /**
+     * Raw WD Tagger v3 classifier output used to derive content rating
+     */
+    ratingAnalysis?: {
+        [key: string]: unknown;
+    };
+    /**
+     * POS tokenization results keyed by engine (sudachi, unidic)
+     */
+    posAnalysis?: {
+        [key: string]: unknown;
+    };
 };
 
 /**
@@ -1010,36 +1107,6 @@ export type SegmentUpdateRequest = {
     hashedId?: string;
 };
 
-/**
- * Segment with internal fields (for internal API responses)
- */
-export type SegmentInternal = Segment & {
-    /**
-     * Storage backend for segment assets
-     */
-    storage: 'LOCAL' | 'R2';
-    /**
-     * Hash identifier for the segment
-     */
-    hashedId: string;
-    /**
-     * Base path in the storage backend
-     */
-    storageBasePath: string;
-    /**
-     * Raw WD Tagger v3 classifier output used to derive content rating
-     */
-    ratingAnalysis: {
-        [key: string]: unknown;
-    };
-    /**
-     * POS tokenization results keyed by engine (sudachi, unidic)
-     */
-    posAnalysis: {
-        [key: string]: unknown;
-    };
-};
-
 export type SegmentContextResponse = {
     segments: Array<Segment>;
     includes: {
@@ -1052,6 +1119,31 @@ export type SegmentContextResponse = {
     };
 };
 
+export type SegmentRevision = {
+    /**
+     * Revision ID
+     */
+    id: number;
+    /**
+     * Sequential revision number per segment
+     */
+    revisionNumber: number;
+    /**
+     * Snapshot of editable fields at the time of the revision
+     */
+    snapshot: {
+        [key: string]: unknown;
+    };
+    /**
+     * Name of the user who made the change
+     */
+    userName?: string;
+    /**
+     * When the revision was created
+     */
+    createdAt: string;
+};
+
 /**
  * Ordered media series grouping
  */
@@ -1060,6 +1152,10 @@ export type Series = {
      * Series ID
      */
     id: number;
+    /**
+     * Public identifier for the series
+     */
+    publicId: string;
     /**
      * Japanese name of the series
      */
@@ -1119,6 +1215,10 @@ export type Character = {
      * Internal character ID
      */
     id: number;
+    /**
+     * Public identifier for the character (use this in public URLs)
+     */
+    publicId: string;
     externalIds: ExternalId;
     /**
      * Japanese name of the character
@@ -1449,6 +1549,10 @@ export type SegmentCreateRequest = {
     hashedId: string;
 };
 
+export type SegmentBatchCreateRequest = {
+    segments: Array<SegmentCreateRequest>;
+};
+
 export type UserQuotaResponse = {
     /**
      * Number of API requests used in the current billing period.
@@ -1482,42 +1586,42 @@ export type ReportTargetMedia = {
      */
     type: 'MEDIA';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
 };
 
-export type ReportTargetSegment = {
+export type ReportTargetSegmentInput = {
     /**
      * Report target type
      */
     type: 'SEGMENT';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Episode number containing the segment
      */
     episodeNumber?: number;
     /**
-     * Segment UUID this report targets
+     * Segment public ID or UUID
      */
-    segmentUuid: string;
+    segmentId: string;
 };
 
 export type UserReportTarget = ({
     type: 'MEDIA';
 } & ReportTargetMedia) | ({
     type: 'SEGMENT';
-} & ReportTargetSegment);
+} & ReportTargetSegmentInput);
 
 export type CreateReportRequest = {
     target: UserReportTarget;
     /**
      * Reason for the report
      */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER';
+    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_TITLE' | 'DUPLICATE_MEDIA' | 'WRONG_EPISODE_NUMBER' | 'IMAGE_ISSUE' | 'MISSING_EPISODES' | 'INAPPROPRIATE_CONTENT' | 'OTHER';
     /**
      * Optional description with additional details
      */
@@ -1530,13 +1634,32 @@ export type ReportTargetEpisode = {
      */
     type: 'EPISODE';
     /**
-     * Media ID this report targets
+     * Public ID of the media this report targets
      */
-    mediaId: number;
+    mediaId: string;
     /**
      * Episode number this report targets
      */
     episodeNumber: number;
+};
+
+export type ReportTargetSegment = {
+    /**
+     * Report target type
+     */
+    type: 'SEGMENT';
+    /**
+     * Public ID of the media this report targets
+     */
+    mediaId: string;
+    /**
+     * Episode number containing the segment
+     */
+    episodeNumber?: number;
+    /**
+     * Segment public ID or UUID
+     */
+    segmentId: string;
 };
 
 export type ReportTarget = ({
@@ -1564,7 +1687,7 @@ export type Report = {
     /**
      * Reason for the report
      */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
+    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'WRONG_TITLE' | 'DUPLICATE_MEDIA' | 'WRONG_EPISODE_NUMBER' | 'IMAGE_ISSUE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
     /**
      * Optional description with additional details
      */
@@ -1645,17 +1768,27 @@ export type UserPreferences = {
 /**
  * Type of user activity
  */
-export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'LIST_ADD_SEGMENT';
+export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'SHARE';
 
 export type UserActivity = {
     id: number;
     activityType: ActivityType;
-    segmentUuid: string;
+    segmentId: number;
     mediaId: number;
     searchQuery: string;
     mediaName: string;
     japaneseText: string;
     createdAt: string;
+};
+
+/**
+ * Activity counts for a single day, broken down by type. Only types with at least 1 event are present.
+ */
+export type HeatmapDayCounts = {
+    SEARCH?: number;
+    SEGMENT_PLAY?: number;
+    ANKI_EXPORT?: number;
+    SHARE?: number;
 };
 
 /**
@@ -1667,9 +1800,17 @@ export type Collection = {
      */
     id: number;
     /**
+     * Public identifier for the collection
+     */
+    publicId: string;
+    /**
      * Name of the collection
      */
     name: string;
+    /**
+     * Type of the collection
+     */
+    type: 'USER' | 'ANKI_EXPORT';
     /**
      * Visibility of the collection
      */
@@ -1690,9 +1831,9 @@ export type Collection = {
 
 export type UserExportCollection = Collection & {
     /**
-     * Segment UUIDs in saved order
+     * Segment IDs in saved order
      */
-    segmentUuids: Array<string>;
+    segmentIds: Array<number>;
 };
 
 /**
@@ -2035,7 +2176,7 @@ export type SearchErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2076,7 +2217,7 @@ export type GetSearchStatsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2117,7 +2258,7 @@ export type SearchWordsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2179,7 +2320,7 @@ export type ListMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2220,7 +2361,7 @@ export type CreateMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2278,7 +2419,7 @@ export type AutocompleteMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2310,11 +2451,16 @@ export type GetSegmentByUuidData = {
     body?: never;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Additional internal fields to include in the response
+         */
+        include?: Array<'ratingAnalysis' | 'posAnalysis' | 'hashedId' | 'storageBasePath' | 'storage'>;
+    };
     url: '/v1/media/segments/{uuid}';
 };
 
@@ -2324,7 +2470,7 @@ export type GetSegmentByUuidErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key or session)
      */
     401: Error401;
     /**
@@ -2349,9 +2495,9 @@ export type GetSegmentByUuidError = GetSegmentByUuidErrors[keyof GetSegmentByUui
 
 export type GetSegmentByUuidResponses = {
     /**
-     * OK
+     * Single segment response with internal fields
      */
-    200: Segment;
+    200: SegmentInternal;
 };
 
 export type GetSegmentByUuidResponse = GetSegmentByUuidResponses[keyof GetSegmentByUuidResponses];
@@ -2360,7 +2506,7 @@ export type UpdateSegmentByUuidData = {
     body: SegmentUpdateRequest;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };
@@ -2374,7 +2520,7 @@ export type UpdateSegmentByUuidErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key or session)
      */
     401: Error401;
     /**
@@ -2410,7 +2556,7 @@ export type GetSegmentContextData = {
     body?: never;
     path: {
         /**
-         * Segment UUID
+         * Segment UUID or publicId
          */
         uuid: string;
     };
@@ -2433,7 +2579,7 @@ export type GetSegmentContextErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key or session)
      */
     401: Error401;
     /**
@@ -2465,6 +2611,58 @@ export type GetSegmentContextResponses = {
 
 export type GetSegmentContextResponse = GetSegmentContextResponses[keyof GetSegmentContextResponses];
 
+export type ListSegmentRevisionsData = {
+    body?: never;
+    path: {
+        /**
+         * Segment UUID or publicId
+         */
+        uuid: string;
+    };
+    query?: never;
+    url: '/v1/media/segments/{uuid}/revisions';
+};
+
+export type ListSegmentRevisionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (API key or session)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ListSegmentRevisionsError = ListSegmentRevisionsErrors[keyof ListSegmentRevisionsErrors];
+
+export type ListSegmentRevisionsResponses = {
+    /**
+     * List of segment revisions
+     */
+    200: {
+        revisions: Array<SegmentRevision>;
+    };
+};
+
+export type ListSegmentRevisionsResponse = ListSegmentRevisionsResponses[keyof ListSegmentRevisionsResponses];
+
 export type ListSeriesData = {
     body?: never;
     path?: never;
@@ -2491,7 +2689,7 @@ export type ListSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2545,7 +2743,7 @@ export type CreateSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2577,9 +2775,9 @@ export type DeleteSeriesData = {
     body?: never;
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/series/{id}';
@@ -2591,7 +2789,7 @@ export type DeleteSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2627,9 +2825,9 @@ export type GetSeriesData = {
     body?: never;
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -2646,7 +2844,7 @@ export type GetSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2695,9 +2893,9 @@ export type UpdateSeriesData = {
     };
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/series/{id}';
@@ -2709,7 +2907,7 @@ export type UpdateSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2744,9 +2942,9 @@ export type UpdateSeriesResponse = UpdateSeriesResponses[keyof UpdateSeriesRespo
 export type AddMediaToSeriesData = {
     body: {
         /**
-         * Media ID to add
+         * Media public ID to add
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Position in the series (1-indexed)
          */
@@ -2754,9 +2952,9 @@ export type AddMediaToSeriesData = {
     };
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/series/{id}/media';
@@ -2768,7 +2966,7 @@ export type AddMediaToSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2804,13 +3002,13 @@ export type RemoveMediaFromSeriesData = {
     body?: never;
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
         /**
-         * Media ID
+         * Media public ID
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: never;
     url: '/v1/media/series/{id}/media/{mediaId}';
@@ -2822,7 +3020,7 @@ export type RemoveMediaFromSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2863,13 +3061,13 @@ export type UpdateSeriesMediaData = {
     };
     path: {
         /**
-         * Series ID
+         * Series public ID
          */
-        id: number;
+        id: string;
         /**
-         * Media ID
+         * Media public ID
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: never;
     url: '/v1/media/series/{id}/media/{mediaId}';
@@ -2881,7 +3079,7 @@ export type UpdateSeriesMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2917,7 +3115,7 @@ export type GetCharacterData = {
     body?: never;
     path: {
         /**
-         * Internal character ID
+         * Character ID
          */
         id: number;
     };
@@ -2931,7 +3129,7 @@ export type GetCharacterErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -2981,7 +3179,7 @@ export type GetSeiyuuErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3017,9 +3215,9 @@ export type DeleteMediaData = {
     body?: never;
     path: {
         /**
-         * Media ID
+         * Media public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/{id}';
@@ -3031,7 +3229,7 @@ export type DeleteMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3067,9 +3265,9 @@ export type GetMediaData = {
     body?: never;
     path: {
         /**
-         * Media ID
+         * Media public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -3086,7 +3284,7 @@ export type GetMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3122,9 +3320,9 @@ export type UpdateMediaData = {
     body: MediaUpdateRequest;
     path: {
         /**
-         * Media ID
+         * Media public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/media/{id}';
@@ -3136,7 +3334,7 @@ export type UpdateMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3172,9 +3370,9 @@ export type ListEpisodesData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: {
         /**
@@ -3195,7 +3393,7 @@ export type ListEpisodesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3231,9 +3429,9 @@ export type CreateEpisodeData = {
     body: EpisodeCreateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
     };
     query?: never;
     url: '/v1/media/{mediaId}/episodes';
@@ -3245,7 +3443,7 @@ export type CreateEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3285,9 +3483,9 @@ export type DeleteEpisodeData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3303,7 +3501,7 @@ export type DeleteEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3339,9 +3537,9 @@ export type GetEpisodeData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3357,7 +3555,7 @@ export type GetEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3393,9 +3591,9 @@ export type UpdateEpisodeData = {
     body: EpisodeUpdateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3411,7 +3609,7 @@ export type UpdateEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3447,9 +3645,9 @@ export type ListSegmentsData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3474,7 +3672,7 @@ export type ListSegmentsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3516,9 +3714,9 @@ export type CreateSegmentData = {
     body: SegmentCreateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3534,7 +3732,7 @@ export type CreateSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3570,13 +3768,76 @@ export type CreateSegmentResponses = {
 
 export type CreateSegmentResponse = CreateSegmentResponses[keyof CreateSegmentResponses];
 
+export type CreateSegmentsBatchData = {
+    body: SegmentBatchCreateRequest;
+    path: {
+        /**
+         * Public ID of the media
+         */
+        mediaId: string;
+        /**
+         * Episode number
+         */
+        episodeNumber: number;
+    };
+    query?: never;
+    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/batch';
+};
+
+export type CreateSegmentsBatchErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (API key)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CreateSegmentsBatchError = CreateSegmentsBatchErrors[keyof CreateSegmentsBatchErrors];
+
+export type CreateSegmentsBatchResponses = {
+    /**
+     * Batch segment creation result
+     */
+    201: {
+        /**
+         * Number of segments successfully created
+         */
+        created: number;
+        /**
+         * Number of segments skipped due to duplicate UUIDs
+         */
+        skipped: number;
+    };
+};
+
+export type CreateSegmentsBatchResponse = CreateSegmentsBatchResponses[keyof CreateSegmentsBatchResponses];
+
 export type DeleteSegmentData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3596,7 +3857,7 @@ export type DeleteSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3632,9 +3893,9 @@ export type GetSegmentData = {
     body?: never;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3654,7 +3915,7 @@ export type GetSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3690,9 +3951,9 @@ export type UpdateSegmentData = {
     body: SegmentUpdateRequest;
     path: {
         /**
-         * ID of the media
+         * Public ID of the media
          */
-        mediaId: number;
+        mediaId: string;
         /**
          * Episode number
          */
@@ -3712,7 +3973,7 @@ export type UpdateSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (API key)
      */
     401: Error401;
     /**
@@ -3963,8 +4224,8 @@ export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserA
 
 export type TrackUserActivityData = {
     body: {
-        activityType: 'SEGMENT_PLAY';
-        segmentUuid?: string;
+        activityType: 'SEGMENT_PLAY' | 'SHARE';
+        segmentId?: number;
         mediaId?: number;
         mediaName?: string;
         japaneseText?: string;
@@ -4008,10 +4269,6 @@ export type GetUserActivityHeatmapData = {
          * Number of days to include in the heatmap
          */
         days?: number;
-        /**
-         * Filter by activity type
-         */
-        activityType?: ActivityType;
     };
     url: '/v1/user/activity/heatmap';
 };
@@ -4035,10 +4292,10 @@ export type GetUserActivityHeatmapResponses = {
      */
     200: {
         /**
-         * Map of YYYY-MM-DD date strings to activity activityByDay
+         * Map of YYYY-MM-DD date strings to per-type activity counts
          */
         activityByDay: {
-            [key: string]: number;
+            [key: string]: HeatmapDayCounts;
         };
     };
 };
@@ -4079,6 +4336,7 @@ export type GetUserActivityStatsResponses = {
         totalExports: number;
         totalPlays: number;
         totalListAdds: number;
+        totalShares: number;
         topMedia: Array<{
             mediaId: number;
             count: number;
@@ -4395,9 +4653,9 @@ export type DeleteCollectionData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}';
@@ -4445,9 +4703,9 @@ export type GetCollectionData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -4507,9 +4765,9 @@ export type UpdateCollectionData = {
     };
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}';
@@ -4556,9 +4814,9 @@ export type UpdateCollectionResponse = UpdateCollectionResponses[keyof UpdateCol
 export type AddSegmentToCollectionData = {
     body: {
         /**
-         * UUID of the segment to add
+         * Public ID or UUID of the segment to add
          */
-        segmentUuid: string;
+        segmentId: string;
         /**
          * Optional annotation
          */
@@ -4566,9 +4824,9 @@ export type AddSegmentToCollectionData = {
     };
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}/segments';
@@ -4616,16 +4874,16 @@ export type RemoveSegmentFromCollectionData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
         /**
-         * Segment UUID
+         * Segment ID
          */
-        uuid: string;
+        segmentId: number;
     };
     query?: never;
-    url: '/v1/collections/{id}/segments/{uuid}';
+    url: '/v1/collections/{id}/segments/{segmentId}';
 };
 
 export type RemoveSegmentFromCollectionErrors = {
@@ -4679,16 +4937,16 @@ export type UpdateCollectionSegmentData = {
     };
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
         /**
-         * Segment UUID
+         * Segment ID
          */
-        uuid: string;
+        segmentId: number;
     };
     query?: never;
-    url: '/v1/collections/{id}/segments/{uuid}';
+    url: '/v1/collections/{id}/segments/{segmentId}';
 };
 
 export type UpdateCollectionSegmentErrors = {
@@ -4733,9 +4991,9 @@ export type SearchCollectionSegmentsData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: {
         /**
@@ -4792,9 +5050,9 @@ export type GetCollectionStatsData = {
     body?: never;
     path: {
         /**
-         * Collection ID
+         * Collection public ID
          */
-        id: number;
+        id: string;
     };
     query?: never;
     url: '/v1/collections/{id}/stats';
@@ -4847,7 +5105,7 @@ export type GetAdminDashboardData = {
 
 export type GetAdminDashboardErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -4944,7 +5202,7 @@ export type GetAdminHealthData = {
 
 export type GetAdminHealthErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5011,7 +5269,7 @@ export type TriggerReindexErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5052,7 +5310,7 @@ export type ListAdminQueueStatsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5108,7 +5366,7 @@ export type GetAdminQueueErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5198,7 +5456,7 @@ export type ListAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5261,7 +5519,7 @@ export type RetryAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5314,7 +5572,7 @@ export type PurgeAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5357,10 +5615,6 @@ export type ClearAdminImpersonationData = {
 };
 
 export type ClearAdminImpersonationErrors = {
-    /**
-     * Unauthorized (session)
-     */
-    401: Error401;
     /**
      * Forbidden
      */
@@ -5405,10 +5659,6 @@ export type ImpersonateAdminUserErrors = {
      * Bad Request
      */
     400: Error400;
-    /**
-     * Unauthorized (session)
-     */
-    401: Error401;
     /**
      * Forbidden
      */
@@ -5478,9 +5728,9 @@ export type ListAdminReportsData = {
          */
         'target.episodeNumber'?: number;
         /**
-         * Filter by target segment UUID
+         * Filter by target segment ID
          */
-        'target.segmentUuid'?: string;
+        'target.segmentId'?: number;
         /**
          * Filter by audit run ID
          */
@@ -5491,7 +5741,7 @@ export type ListAdminReportsData = {
 
 export type ListAdminReportsErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5537,7 +5787,7 @@ export type UpdateAdminReportErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5578,7 +5828,7 @@ export type ListAdminMediaAuditsData = {
 
 export type ListAdminMediaAuditsErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5635,7 +5885,7 @@ export type UpdateAdminMediaAuditErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5686,7 +5936,7 @@ export type RunAdminMediaAuditData = {
 
 export type RunAdminMediaAuditErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5740,7 +5990,7 @@ export type ListAdminMediaAuditRunsData = {
 
 export type ListAdminMediaAuditRunsErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5785,7 +6035,7 @@ export type GetAdminMediaAuditRunData = {
 
 export type GetAdminMediaAuditRunErrors = {
     /**
-     * Unauthorized
+     * Unauthorized (session)
      */
     401: Error401;
     /**
@@ -5819,3 +6069,89 @@ export type GetAdminMediaAuditRunResponses = {
 };
 
 export type GetAdminMediaAuditRunResponse = GetAdminMediaAuditRunResponses[keyof GetAdminMediaAuditRunResponses];
+
+export type GetAnnouncementData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/announcement';
+};
+
+export type GetAnnouncementErrors = {
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAnnouncementError = GetAnnouncementErrors[keyof GetAnnouncementErrors];
+
+export type GetAnnouncementResponses = {
+    /**
+     * OK
+     */
+    200: {
+        message: string;
+        type: 'info' | 'warning' | 'maintenance';
+        active: boolean;
+    };
+    /**
+     * No announcement set
+     */
+    204: void;
+};
+
+export type GetAnnouncementResponse = GetAnnouncementResponses[keyof GetAnnouncementResponses];
+
+export type UpdateAnnouncementData = {
+    body: {
+        message: string;
+        type: 'info' | 'warning' | 'maintenance';
+        active: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/admin/announcement';
+};
+
+export type UpdateAnnouncementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (session)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UpdateAnnouncementError = UpdateAnnouncementErrors[keyof UpdateAnnouncementErrors];
+
+export type UpdateAnnouncementResponses = {
+    /**
+     * Announcement updated
+     */
+    200: {
+        message: string;
+        type: 'info' | 'warning' | 'maintenance';
+        active: boolean;
+    };
+};
+
+export type UpdateAnnouncementResponse = UpdateAnnouncementResponses[keyof UpdateAnnouncementResponses];
