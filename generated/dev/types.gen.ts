@@ -142,6 +142,36 @@ export type SearchRequest = {
 };
 
 /**
+ * Morphological token from Japanese text analysis
+ */
+export type Token = {
+    /**
+     * Surface form (the text as it appears in the sentence)
+     */
+    s: string;
+    /**
+     * Dictionary form (base/lemma form for search)
+     */
+    d: string;
+    /**
+     * Reading in katakana
+     */
+    r: string;
+    /**
+     * Begin character offset in textJa.content
+     */
+    b: number;
+    /**
+     * End character offset in textJa.content
+     */
+    e: number;
+    /**
+     * Primary part-of-speech tag
+     */
+    p: string;
+};
+
+/**
  * Segment with content, optional highlights, and media URLs
  */
 export type Segment = {
@@ -195,6 +225,10 @@ export type Segment = {
          * Japanese content with search terms highlighted
          */
         highlight?: string;
+        /**
+         * Morphological tokens for interactive display (Labs feature)
+         */
+        tokens?: Array<Token>;
     };
     textEn: {
         /**
