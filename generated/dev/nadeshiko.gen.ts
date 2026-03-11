@@ -3,7 +3,7 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement } from './sdk.gen';
 
 type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);
 
@@ -101,6 +101,7 @@ export type NadeshikoClient = {
     impersonateAdminUser: typeof impersonateAdminUser;
     clearAdminImpersonation: typeof clearAdminImpersonation;
     listAdminReports: typeof listAdminReports;
+    batchUpdateAdminReports: typeof batchUpdateAdminReports;
     updateAdminReport: typeof updateAdminReport;
     listAdminMediaAudits: typeof listAdminMediaAudits;
     updateAdminMediaAudit: typeof updateAdminMediaAudit;
@@ -216,6 +217,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     impersonateAdminUser: (options?: any) => impersonateAdminUser({ ...options, client: clientInstance }),
     clearAdminImpersonation: (options?: any) => clearAdminImpersonation({ ...options, client: clientInstance }),
     listAdminReports: (options?: any) => listAdminReports({ ...options, client: clientInstance }),
+    batchUpdateAdminReports: (options?: any) => batchUpdateAdminReports({ ...options, client: clientInstance }),
     updateAdminReport: (options?: any) => updateAdminReport({ ...options, client: clientInstance }),
     listAdminMediaAudits: (options?: any) => listAdminMediaAudits({ ...options, client: clientInstance }),
     updateAdminMediaAudit: (options?: any) => updateAdminMediaAudit({ ...options, client: clientInstance }),

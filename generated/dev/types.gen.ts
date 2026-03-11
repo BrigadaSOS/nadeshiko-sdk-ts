@@ -1892,21 +1892,17 @@ export type UserLabFeature = {
      */
     key: string;
     /**
-     * Human-readable feature name (only present for labs)
+     * Human-readable feature name
      */
     name?: string;
     /**
-     * Description of what the feature does (only present for labs)
+     * Description of what the feature does
      */
     description?: string;
     /**
      * Whether this feature is currently active for the user
      */
     active: boolean;
-    /**
-     * Whether the user can toggle this feature (lab=true, flag=false)
-     */
-    userControllable: boolean;
 };
 
 /**
@@ -2072,6 +2068,21 @@ export type AdminReport = Report & {
 export type AdminReportListResponse = {
     reports: Array<AdminReport>;
     pagination: OpaqueCursorPagination;
+};
+
+export type BatchUpdateReportsRequest = {
+    /**
+     * Report IDs to update
+     */
+    ids: Array<number>;
+    /**
+     * New status for all selected reports
+     */
+    status: 'PENDING' | 'CONCERN' | 'ACCEPTED' | 'REJECTED' | 'RESOLVED' | 'IGNORED';
+    /**
+     * Optional admin notes to set on all selected reports
+     */
+    adminNotes?: string;
 };
 
 export type UpdateReportRequest = {
@@ -5743,9 +5754,10 @@ export type ListAdminReportsData = {
          */
         take?: number;
         /**
-         * Filter by report status
+         * Filter by report status. Accepts a single value or comma-separated list (e.g. "PENDING,ACCEPTED"). Valid values: PENDING, CONCERN, ACCEPTED, REJECTED, RESOLVED, IGNORED.
+         *
          */
-        status?: 'PENDING' | 'CONCERN' | 'ACCEPTED' | 'REJECTED' | 'RESOLVED' | 'IGNORED';
+        status?: string;
         /**
          * Filter by report source
          */
@@ -5803,6 +5815,52 @@ export type ListAdminReportsResponses = {
 };
 
 export type ListAdminReportsResponse = ListAdminReportsResponses[keyof ListAdminReportsResponses];
+
+export type BatchUpdateAdminReportsData = {
+    body: BatchUpdateReportsRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/reports/batch';
+};
+
+export type BatchUpdateAdminReportsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized (session)
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type BatchUpdateAdminReportsError = BatchUpdateAdminReportsErrors[keyof BatchUpdateAdminReportsErrors];
+
+export type BatchUpdateAdminReportsResponses = {
+    /**
+     * Reports updated successfully
+     */
+    200: {
+        /**
+         * Number of reports updated
+         */
+        updated: number;
+    };
+};
+
+export type BatchUpdateAdminReportsResponse = BatchUpdateAdminReportsResponses[keyof BatchUpdateAdminReportsResponses];
 
 export type UpdateAdminReportData = {
     body: UpdateReportRequest;
