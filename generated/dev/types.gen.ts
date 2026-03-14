@@ -169,6 +169,22 @@ export type Token = {
      * Primary part-of-speech tag
      */
     p: string;
+    /**
+     * POS subtype 1 (UniDic pos[1])
+     */
+    p1?: string;
+    /**
+     * POS subtype 2 (UniDic pos[2])
+     */
+    p2?: string;
+    /**
+     * Conjugation type (UniDic pos[4])
+     */
+    p4?: string;
+    /**
+     * Conjugation form (UniDic pos[5])
+     */
+    cf?: string;
 };
 
 /**
