@@ -8,7 +8,7 @@
  * 3. Create internal namespace exports organized by tag group
  */
 
-import { readFileSync, writeFileSync, rmSync } from 'fs';
+import { copyFileSync, readFileSync, writeFileSync, rmSync } from 'fs';
 import { join, dirname } from 'path';
 import { parse } from 'yaml';
 import { fileURLToPath } from 'url';
@@ -261,12 +261,27 @@ async function parseOpenApiSpec(): Promise<{
 /**
  * Generate the client factory file
  */
-function generateClientFactory(endpoints: EndpointInfo[], authMode: 'apiKeyOnly' | 'hybrid'): string {
+function generateClientFactory(endpoints: EndpointInfo[], authMode: 'apiKeyOnly' | 'hybrid', availableTypeNames: Set<string>): string {
   const operationIds = endpoints.map(e => e.operationId);
   const sdkImports = operationIds.join(', ');
 
-  // Build the return type with all SDK methods
+  // Build the return type with overloaded call signatures per method:
+  //   • throwOnError: false  → union return (caller must check data vs error)
+  //   • default / true       → clean Promise<{ data }> (throws on error)
   const returnTypeParts = operationIds.map(fn => {
+    const prefix = operationTypePrefix(fn);
+    const hasData = availableTypeNames.has(`${prefix}Data`);
+    const hasResponse = availableTypeNames.has(`${prefix}Response`);
+    if (hasData && hasResponse) {
+      const errorType = availableTypeNames.has(`${prefix}Errors`)
+        ? `Types.${prefix}Errors`
+        : 'unknown';
+      const success = `{ data: Types.${prefix}Response; response: Response; request: Request }`;
+      return `    ${fn}: {
+      (options: Options<Types.${prefix}Data, boolean> & { throwOnError: false }): Promise<${success} | { error: ${errorType}; response: Response; request: Request }>;
+      (options?: Options<Types.${prefix}Data, boolean>): Promise<${success}>;
+    };`;
+    }
     return `    ${fn}: typeof ${fn};`;
   });
 
@@ -277,7 +292,7 @@ ${returnTypeParts.join('\n')}
 
   // Build the bound functions return
   const boundFunctions = operationIds.map(fn => {
-    return `    ${fn}: (options?: any) => ${fn}({ ...options, client: clientInstance }),`;
+    return `    ${fn}: (options?: any) => ${fn}({ throwOnError: true, ...options, client: clientInstance }),`;
   }).join('\n');
 
   const authImports = authMode === 'hybrid'
@@ -297,7 +312,12 @@ ${returnTypeParts.join('\n')}
    * Defaults to reading the \`nadeshiko.session_token\` cookie from \`document.cookie\`.
    */
   sessionToken?: () => string | undefined | Promise<string | undefined>;
+  /** Base URL of the Nadeshiko API. Accepts \`'LOCAL'\`, \`'DEVELOPMENT'\`, \`'PRODUCTION'\`, or a custom URL string. */
+  baseURL?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+  /** @deprecated Use \`baseURL\` instead */
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+  /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
+  retryOptions?: RetryOptions;
 }`
     : `export interface NadeshikoConfig {
   /**
@@ -305,7 +325,12 @@ ${returnTypeParts.join('\n')}
    * Public SDK only supports API key authentication.
    */
   apiKey?: ApiKeyProvider;
+  /** Base URL of the Nadeshiko API. Accepts \`'LOCAL'\`, \`'DEVELOPMENT'\`, \`'PRODUCTION'\`, or a custom URL string. */
+  baseURL?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+  /** @deprecated Use \`baseURL\` instead */
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+  /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
+  retryOptions?: RetryOptions;
 }`;
   const sessionTokenHelper = authMode === 'hybrid'
     ? `const defaultSessionTokenGetter = (): string | undefined => {
@@ -332,7 +357,10 @@ ${returnTypeParts.join('\n')}
 
 import { createClient as createApiClient, createConfig, type Client } from './client';
 ${authImports}import type { ClientOptions } from './types.gen';
-import { ${sdkImports} } from './sdk.gen';
+import type * as Types from './types.gen';
+import { ${sdkImports}, type Options } from './sdk.gen';
+import { withRetry, type RetryOptions } from './retry';
+import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
 ${authTypeHelpers}
 
@@ -350,11 +378,12 @@ ${returnType}
 ${sessionTokenHelper}
 
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
-  const baseUrl = config.baseUrl === undefined
+  const rawBaseUrl = config.baseURL ?? config.baseUrl;
+  const baseUrl = rawBaseUrl === undefined
     ? environments.PRODUCTION
-    : (config.baseUrl in environments
-        ? environments[config.baseUrl as keyof typeof environments]
-        : config.baseUrl);
+    : (rawBaseUrl in environments
+        ? environments[rawBaseUrl as keyof typeof environments]
+        : rawBaseUrl);
 
   const getApiKey = async (): Promise<string | undefined> => {
     if (typeof config.apiKey === 'function') {
@@ -366,15 +395,99 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 ${authResolverConfig}
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
+    fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
 ${authResolverFn}
   }));
+
+  clientInstance.interceptors.error.use((error) => {
+    if (error && typeof error === 'object' && 'code' in error && typeof (error as any).code === 'string') {
+      return new NadeshikoError(error as NadeshikoProblemDetails);
+    }
+    return error;
+  });
 
   return {
     client: clientInstance,
 ${boundFunctions}
-  };
+  } as NadeshikoClient;
 }
 
+`;
+}
+
+/**
+ * Generate errors.ts with a NadeshikoErrorCode union derived from the generated error types.
+ */
+function generateErrorsFile(availableTypeNames: Set<string>): string {
+  const present = [...availableTypeNames].filter(name => /^Error\d+$/.test(name));
+
+  const imports = present.length > 0
+    ? `import type { ${present.join(', ')} } from './types.gen';\n\n`
+    : '';
+  const codeUnion = present.length > 0
+    ? present.map(t => `${t}['code']`).join(' | ')
+    : 'string';
+
+  return `// This file is auto-generated by scripts/generate.ts
+${imports}/** Union of all known API error codes. */
+export type NadeshikoErrorCode = ${codeUnion};
+
+export interface NadeshikoProblemDetails {
+  code: NadeshikoErrorCode;
+  title: string;
+  detail: string;
+  type?: string;
+  /** Trace ID for this specific error occurrence — include when reporting issues */
+  instance?: string;
+  status: number;
+  /** Per-field validation messages, present when \`code\` is \`'VALIDATION_FAILED'\` */
+  errors?: Record<string, string>;
+}
+
+/**
+ * Thrown by the SDK when the API returns a non-2xx response.
+ *
+ * All fields from the RFC 7807 Problem Details response body are
+ * available directly on the error instance.
+ *
+ * @example
+ * \`\`\`ts
+ * import { NadeshikoError } from '@brigadasos/nadeshiko-sdk';
+ *
+ * try {
+ *   const { data } = await client.search({ body: { query: { search: '猫' } } });
+ * } catch (err) {
+ *   if (err instanceof NadeshikoError) {
+ *     console.error(err.code);    // 'RATE_LIMIT_EXCEEDED'
+ *     console.error(err.status);  // 429
+ *     console.error(err.traceId); // trace ID for support
+ *   }
+ * }
+ * \`\`\`
+ */
+export class NadeshikoError extends Error {
+  readonly code: NadeshikoErrorCode;
+  readonly title: string;
+  readonly detail: string;
+  readonly type?: string;
+  readonly status: number;
+  /** Trace ID from \`instance\` field — include when reporting issues */
+  readonly traceId?: string;
+  /** Per-field validation messages, present when \`code === 'VALIDATION_FAILED'\` */
+  readonly errors?: Record<string, string>;
+
+  constructor(body: NadeshikoProblemDetails) {
+    super(body.detail || body.title || \`API error \${body.status}\`);
+    this.name = 'NadeshikoError';
+    this.code = body.code;
+    this.title = body.title;
+    this.detail = body.detail;
+    this.type = body.type;
+    this.status = body.status;
+    this.traceId = body.instance;
+    this.errors = body.errors;
+  }
+}
 `;
 }
 
@@ -424,12 +537,24 @@ function generatePublicIndex(publicEndpoints: EndpointInfo[], availableTypeNames
     .map(name => `  ${name}`)
     .join(',\n');
 
+  // Common entity types useful to consumers (filter to what exists in this build)
+  const entityTypes = [
+    'Segment', 'Media', 'Episode', 'Series', 'Character', 'Seiyuu',
+    'PaginationInfo', 'OpaqueCursorPagination',
+  ].filter(t => availableTypeNames.has(t));
+  const entityExports = entityTypes.map(t => `  ${t}`).join(',\n');
+
   return `// This file is auto-generated by scripts/generate.ts
 // Public SDK exposes only API key-authenticated endpoints
 
 export { ${exports}, type Options } from './sdk.gen';
 export type {
 ${typeExports}
+} from './types.gen';
+
+// Common entity types
+export type {
+${entityExports}
 } from './types.gen';
 
 // Re-export client factory
@@ -439,6 +564,11 @@ export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } fro
 export { client } from './client.gen';
 
 export type { Client, Config } from './client';
+
+// Re-export helpers
+export { paginate, type PaginationMeta } from './paginate';
+export { withRetry, type RetryOptions } from './retry';
+export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails } from './errors';
 `;
 }
 
@@ -470,6 +600,11 @@ export { client } from './client.gen';
 ${internalGroupExports}// Re-export all generated types
 export * from './types.gen';
 export type { Client, Config } from './client';
+
+// Re-export helpers
+export { paginate, type PaginationMeta } from './paginate';
+export { withRetry, type RetryOptions } from './retry';
+export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails } from './errors';
 `;
 }
 
@@ -491,6 +626,11 @@ async function main() {
       proc.on('close', (code) => code === 0 ? resolve() : reject(new Error(`openapi-ts exited with code ${code}`)));
     });
 
+    // Copy hand-written helpers into the generated directory
+    copyFileSync(join(ROOT_DIR, 'src', 'retry.ts'), join(GENERATED_DIR, 'retry.ts'));
+    copyFileSync(join(ROOT_DIR, 'src', 'paginate.ts'), join(GENERATED_DIR, 'paginate.ts'));
+    console.log('✓ Copied src/retry.ts and src/paginate.ts into generated dir');
+
     // Parse the spec to get endpoint categorization
     console.log('Parsing OpenAPI spec...');
     const { public: publicEndpoints, internal: internalEndpoints, internalByGroup } = await parseOpenApiSpec();
@@ -504,12 +644,17 @@ async function main() {
     console.log(`SDK type: ${SDK_TYPE}`);
     const availableTypeNames = getAvailableGeneratedTypeNames();
 
+    // Generate errors.ts with a typed NadeshikoErrorCode union
+    const errorsContent = generateErrorsFile(availableTypeNames);
+    writeFileSync(join(GENERATED_DIR, 'errors.ts'), errorsContent);
+    console.log('✓ Generated errors.ts with NadeshikoErrorCode union');
+
     if (SDK_TYPE === 'internal' || SDK_TYPE === 'dev') {
       console.log(`Internal groups: ${Object.keys(internalByGroup).join(', ')}`);
 
       // For internal SDK, include both public and internal endpoints
       const allEndpoints = [...publicEndpoints, ...internalEndpoints];
-      const clientFactoryContent = generateClientFactory(allEndpoints, 'hybrid');
+      const clientFactoryContent = generateClientFactory(allEndpoints, 'hybrid', availableTypeNames);
       writeFileSync(join(GENERATED_DIR, 'nadeshiko.gen.ts'), clientFactoryContent);
       console.log(`✓ Generated nadeshiko.gen.ts with ${allEndpoints.length} total endpoints`);
 
@@ -541,7 +686,7 @@ async function main() {
         `Skipping ${publicEndpoints.length - apiKeyPublicEndpoints.length} public endpoints without API key auth`,
       );
 
-      const clientFactoryContent = generateClientFactory(apiKeyPublicEndpoints, 'apiKeyOnly');
+      const clientFactoryContent = generateClientFactory(apiKeyPublicEndpoints, 'apiKeyOnly', availableTypeNames);
       writeFileSync(join(GENERATED_DIR, 'nadeshiko.gen.ts'), clientFactoryContent);
       console.log(`✓ Generated nadeshiko.gen.ts with ${apiKeyPublicEndpoints.length} public API key endpoints`);
 

@@ -82,3 +82,20 @@ export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } fro
 export { client } from './client.gen';
 
 export type { Client, Config } from './client';
+
+// Common entity types
+export type {
+  Segment,
+  Media,
+  Episode,
+  Series,
+  Character,
+  Seiyuu,
+  PaginationInfo,
+  OpaqueCursorPagination,
+} from './types.gen';
+
+// Re-export helpers
+export { paginate, type PaginationMeta } from './paginate';
+export { withRetry, type RetryOptions } from './retry';
+export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails } from './errors';

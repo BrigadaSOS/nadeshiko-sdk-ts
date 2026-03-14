@@ -1,6 +1,6 @@
 {
   "name": "@brigadasos/nadeshiko-sdk-build",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "TypeScript SDK for Nadeshiko API",
   "private": true,
   "license": "MIT",
@@ -33,6 +33,7 @@
     "pack:public": "bun run scripts/build-package.ts public",
     "pack:internal": "bun run scripts/build-package.ts internal",
     "pack:dev": "bun run scripts/build-package.ts dev",
+    "test": "bun test src/",
     "clean": "rm -rf build generated"
   },
   "devDependencies": {
