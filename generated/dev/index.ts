@@ -15,3 +15,8 @@ export * from './internal.gen';
 // Re-export all generated types
 export * from './types.gen';
 export type { Client, Config } from './client';
+
+// Re-export helpers
+export { paginate, type PaginationMeta } from './paginate';
+export { withRetry, type RetryOptions } from './retry';
+export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails } from './errors';
