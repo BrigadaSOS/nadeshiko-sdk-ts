@@ -90,6 +90,8 @@ export type NadeshikoClient = {
     };
   };
 
+
+
 export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient {
   const rawBaseUrl = config.baseURL ?? config.baseUrl;
   const baseUrl = rawBaseUrl === undefined
@@ -104,6 +106,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     }
     return config.apiKey;
   };
+
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
@@ -136,3 +139,4 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getSegment: (options?: any) => getSegment({ throwOnError: true, ...options, client: clientInstance }),
   } as NadeshikoClient;
 }
+

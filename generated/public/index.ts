@@ -75,14 +75,6 @@ export type {
   GetSegmentResponse
 } from './types.gen';
 
-// Re-export client factory
-export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
-
-// Re-export singleton client
-export { client } from './client.gen';
-
-export type { Client, Config } from './client';
-
 // Common entity types
 export type {
   Segment,
@@ -92,8 +84,16 @@ export type {
   Character,
   Seiyuu,
   PaginationInfo,
-  OpaqueCursorPagination,
+  OpaqueCursorPagination
 } from './types.gen';
+
+// Re-export client factory
+export { createNadeshikoClient, type NadeshikoClient, type NadeshikoConfig } from './nadeshiko.gen';
+
+// Re-export singleton client
+export { client } from './client.gen';
+
+export type { Client, Config } from './client';
 
 // Re-export helpers
 export { paginate, type PaginationMeta } from './paginate';
