@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminDashboardOverview, getAdminDashboardMedia, getAdminDashboardActivity, getAdminDashboardCollections, getAdminDashboardApiKeys, getAdminDashboardSystem, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
@@ -279,6 +279,30 @@ export type NadeshikoClient = {
       (options: Options<Types.GetAdminDashboardData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetAdminDashboardData, boolean>): Promise<{ data: Types.GetAdminDashboardResponse; response: Response; request: Request }>;
     };
+    getAdminDashboardOverview: {
+      (options: Options<Types.GetAdminDashboardOverviewData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardOverviewResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardOverviewErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetAdminDashboardOverviewData, boolean>): Promise<{ data: Types.GetAdminDashboardOverviewResponse; response: Response; request: Request }>;
+    };
+    getAdminDashboardMedia: {
+      (options: Options<Types.GetAdminDashboardMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardMediaResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardMediaErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetAdminDashboardMediaData, boolean>): Promise<{ data: Types.GetAdminDashboardMediaResponse; response: Response; request: Request }>;
+    };
+    getAdminDashboardActivity: {
+      (options: Options<Types.GetAdminDashboardActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardActivityResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardActivityErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetAdminDashboardActivityData, boolean>): Promise<{ data: Types.GetAdminDashboardActivityResponse; response: Response; request: Request }>;
+    };
+    getAdminDashboardCollections: {
+      (options: Options<Types.GetAdminDashboardCollectionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardCollectionsResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardCollectionsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetAdminDashboardCollectionsData, boolean>): Promise<{ data: Types.GetAdminDashboardCollectionsResponse; response: Response; request: Request }>;
+    };
+    getAdminDashboardApiKeys: {
+      (options: Options<Types.GetAdminDashboardApiKeysData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardApiKeysResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardApiKeysErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetAdminDashboardApiKeysData, boolean>): Promise<{ data: Types.GetAdminDashboardApiKeysResponse; response: Response; request: Request }>;
+    };
+    getAdminDashboardSystem: {
+      (options: Options<Types.GetAdminDashboardSystemData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardSystemResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardSystemErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetAdminDashboardSystemData, boolean>): Promise<{ data: Types.GetAdminDashboardSystemResponse; response: Response; request: Request }>;
+    };
     getAdminHealth: {
       (options: Options<Types.GetAdminHealthData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminHealthResponse; response: Response; request: Request } | { error: Types.GetAdminHealthErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetAdminHealthData, boolean>): Promise<{ data: Types.GetAdminHealthResponse; response: Response; request: Request }>;
@@ -461,6 +485,12 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     searchCollectionSegments: (options?: any) => searchCollectionSegments({ throwOnError: true, ...options, client: clientInstance }),
     getCollectionStats: (options?: any) => getCollectionStats({ throwOnError: true, ...options, client: clientInstance }),
     getAdminDashboard: (options?: any) => getAdminDashboard({ throwOnError: true, ...options, client: clientInstance }),
+    getAdminDashboardOverview: (options?: any) => getAdminDashboardOverview({ throwOnError: true, ...options, client: clientInstance }),
+    getAdminDashboardMedia: (options?: any) => getAdminDashboardMedia({ throwOnError: true, ...options, client: clientInstance }),
+    getAdminDashboardActivity: (options?: any) => getAdminDashboardActivity({ throwOnError: true, ...options, client: clientInstance }),
+    getAdminDashboardCollections: (options?: any) => getAdminDashboardCollections({ throwOnError: true, ...options, client: clientInstance }),
+    getAdminDashboardApiKeys: (options?: any) => getAdminDashboardApiKeys({ throwOnError: true, ...options, client: clientInstance }),
+    getAdminDashboardSystem: (options?: any) => getAdminDashboardSystem({ throwOnError: true, ...options, client: clientInstance }),
     getAdminHealth: (options?: any) => getAdminHealth({ throwOnError: true, ...options, client: clientInstance }),
     triggerReindex: (options?: any) => triggerReindex({ throwOnError: true, ...options, client: clientInstance }),
     listAdminQueueStats: (options?: any) => listAdminQueueStats({ throwOnError: true, ...options, client: clientInstance }),
