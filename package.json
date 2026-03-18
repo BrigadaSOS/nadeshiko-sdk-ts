@@ -25,14 +25,12 @@
     "openapi"
   ],
   "scripts": {
-    "codegen": "bun run codegen:public && bun run codegen:internal && bun run codegen:dev",
+    "codegen": "bun run codegen:public && bun run codegen:internal",
     "codegen:public": "SDK_TYPE=public bun run scripts/generate.ts",
     "codegen:internal": "SDK_TYPE=internal bun run scripts/generate.ts",
-    "codegen:dev": "SDK_TYPE=dev bun run scripts/generate.ts",
-    "pack": "bun run pack:public && bun run pack:internal && bun run pack:dev",
+    "pack": "bun run pack:public && bun run pack:internal",
     "pack:public": "bun run scripts/build-package.ts public",
     "pack:internal": "bun run scripts/build-package.ts internal",
-    "pack:dev": "bun run scripts/build-package.ts dev",
     "test": "bun test src/",
     "clean": "rm -rf build generated"
   },

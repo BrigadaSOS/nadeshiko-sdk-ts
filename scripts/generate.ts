@@ -611,8 +611,8 @@ export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails }
 // Main execution
 async function main() {
   try {
-    if (SDK_TYPE !== 'public' && SDK_TYPE !== 'internal' && SDK_TYPE !== 'dev') {
-      throw new Error(`Invalid SDK_TYPE "${SDK_TYPE}". Expected "public", "internal", or "dev".`);
+    if (SDK_TYPE !== 'public' && SDK_TYPE !== 'internal') {
+      throw new Error(`Invalid SDK_TYPE "${SDK_TYPE}". Expected "public" or "internal".`);
     }
 
     // First run openapi-ts to generate all endpoints
@@ -649,7 +649,7 @@ async function main() {
     writeFileSync(join(GENERATED_DIR, 'errors.ts'), errorsContent);
     console.log('✓ Generated errors.ts with NadeshikoErrorCode union');
 
-    if (SDK_TYPE === 'internal' || SDK_TYPE === 'dev') {
+    if (SDK_TYPE === 'internal') {
       console.log(`Internal groups: ${Object.keys(internalByGroup).join(', ')}`);
 
       // For internal SDK, include both public and internal endpoints

@@ -4,7 +4,7 @@ import { appendFileSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 
-type ReleaseChannel = 'dev' | 'stable';
+type ReleaseChannel = 'internal' | 'stable';
 
 type RawPayload = {
   release_channel?: unknown;
@@ -68,9 +68,9 @@ function getPayload(): RawPayload {
 
 function resolveChannel(raw: unknown): ReleaseChannel {
   const value = toStringValue(raw).toLowerCase();
-  if (value === 'dev') return 'dev';
+  if (value === 'internal' || value === 'dev') return 'internal';
   if (value === 'stable' || !value) return 'stable';
-  fail(`\`release_channel\` must be "dev" or "stable". Received: "${value}"`);
+  fail(`\`release_channel\` must be "internal" or "stable". Received: "${value}"`);
 }
 
 async function loadSpecVersion(specUrl: string): Promise<string> {
@@ -110,12 +110,12 @@ function deriveVersions(specVersion: string, channel: ReleaseChannel, backendSha
 
   const baseVersion = `${semverMatch[1]}.${semverMatch[2]}.${semverMatch[3]}`;
 
-  if (channel === 'dev') {
+  if (channel === 'internal') {
     const shortSha = backendSha.slice(0, 7);
     return {
       specVersion,
       publicVersion: baseVersion,
-      internalVersion: `${baseVersion}-dev.${shortSha}`,
+      internalVersion: `${baseVersion}-internal.${shortSha}`,
       internalOnly: true,
     };
   }
@@ -144,9 +144,9 @@ async function main(): Promise<void> {
   const derived = deriveVersions(specVersion, channel, backendSha);
 
   const releaseTag = channel === 'stable' ? `v${derived.specVersion}` : '';
-  const prerelease = channel === 'dev';
-  const distTag = channel === 'stable' ? 'latest' : 'dev';
-  const internalDistTag = channel === 'stable' ? 'internal' : 'dev';
+  const prerelease = channel === 'internal';
+  const distTag = channel === 'stable' ? 'latest' : 'internal';
+  const internalDistTag = 'internal';
 
   console.log(
     `Release payload OK: channel=${channel} from ${backendRepo}@${backendSha} (spec=${derived.specVersion})`,
