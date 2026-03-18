@@ -998,6 +998,10 @@ export type MediaAutocompleteItem = {
      */
     id: number;
     /**
+     * Public identifier for the media
+     */
+    publicId: string;
+    /**
      * Original Japanese name of the media
      */
     nameJa: string;
@@ -1808,7 +1812,10 @@ export type UserPreferences = {
      * Media hidden from search results by the user
      */
     hiddenMedia?: Array<{
-        mediaId: number;
+        /**
+         * Public identifier of the hidden media
+         */
+        mediaPublicId: string;
         nameEn?: string;
         nameJa?: string;
         nameRomaji?: string;
