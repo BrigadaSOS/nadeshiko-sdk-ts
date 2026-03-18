@@ -527,7 +527,7 @@ export type Error401 = {
     /**
      * Specific error code for programmatic handling
      */
-    code: 'AUTH_CREDENTIALS_REQUIRED' | 'AUTH_CREDENTIALS_INVALID' | 'AUTH_CREDENTIALS_EXPIRED' | 'EMAIL_NOT_VERIFIED';
+    code: 'AUTH_CREDENTIALS_REQUIRED' | 'AUTH_CREDENTIALS_INVALID' | 'AUTH_CREDENTIALS_EXPIRED';
     /**
      * A short, human-readable summary of the problem
      */
@@ -2237,7 +2237,7 @@ export type SearchErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2278,7 +2278,7 @@ export type GetSearchStatsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2319,7 +2319,7 @@ export type SearchWordsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2381,7 +2381,7 @@ export type ListMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2422,7 +2422,7 @@ export type CreateMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2480,7 +2480,7 @@ export type AutocompleteMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2512,7 +2512,7 @@ export type GetSegmentByUuidData = {
     body?: never;
     path: {
         /**
-         * Segment UUID or publicId
+         * Segment publicId
          */
         uuid: string;
     };
@@ -2531,7 +2531,7 @@ export type GetSegmentByUuidErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key or session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2556,7 +2556,7 @@ export type GetSegmentByUuidError = GetSegmentByUuidErrors[keyof GetSegmentByUui
 
 export type GetSegmentByUuidResponses = {
     /**
-     * Single segment response with internal fields
+     * OK
      */
     200: SegmentInternal;
 };
@@ -2567,7 +2567,7 @@ export type UpdateSegmentByUuidData = {
     body: SegmentUpdateRequest;
     path: {
         /**
-         * Segment UUID or publicId
+         * Segment publicId
          */
         uuid: string;
     };
@@ -2581,7 +2581,7 @@ export type UpdateSegmentByUuidErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key or session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2606,7 +2606,7 @@ export type UpdateSegmentByUuidError = UpdateSegmentByUuidErrors[keyof UpdateSeg
 
 export type UpdateSegmentByUuidResponses = {
     /**
-     * Single segment response with internal fields
+     * OK
      */
     200: SegmentInternal;
 };
@@ -2617,7 +2617,7 @@ export type GetSegmentContextData = {
     body?: never;
     path: {
         /**
-         * Segment UUID or publicId
+         * Segment publicId
          */
         uuid: string;
     };
@@ -2640,7 +2640,7 @@ export type GetSegmentContextErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key or session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2676,7 +2676,7 @@ export type ListSegmentRevisionsData = {
     body?: never;
     path: {
         /**
-         * Segment UUID or publicId
+         * Segment publicId
          */
         uuid: string;
     };
@@ -2690,7 +2690,7 @@ export type ListSegmentRevisionsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key or session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2715,7 +2715,7 @@ export type ListSegmentRevisionsError = ListSegmentRevisionsErrors[keyof ListSeg
 
 export type ListSegmentRevisionsResponses = {
     /**
-     * List of segment revisions
+     * OK
      */
     200: {
         revisions: Array<SegmentRevision>;
@@ -2750,7 +2750,7 @@ export type ListSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2804,7 +2804,7 @@ export type CreateSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2850,7 +2850,7 @@ export type DeleteSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2905,7 +2905,7 @@ export type GetSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -2968,7 +2968,7 @@ export type UpdateSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3027,7 +3027,7 @@ export type AddMediaToSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3081,7 +3081,7 @@ export type RemoveMediaFromSeriesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3140,7 +3140,7 @@ export type UpdateSeriesMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3190,7 +3190,7 @@ export type GetCharacterErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3240,7 +3240,7 @@ export type GetSeiyuuErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3290,7 +3290,7 @@ export type DeleteMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3345,7 +3345,7 @@ export type GetMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3395,7 +3395,7 @@ export type UpdateMediaErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3454,7 +3454,7 @@ export type ListEpisodesErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3479,7 +3479,7 @@ export type ListEpisodesError = ListEpisodesErrors[keyof ListEpisodesErrors];
 
 export type ListEpisodesResponses = {
     /**
-     * Paginated list of episodes
+     * OK
      */
     200: EpisodeListResponse;
 };
@@ -3504,7 +3504,7 @@ export type CreateEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3533,7 +3533,7 @@ export type CreateEpisodeError = CreateEpisodeErrors[keyof CreateEpisodeErrors];
 
 export type CreateEpisodeResponses = {
     /**
-     * Single episode response
+     * OK
      */
     201: Episode;
 };
@@ -3562,7 +3562,7 @@ export type DeleteEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3587,7 +3587,7 @@ export type DeleteEpisodeError = DeleteEpisodeErrors[keyof DeleteEpisodeErrors];
 
 export type DeleteEpisodeResponses = {
     /**
-     * Episode successfully deleted
+     * No Content
      */
     204: void;
 };
@@ -3616,7 +3616,7 @@ export type GetEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3641,7 +3641,7 @@ export type GetEpisodeError = GetEpisodeErrors[keyof GetEpisodeErrors];
 
 export type GetEpisodeResponses = {
     /**
-     * Single episode response
+     * OK
      */
     200: Episode;
 };
@@ -3670,7 +3670,7 @@ export type UpdateEpisodeErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3695,7 +3695,7 @@ export type UpdateEpisodeError = UpdateEpisodeErrors[keyof UpdateEpisodeErrors];
 
 export type UpdateEpisodeResponses = {
     /**
-     * Single episode response
+     * OK
      */
     200: Episode;
 };
@@ -3733,7 +3733,7 @@ export type ListSegmentsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3758,7 +3758,7 @@ export type ListSegmentsError = ListSegmentsErrors[keyof ListSegmentsErrors];
 
 export type ListSegmentsResponses = {
     /**
-     * Paginated segment list response
+     * OK
      */
     200: {
         /**
@@ -3793,7 +3793,7 @@ export type CreateSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3822,7 +3822,7 @@ export type CreateSegmentError = CreateSegmentErrors[keyof CreateSegmentErrors];
 
 export type CreateSegmentResponses = {
     /**
-     * Single segment response with internal fields
+     * OK
      */
     201: SegmentInternal;
 };
@@ -3851,7 +3851,7 @@ export type CreateSegmentsBatchErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3876,7 +3876,7 @@ export type CreateSegmentsBatchError = CreateSegmentsBatchErrors[keyof CreateSeg
 
 export type CreateSegmentsBatchResponses = {
     /**
-     * Batch segment creation result
+     * Created
      */
     201: {
         /**
@@ -3918,7 +3918,7 @@ export type DeleteSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -3943,7 +3943,7 @@ export type DeleteSegmentError = DeleteSegmentErrors[keyof DeleteSegmentErrors];
 
 export type DeleteSegmentResponses = {
     /**
-     * Segment successfully deleted
+     * No Content
      */
     204: void;
 };
@@ -3976,7 +3976,7 @@ export type GetSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4001,7 +4001,7 @@ export type GetSegmentError = GetSegmentErrors[keyof GetSegmentErrors];
 
 export type GetSegmentResponses = {
     /**
-     * Single segment response
+     * OK
      */
     200: Segment;
 };
@@ -4034,7 +4034,7 @@ export type UpdateSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (API key)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4059,7 +4059,7 @@ export type UpdateSegmentError = UpdateSegmentErrors[keyof UpdateSegmentErrors];
 
 export type UpdateSegmentResponses = {
     /**
-     * Single segment response with internal fields
+     * OK
      */
     200: SegmentInternal;
 };
@@ -4075,7 +4075,7 @@ export type GetUserQuotaData = {
 
 export type GetUserQuotaErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4116,7 +4116,7 @@ export type CreateUserReportErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4133,7 +4133,7 @@ export type CreateUserReportError = CreateUserReportErrors[keyof CreateUserRepor
 
 export type CreateUserReportResponses = {
     /**
-     * Report created successfully
+     * Created
      */
     201: Report;
 };
@@ -4149,7 +4149,7 @@ export type GetUserPreferencesData = {
 
 export type GetUserPreferencesErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4178,7 +4178,7 @@ export type UpdateUserPreferencesData = {
 
 export type UpdateUserPreferencesErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4212,7 +4212,7 @@ export type DeleteUserActivityData = {
 
 export type DeleteUserActivityErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4260,7 +4260,7 @@ export type ListUserActivityData = {
 
 export type ListUserActivityErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4303,7 +4303,7 @@ export type TrackUserActivityErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4316,7 +4316,7 @@ export type TrackUserActivityError = TrackUserActivityErrors[keyof TrackUserActi
 
 export type TrackUserActivityResponses = {
     /**
-     * Activity tracked
+     * No Content
      */
     204: void;
 };
@@ -4337,7 +4337,7 @@ export type GetUserActivityHeatmapData = {
 
 export type GetUserActivityHeatmapErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4378,7 +4378,7 @@ export type GetUserActivityStatsData = {
 
 export type GetUserActivityStatsErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4422,7 +4422,7 @@ export type DeleteUserActivityByDateData = {
 
 export type DeleteUserActivityByDateErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4458,7 +4458,7 @@ export type DeleteUserActivityByIdData = {
 
 export type DeleteUserActivityByIdErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4475,7 +4475,7 @@ export type DeleteUserActivityByIdError = DeleteUserActivityByIdErrors[keyof Del
 
 export type DeleteUserActivityByIdResponses = {
     /**
-     * Activity deleted
+     * No Content
      */
     204: void;
 };
@@ -4491,7 +4491,7 @@ export type ExportUserDataData = {
 
 export type ExportUserDataErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4520,7 +4520,7 @@ export type ListUserLabsData = {
 
 export type ListUserLabsErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4554,7 +4554,7 @@ export type UnenrollUserLabData = {
 
 export type UnenrollUserLabErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4571,7 +4571,7 @@ export type UnenrollUserLabError = UnenrollUserLabErrors[keyof UnenrollUserLabEr
 
 export type UnenrollUserLabResponses = {
     /**
-     * Unenrolled successfully
+     * No Content
      */
     204: void;
 };
@@ -4592,7 +4592,7 @@ export type EnrollUserLabData = {
 
 export type EnrollUserLabErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4609,7 +4609,7 @@ export type EnrollUserLabError = EnrollUserLabErrors[keyof EnrollUserLabErrors];
 
 export type EnrollUserLabResponses = {
     /**
-     * Enrolled successfully
+     * No Content
      */
     204: void;
 };
@@ -4642,7 +4642,7 @@ export type ListCollectionsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4683,7 +4683,7 @@ export type CreateCollectionErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4729,7 +4729,7 @@ export type DeleteCollectionErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4788,7 +4788,7 @@ export type GetCollectionErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4841,7 +4841,7 @@ export type UpdateCollectionErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4900,7 +4900,7 @@ export type AddSegmentToCollectionErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -4954,7 +4954,7 @@ export type RemoveSegmentFromCollectionErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5017,7 +5017,7 @@ export type UpdateCollectionSegmentErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5076,7 +5076,7 @@ export type SearchCollectionSegmentsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5126,7 +5126,7 @@ export type GetCollectionStatsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5167,7 +5167,7 @@ export type GetAdminDashboardData = {
 
 export type GetAdminDashboardErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5264,7 +5264,7 @@ export type GetAdminHealthData = {
 
 export type GetAdminHealthErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5331,7 +5331,7 @@ export type TriggerReindexErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5352,7 +5352,7 @@ export type TriggerReindexError = TriggerReindexErrors[keyof TriggerReindexError
 
 export type TriggerReindexResponses = {
     /**
-     * Reindex operation completed
+     * OK
      */
     200: ReindexResponse;
 };
@@ -5372,7 +5372,7 @@ export type ListAdminQueueStatsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5393,7 +5393,7 @@ export type ListAdminQueueStatsError = ListAdminQueueStatsErrors[keyof ListAdmin
 
 export type ListAdminQueueStatsResponses = {
     /**
-     * Queue statistics retrieved successfully
+     * OK
      */
     200: Array<{
         queue: string;
@@ -5428,7 +5428,7 @@ export type GetAdminQueueErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5453,7 +5453,7 @@ export type GetAdminQueueError = GetAdminQueueErrors[keyof GetAdminQueueErrors];
 
 export type GetAdminQueueResponses = {
     /**
-     * Queue details retrieved successfully
+     * OK
      */
     200: {
         queue: string;
@@ -5518,7 +5518,7 @@ export type ListAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5539,7 +5539,7 @@ export type ListAdminQueueFailedError = ListAdminQueueFailedErrors[keyof ListAdm
 
 export type ListAdminQueueFailedResponses = {
     /**
-     * Failed jobs retrieved successfully
+     * OK
      */
     200: Array<{
         /**
@@ -5581,7 +5581,7 @@ export type RetryAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5602,7 +5602,7 @@ export type RetryAdminQueueFailedError = RetryAdminQueueFailedErrors[keyof Retry
 
 export type RetryAdminQueueFailedResponses = {
     /**
-     * Jobs queued for retry
+     * OK
      */
     200: {
         success: boolean;
@@ -5634,7 +5634,7 @@ export type PurgeAdminQueueFailedErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5655,7 +5655,7 @@ export type PurgeAdminQueueFailedError = PurgeAdminQueueFailedErrors[keyof Purge
 
 export type PurgeAdminQueueFailedResponses = {
     /**
-     * Failed jobs purged successfully
+     * OK
      */
     200: {
         success: boolean;
@@ -5695,7 +5695,7 @@ export type ClearAdminImpersonationError = ClearAdminImpersonationErrors[keyof C
 
 export type ClearAdminImpersonationResponses = {
     /**
-     * Impersonation session cleared
+     * OK
      */
     200: {
         message: string;
@@ -5743,7 +5743,7 @@ export type ImpersonateAdminUserError = ImpersonateAdminUserErrors[keyof Imperso
 
 export type ImpersonateAdminUserResponses = {
     /**
-     * Impersonation session created
+     * OK
      */
     200: {
         message: string;
@@ -5804,7 +5804,7 @@ export type ListAdminReportsData = {
 
 export type ListAdminReportsErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5845,7 +5845,7 @@ export type BatchUpdateAdminReportsErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5866,7 +5866,7 @@ export type BatchUpdateAdminReportsError = BatchUpdateAdminReportsErrors[keyof B
 
 export type BatchUpdateAdminReportsResponses = {
     /**
-     * Reports updated successfully
+     * OK
      */
     200: {
         /**
@@ -5896,7 +5896,7 @@ export type UpdateAdminReportErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5921,7 +5921,7 @@ export type UpdateAdminReportError = UpdateAdminReportErrors[keyof UpdateAdminRe
 
 export type UpdateAdminReportResponses = {
     /**
-     * Report updated successfully
+     * OK
      */
     200: Report;
 };
@@ -5937,7 +5937,7 @@ export type ListAdminMediaAuditsData = {
 
 export type ListAdminMediaAuditsErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -5994,7 +5994,7 @@ export type UpdateAdminMediaAuditErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -6019,7 +6019,7 @@ export type UpdateAdminMediaAuditError = UpdateAdminMediaAuditErrors[keyof Updat
 
 export type UpdateAdminMediaAuditResponses = {
     /**
-     * Audit updated successfully
+     * OK
      */
     200: MediaAudit;
 };
@@ -6045,7 +6045,7 @@ export type RunAdminMediaAuditData = {
 
 export type RunAdminMediaAuditErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -6070,7 +6070,7 @@ export type RunAdminMediaAuditError = RunAdminMediaAuditErrors[keyof RunAdminMed
 
 export type RunAdminMediaAuditResponses = {
     /**
-     * Audit run completed
+     * OK
      */
     200: RunAuditResponse;
 };
@@ -6099,7 +6099,7 @@ export type ListAdminMediaAuditRunsData = {
 
 export type ListAdminMediaAuditRunsErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -6144,7 +6144,7 @@ export type GetAdminMediaAuditRunData = {
 
 export type GetAdminMediaAuditRunErrors = {
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -6233,7 +6233,7 @@ export type UpdateAnnouncementErrors = {
      */
     400: Error400;
     /**
-     * Unauthorized (session)
+     * Unauthorized
      */
     401: Error401;
     /**
@@ -6254,7 +6254,7 @@ export type UpdateAnnouncementError = UpdateAnnouncementErrors[keyof UpdateAnnou
 
 export type UpdateAnnouncementResponses = {
     /**
-     * Announcement updated
+     * OK
      */
     200: {
         message: string;

@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
@@ -71,14 +71,6 @@ export type NadeshikoClient = {
       (options: Options<Types.GetSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request } | { error: Types.GetSeriesErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetSeriesData, boolean>): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request }>;
     };
-    getCharacter: {
-      (options: Options<Types.GetCharacterData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request } | { error: Types.GetCharacterErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCharacterData, boolean>): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request }>;
-    };
-    getSeiyuu: {
-      (options: Options<Types.GetSeiyuuData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request } | { error: Types.GetSeiyuuErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSeiyuuData, boolean>): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request }>;
-    };
     getMedia: {
       (options: Options<Types.GetMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetMediaData, boolean>): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request }>;
@@ -134,6 +126,14 @@ export type NadeshikoClient = {
     removeMediaFromSeries: {
       (options: Options<Types.RemoveMediaFromSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveMediaFromSeriesResponse; response: Response; request: Request } | { error: Types.RemoveMediaFromSeriesErrors; response: Response; request: Request }>;
       (options?: Options<Types.RemoveMediaFromSeriesData, boolean>): Promise<{ data: Types.RemoveMediaFromSeriesResponse; response: Response; request: Request }>;
+    };
+    getCharacter: {
+      (options: Options<Types.GetCharacterData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request } | { error: Types.GetCharacterErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetCharacterData, boolean>): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request }>;
+    };
+    getSeiyuu: {
+      (options: Options<Types.GetSeiyuuData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request } | { error: Types.GetSeiyuuErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetSeiyuuData, boolean>): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request }>;
     };
     updateMedia: {
       (options: Options<Types.UpdateMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateMediaResponse; response: Response; request: Request } | { error: Types.UpdateMediaErrors; response: Response; request: Request }>;
@@ -409,8 +409,6 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getSegmentContext: (options?: any) => getSegmentContext({ throwOnError: true, ...options, client: clientInstance }),
     listSeries: (options?: any) => listSeries({ throwOnError: true, ...options, client: clientInstance }),
     getSeries: (options?: any) => getSeries({ throwOnError: true, ...options, client: clientInstance }),
-    getCharacter: (options?: any) => getCharacter({ throwOnError: true, ...options, client: clientInstance }),
-    getSeiyuu: (options?: any) => getSeiyuu({ throwOnError: true, ...options, client: clientInstance }),
     getMedia: (options?: any) => getMedia({ throwOnError: true, ...options, client: clientInstance }),
     listEpisodes: (options?: any) => listEpisodes({ throwOnError: true, ...options, client: clientInstance }),
     getEpisode: (options?: any) => getEpisode({ throwOnError: true, ...options, client: clientInstance }),
@@ -425,6 +423,8 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     addMediaToSeries: (options?: any) => addMediaToSeries({ throwOnError: true, ...options, client: clientInstance }),
     updateSeriesMedia: (options?: any) => updateSeriesMedia({ throwOnError: true, ...options, client: clientInstance }),
     removeMediaFromSeries: (options?: any) => removeMediaFromSeries({ throwOnError: true, ...options, client: clientInstance }),
+    getCharacter: (options?: any) => getCharacter({ throwOnError: true, ...options, client: clientInstance }),
+    getSeiyuu: (options?: any) => getSeiyuu({ throwOnError: true, ...options, client: clientInstance }),
     updateMedia: (options?: any) => updateMedia({ throwOnError: true, ...options, client: clientInstance }),
     deleteMedia: (options?: any) => deleteMedia({ throwOnError: true, ...options, client: clientInstance }),
     createEpisode: (options?: any) => createEpisode({ throwOnError: true, ...options, client: clientInstance }),

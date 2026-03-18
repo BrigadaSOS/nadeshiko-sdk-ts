@@ -40,15 +40,9 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * | **Kana** (`たべる`, `かのじょ`) | Standard search across content, base form, and reading form |
  * | **English/Spanish** | Direct translation search |
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const search = <ThrowOnError extends boolean = false>(options?: Options<SearchData, ThrowOnError>) => (options?.client ?? client).post<SearchResponses, SearchErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search',
     ...options,
     headers: {
@@ -68,15 +62,9 @@ export const search = <ThrowOnError extends boolean = false>(options?: Options<S
  *
  * The stats are scoped by query and category filters, but are not narrowed by a selected media/episode.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getSearchStats = <ThrowOnError extends boolean = false>(options?: Options<GetSearchStatsData, ThrowOnError>) => (options?.client ?? client).post<GetSearchStatsResponses, GetSearchStatsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search/stats',
     ...options,
     headers: {
@@ -92,20 +80,9 @@ export const getSearchStats = <ThrowOnError extends boolean = false>(options?: O
  *
  * Unlike the main search endpoint, this returns a summary of matches per media rather than individual segments.
  *
- * **Use Cases**
- * - Vocabulary discovery across media library
- * - Finding anime/dramas that use specific words
- * - Comparing word usage across different titles
- *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const searchWords = <ThrowOnError extends boolean = false>(options: Options<SearchWordsData, ThrowOnError>) => (options.client ?? client).post<SearchWordsResponses, SearchWordsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search/words',
     ...options,
     headers: {
@@ -120,33 +97,21 @@ export const searchWords = <ThrowOnError extends boolean = false>(options: Optio
  * Returns a paginated list of media with full metadata, including cover/banner images, episode counts, and genres.
  * Supports filtering by category and text search.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const listMedia = <ThrowOnError extends boolean = false>(options?: Options<ListMediaData, ThrowOnError>) => (options?.client ?? client).get<ListMediaResponses, ListMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media',
     ...options
 });
 
 /**
- * Create new media
+ * Create media
  *
  * Creates a new media entry in the database.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const createMedia = <ThrowOnError extends boolean = false>(options: Options<CreateMediaData, ThrowOnError>) => (options.client ?? client).post<CreateMediaResponses, CreateMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media',
     ...options,
     headers: {
@@ -162,54 +127,35 @@ export const createMedia = <ThrowOnError extends boolean = false>(options: Optio
  * Results are ranked by exact match, then prefix match, then contains match,
  * and further sorted by name length.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const autocompleteMedia = <ThrowOnError extends boolean = false>(options: Options<AutocompleteMediaData, ThrowOnError>) => (options.client ?? client).get<AutocompleteMediaResponses, AutocompleteMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/autocomplete',
     ...options
 });
 
 /**
- * Get segment by UUID or publicId
+ * Get segment by publicId
  *
- * Returns a specific segment by its UUID or publicId. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
+ * Returns a specific segment by its publicId. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
  *
  * Pass `include[]=ratingAnalysis` and/or `include[]=posAnalysis` to receive raw analysis fields alongside the standard segment data.
  *
- * **Permissions:** `UPDATE_MEDIA` (API key) or admin session
- *
  */
 export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<GetSegmentByUuidData, ThrowOnError>) => (options.client ?? client).get<GetSegmentByUuidResponses, GetSegmentByUuidErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}',
     ...options
 });
 
 /**
- * Update segment by UUID or publicId
+ * Update segment by publicId
  *
- * Updates an existing segment identified by its UUID or publicId. Performs the lookup internally,
- * then applies the update. Only provided fields will be updated.
- *
- * **Permissions:** `UPDATE_MEDIA`
+ * Updates an existing segment identified by its publicId. Only provided fields will be updated.
  *
  */
 export const updateSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentByUuidData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentByUuidResponses, UpdateSegmentByUuidErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}',
     ...options,
     headers: {
@@ -224,15 +170,9 @@ export const updateSegmentByUuid = <ThrowOnError extends boolean = false>(option
  * Retrieves segments surrounding a specific segment within an episode.
  * Returns segments both before and after the target, providing dialogue context for how a sentence is used.
  *
- * **Permissions:** `UPDATE_MEDIA` (API key) or admin session
- *
  */
 export const getSegmentContext = <ThrowOnError extends boolean = false>(options: Options<GetSegmentContextData, ThrowOnError>) => (options.client ?? client).get<GetSegmentContextResponses, GetSegmentContextErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}/context',
     ...options
 });
@@ -240,17 +180,11 @@ export const getSegmentContext = <ThrowOnError extends boolean = false>(options:
 /**
  * List segment revision history
  *
- * Returns the revision history for a segment identified by UUID, ordered by most recent first.
- *
- * **Permissions:** `UPDATE_MEDIA` (API key) or admin session
+ * Returns the revision history for a segment, ordered by most recent first.
  *
  */
 export const listSegmentRevisions = <ThrowOnError extends boolean = false>(options: Options<ListSegmentRevisionsData, ThrowOnError>) => (options.client ?? client).get<ListSegmentRevisionsResponses, ListSegmentRevisionsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/segments/{uuid}/revisions',
     ...options
 });
@@ -260,15 +194,9 @@ export const listSegmentRevisions = <ThrowOnError extends boolean = false>(optio
  *
  * Returns a paginated list of media series groupings.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const listSeries = <ThrowOnError extends boolean = false>(options?: Options<ListSeriesData, ThrowOnError>) => (options?.client ?? client).get<ListSeriesResponses, ListSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series',
     ...options
 });
@@ -278,15 +206,9 @@ export const listSeries = <ThrowOnError extends boolean = false>(options?: Optio
  *
  * Creates a new media series grouping.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const createSeries = <ThrowOnError extends boolean = false>(options: Options<CreateSeriesData, ThrowOnError>) => (options.client ?? client).post<CreateSeriesResponses, CreateSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series',
     ...options,
     headers: {
@@ -300,15 +222,9 @@ export const createSeries = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Deletes a series and all its media associations.
  *
- * **Permissions:** `REMOVE_MEDIA`
- *
  */
 export const deleteSeries = <ThrowOnError extends boolean = false>(options: Options<DeleteSeriesData, ThrowOnError>) => (options.client ?? client).delete<DeleteSeriesResponses, DeleteSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}',
     ...options
 });
@@ -318,15 +234,9 @@ export const deleteSeries = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Returns a series with all media entries sorted by position.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getSeries = <ThrowOnError extends boolean = false>(options: Options<GetSeriesData, ThrowOnError>) => (options.client ?? client).get<GetSeriesResponses, GetSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}',
     ...options
 });
@@ -336,15 +246,9 @@ export const getSeries = <ThrowOnError extends boolean = false>(options: Options
  *
  * Updates series localized names.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const updateSeries = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesResponses, UpdateSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}',
     ...options,
     headers: {
@@ -358,15 +262,9 @@ export const updateSeries = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Adds a media entry to a series at a specific position.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: Options<AddMediaToSeriesData, ThrowOnError>) => (options.client ?? client).post<AddMediaToSeriesResponses, AddMediaToSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}/media',
     ...options,
     headers: {
@@ -380,15 +278,9 @@ export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: 
  *
  * Removes a media entry from a series.
  *
- * **Permissions:** `REMOVE_MEDIA`
- *
  */
 export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(options: Options<RemoveMediaFromSeriesData, ThrowOnError>) => (options.client ?? client).delete<RemoveMediaFromSeriesResponses, RemoveMediaFromSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}/media/{mediaId}',
     ...options
 });
@@ -398,15 +290,9 @@ export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(opti
  *
  * Updates the position of a media entry in a series.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesMediaResponses, UpdateSeriesMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/series/{id}/media/{mediaId}',
     ...options,
     headers: {
@@ -420,15 +306,9 @@ export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options:
  *
  * Returns a character with their voice actors (seiyuu) and all media appearances.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getCharacter = <ThrowOnError extends boolean = false>(options: Options<GetCharacterData, ThrowOnError>) => (options.client ?? client).get<GetCharacterResponses, GetCharacterErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/characters/{id}',
     ...options
 });
@@ -438,33 +318,21 @@ export const getCharacter = <ThrowOnError extends boolean = false>(options: Opti
  *
  * Returns a voice actor (seiyuu) with all characters they voiced and their media appearances.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options<GetSeiyuuData, ThrowOnError>) => (options.client ?? client).get<GetSeiyuuResponses, GetSeiyuuErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/seiyuu/{id}',
     ...options
 });
 
 /**
- * Delete media (soft delete)
+ * Delete media
  *
  * Soft-deletes a media entry by setting the `deletedAt` timestamp. The media remains in the database but is excluded from query results.
  *
- * **Permissions:** `REMOVE_MEDIA`
- *
  */
 export const deleteMedia = <ThrowOnError extends boolean = false>(options: Options<DeleteMediaData, ThrowOnError>) => (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options
 });
@@ -474,15 +342,9 @@ export const deleteMedia = <ThrowOnError extends boolean = false>(options: Optio
  *
  * Returns a single media entry by its ID with full metadata.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getMedia = <ThrowOnError extends boolean = false>(options: Options<GetMediaData, ThrowOnError>) => (options.client ?? client).get<GetMediaResponses, GetMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options
 });
@@ -492,15 +354,9 @@ export const getMedia = <ThrowOnError extends boolean = false>(options: Options<
  *
  * Updates an existing media entry. Only provided fields will be updated.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const updateMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateMediaResponses, UpdateMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{id}',
     ...options,
     headers: {
@@ -514,33 +370,21 @@ export const updateMedia = <ThrowOnError extends boolean = false>(options: Optio
  *
  * Returns a paginated list of episodes for a specific media.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const listEpisodes = <ThrowOnError extends boolean = false>(options: Options<ListEpisodesData, ThrowOnError>) => (options.client ?? client).get<ListEpisodesResponses, ListEpisodesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes',
     ...options
 });
 
 /**
- * Create new episode
+ * Create episode
  *
  * Creates a new episode for a specific media.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const createEpisode = <ThrowOnError extends boolean = false>(options: Options<CreateEpisodeData, ThrowOnError>) => (options.client ?? client).post<CreateEpisodeResponses, CreateEpisodeErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes',
     ...options,
     headers: {
@@ -550,19 +394,13 @@ export const createEpisode = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * Delete an episode
+ * Delete episode
  *
  * Soft-deletes an episode. Segments are not cascade deleted — this only hides the episode from results.
  *
- * **Permissions:** `REMOVE_MEDIA`
- *
  */
 export const deleteEpisode = <ThrowOnError extends boolean = false>(options: Options<DeleteEpisodeData, ThrowOnError>) => (options.client ?? client).delete<DeleteEpisodeResponses, DeleteEpisodeErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options
 });
@@ -572,15 +410,9 @@ export const deleteEpisode = <ThrowOnError extends boolean = false>(options: Opt
  *
  * Returns a specific episode by media ID and episode number.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getEpisode = <ThrowOnError extends boolean = false>(options: Options<GetEpisodeData, ThrowOnError>) => (options.client ?? client).get<GetEpisodeResponses, GetEpisodeErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options
 });
@@ -590,15 +422,9 @@ export const getEpisode = <ThrowOnError extends boolean = false>(options: Option
  *
  * Updates an existing episode. Only provided fields will be updated.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const updateEpisode = <ThrowOnError extends boolean = false>(options: Options<UpdateEpisodeData, ThrowOnError>) => (options.client ?? client).patch<UpdateEpisodeResponses, UpdateEpisodeErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
     ...options,
     headers: {
@@ -612,33 +438,21 @@ export const updateEpisode = <ThrowOnError extends boolean = false>(options: Opt
  *
  * Returns a paginated list of segments for a specific episode.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const listSegments = <ThrowOnError extends boolean = false>(options: Options<ListSegmentsData, ThrowOnError>) => (options.client ?? client).get<ListSegmentsResponses, ListSegmentsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments',
     ...options
 });
 
 /**
- * Create new segment
+ * Create segment
  *
  * Creates a new segment for a specific episode.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const createSegment = <ThrowOnError extends boolean = false>(options: Options<CreateSegmentData, ThrowOnError>) => (options.client ?? client).post<CreateSegmentResponses, CreateSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments',
     ...options,
     headers: {
@@ -648,20 +462,14 @@ export const createSegment = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * Batch create segments for an episode
+ * Batch create segments
  *
  * Creates multiple segments for a specific episode in a single request.
  * Duplicate UUIDs are silently skipped.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const createSegmentsBatch = <ThrowOnError extends boolean = false>(options: Options<CreateSegmentsBatchData, ThrowOnError>) => (options.client ?? client).post<CreateSegmentsBatchResponses, CreateSegmentsBatchErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/batch',
     ...options,
     headers: {
@@ -675,15 +483,9 @@ export const createSegmentsBatch = <ThrowOnError extends boolean = false>(option
  *
  * Soft-deletes a segment by setting its status to DELETED.
  *
- * **Permissions:** `REMOVE_MEDIA`
- *
  */
 export const deleteSegment = <ThrowOnError extends boolean = false>(options: Options<DeleteSegmentData, ThrowOnError>) => (options.client ?? client).delete<DeleteSegmentResponses, DeleteSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options
 });
@@ -693,15 +495,9 @@ export const deleteSegment = <ThrowOnError extends boolean = false>(options: Opt
  *
  * Returns a specific segment by its ID within the media/episode hierarchy.
  *
- * **Permissions:** `READ_MEDIA`
- *
  */
 export const getSegment = <ThrowOnError extends boolean = false>(options: Options<GetSegmentData, ThrowOnError>) => (options.client ?? client).get<GetSegmentResponses, GetSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options
 });
@@ -711,15 +507,9 @@ export const getSegment = <ThrowOnError extends boolean = false>(options: Option
  *
  * Updates an existing segment. Only provided fields will be updated.
  *
- * **Permissions:** `UPDATE_MEDIA`
- *
  */
 export const updateSegment = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentResponses, UpdateSegmentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }, {
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
     ...options,
     headers: {
@@ -733,8 +523,6 @@ export const updateSegment = <ThrowOnError extends boolean = false>(options: Opt
  *
  * Returns the API quota usage for the current billing period.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Options<GetUserQuotaData, ThrowOnError>) => (options?.client ?? client).get<GetUserQuotaResponses, GetUserQuotaErrors, ThrowOnError>({
     security: [{
@@ -747,11 +535,9 @@ export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Opt
 });
 
 /**
- * Create a new report
+ * Create report
  *
- * Submit a report for a segment or media entry.
- *
- * **Permissions:** Session authentication (cookie-based).
+ * Submits a report for a segment or media entry.
  *
  */
 export const createUserReport = <ThrowOnError extends boolean = false>(options: Options<CreateUserReportData, ThrowOnError>) => (options.client ?? client).post<CreateUserReportResponses, CreateUserReportErrors, ThrowOnError>({
@@ -773,8 +559,6 @@ export const createUserReport = <ThrowOnError extends boolean = false>(options: 
  *
  * Returns the authenticated user's full preferences object.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const getUserPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetUserPreferencesData, ThrowOnError>) => (options?.client ?? client).get<GetUserPreferencesResponses, GetUserPreferencesErrors, ThrowOnError>({
     security: [{
@@ -792,8 +576,6 @@ export const getUserPreferences = <ThrowOnError extends boolean = false>(options
  * Deep-merges a partial preferences update into the user's existing preferences.
  * Only the provided keys are updated; all other keys are preserved.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const updateUserPreferences = <ThrowOnError extends boolean = false>(options: Options<UpdateUserPreferencesData, ThrowOnError>) => (options.client ?? client).patch<UpdateUserPreferencesResponses, UpdateUserPreferencesErrors, ThrowOnError>({
     security: [{
@@ -810,11 +592,9 @@ export const updateUserPreferences = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Clear user activity history
+ * Clear user activity
  *
  * Deletes the authenticated user's activity history. Optionally filter by activity type.
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const deleteUserActivity = <ThrowOnError extends boolean = false>(options?: Options<DeleteUserActivityData, ThrowOnError>) => (options?.client ?? client).delete<DeleteUserActivityResponses, DeleteUserActivityErrors, ThrowOnError>({
@@ -828,11 +608,9 @@ export const deleteUserActivity = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * Get user activity history
+ * List user activity
  *
  * Returns the authenticated user's activity history with cursor-based pagination.
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const listUserActivity = <ThrowOnError extends boolean = false>(options?: Options<ListUserActivityData, ThrowOnError>) => (options?.client ?? client).get<ListUserActivityResponses, ListUserActivityErrors, ThrowOnError>({
@@ -849,8 +627,6 @@ export const listUserActivity = <ThrowOnError extends boolean = false>(options?:
  * Track user activity
  *
  * Records a user activity event (e.g. segment play). Fire-and-forget — always returns 204.
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const trackUserActivity = <ThrowOnError extends boolean = false>(options: Options<TrackUserActivityData, ThrowOnError>) => (options.client ?? client).post<TrackUserActivityResponses, TrackUserActivityErrors, ThrowOnError>({
@@ -873,8 +649,6 @@ export const trackUserActivity = <ThrowOnError extends boolean = false>(options:
  * Returns daily activity counts for the authenticated user, grouped by date and activity type.
  * Each day contains per-type counts that can be summed or filtered client-side.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const getUserActivityHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetUserActivityHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetUserActivityHeatmapResponses, GetUserActivityHeatmapErrors, ThrowOnError>({
     security: [{
@@ -892,8 +666,6 @@ export const getUserActivityHeatmap = <ThrowOnError extends boolean = false>(opt
  * Returns aggregate statistics about the authenticated user's activity:
  * total searches, exports, plays, and top media.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const getUserActivityStats = <ThrowOnError extends boolean = false>(options?: Options<GetUserActivityStatsData, ThrowOnError>) => (options?.client ?? client).get<GetUserActivityStatsResponses, GetUserActivityStatsErrors, ThrowOnError>({
     security: [{
@@ -910,8 +682,6 @@ export const getUserActivityStats = <ThrowOnError extends boolean = false>(optio
  *
  * Deletes all activity records for the authenticated user on the given date.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const deleteUserActivityByDate = <ThrowOnError extends boolean = false>(options: Options<DeleteUserActivityByDateData, ThrowOnError>) => (options.client ?? client).delete<DeleteUserActivityByDateResponses, DeleteUserActivityByDateErrors, ThrowOnError>({
     security: [{
@@ -924,11 +694,9 @@ export const deleteUserActivityByDate = <ThrowOnError extends boolean = false>(o
 });
 
 /**
- * Delete a single activity record
+ * Delete activity record
  *
  * Deletes a single activity record by ID for the authenticated user.
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const deleteUserActivityById = <ThrowOnError extends boolean = false>(options: Options<DeleteUserActivityByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteUserActivityByIdResponses, DeleteUserActivityByIdErrors, ThrowOnError>({
@@ -946,8 +714,6 @@ export const deleteUserActivityById = <ThrowOnError extends boolean = false>(opt
  *
  * Returns a full JSON export of all user-related data for GDPR data portability.
  * Includes profile, preferences, activity history, collections, and reports.
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const exportUserData = <ThrowOnError extends boolean = false>(options?: Options<ExportUserDataData, ThrowOnError>) => (options?.client ?? client).get<ExportUserDataResponses, ExportUserDataErrors, ThrowOnError>({
@@ -967,8 +733,6 @@ export const exportUserData = <ThrowOnError extends boolean = false>(options?: O
  * opt-in status. Features gated by role are excluded if the user lacks
  * the required role.
  *
- * **Permissions:** Session authentication (cookie-based).
- *
  */
 export const listUserLabs = <ThrowOnError extends boolean = false>(options?: Options<ListUserLabsData, ThrowOnError>) => (options?.client ?? client).get<ListUserLabsResponses, ListUserLabsErrors, ThrowOnError>({
     security: [{
@@ -984,8 +748,6 @@ export const listUserLabs = <ThrowOnError extends boolean = false>(options?: Opt
  * Unenroll from a lab feature
  *
  * Opts the authenticated user out of a lab feature.
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const unenrollUserLab = <ThrowOnError extends boolean = false>(options: Options<UnenrollUserLabData, ThrowOnError>) => (options.client ?? client).delete<UnenrollUserLabResponses, UnenrollUserLabErrors, ThrowOnError>({
@@ -1003,8 +765,6 @@ export const unenrollUserLab = <ThrowOnError extends boolean = false>(options: O
  *
  * Opts the authenticated user into a lab feature. The user must be eligible
  * for the lab (correct role, in allowlist or rollout percentage).
- *
- * **Permissions:** Session authentication (cookie-based).
  *
  */
 export const enrollUserLab = <ThrowOnError extends boolean = false>(options: Options<EnrollUserLabData, ThrowOnError>) => (options.client ?? client).post<EnrollUserLabResponses, EnrollUserLabErrors, ThrowOnError>({
@@ -1196,12 +956,10 @@ export const getCollectionStats = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * Admin dashboard statistics
+ * Get dashboard statistics
  *
  * Returns at-a-glance statistics for the admin dashboard including media counts,
  * user counts, and system health information.
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const getAdminDashboard = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardResponses, GetAdminDashboardErrors, ThrowOnError>({
@@ -1215,12 +973,10 @@ export const getAdminDashboard = <ThrowOnError extends boolean = false>(options?
 });
 
 /**
- * System health check
+ * Check system health
  *
  * Returns connectivity status and version information for all backend subsystems
  * (Elasticsearch, PostgreSQL, application).
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: Options<GetAdminHealthData, ThrowOnError>) => (options?.client ?? client).get<GetAdminHealthResponses, GetAdminHealthErrors, ThrowOnError>({
@@ -1234,7 +990,7 @@ export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: O
 });
 
 /**
- * Reindex database into Elasticsearch
+ * Reindex segments into Elasticsearch
  *
  * Reindexes segments from the PostgreSQL database into Elasticsearch.
  * Allows filtering by specific media entries and episodes.
@@ -1243,8 +999,6 @@ export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: O
  * - If no filters provided, reindexes all segments
  * - If `media` is provided, reindexes segments from those media entries
  * - If a media item includes `episodes`, only those episodes are reindexed for that media
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const triggerReindex = <ThrowOnError extends boolean = false>(options?: Options<TriggerReindexData, ThrowOnError>) => (options?.client ?? client).post<TriggerReindexResponses, TriggerReindexErrors, ThrowOnError>({
@@ -1265,13 +1019,6 @@ export const triggerReindex = <ThrowOnError extends boolean = false>(options?: O
  * Get queue statistics
  *
  * Returns statistics for all ES sync queues including pending and failed job counts.
- *
- * **Use cases:**
- * - Monitor queue health
- * - Detect stuck jobs
- * - Check backlog size
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const listAdminQueueStats = <ThrowOnError extends boolean = false>(options?: Options<ListAdminQueueStatsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminQueueStatsResponses, ListAdminQueueStatsErrors, ThrowOnError>({
@@ -1294,8 +1041,6 @@ export const listAdminQueueStats = <ThrowOnError extends boolean = false>(option
  * - `es-sync-update` - Jobs to update existing segments
  * - `es-sync-delete` - Jobs to delete segments
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const getAdminQueue = <ThrowOnError extends boolean = false>(options: Options<GetAdminQueueData, ThrowOnError>) => (options.client ?? client).get<GetAdminQueueResponses, GetAdminQueueErrors, ThrowOnError>({
     security: [{
@@ -1311,13 +1056,6 @@ export const getAdminQueue = <ThrowOnError extends boolean = false>(options: Opt
  * Get failed jobs from a queue
  *
  * Returns jobs that have exceeded their retry limit and permanently failed.
- *
- * **Use cases:**
- * - Identify segments that failed to sync to Elasticsearch
- * - Debug persistent sync issues
- * - Decide whether to retry or purge failed jobs
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const listAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<ListAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).get<ListAdminQueueFailedResponses, ListAdminQueueFailedErrors, ThrowOnError>({
@@ -1335,12 +1073,6 @@ export const listAdminQueueFailed = <ThrowOnError extends boolean = false>(optio
  *
  * Re-enqueues all failed jobs from a specific queue for another attempt.
  *
- * **Use cases:**
- * - Retry jobs that failed due to temporary Elasticsearch issues
- * - Recover from network blips
- *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const retryAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<RetryAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).post<RetryAdminQueueFailedResponses, RetryAdminQueueFailedErrors, ThrowOnError>({
     security: [{
@@ -1356,13 +1088,7 @@ export const retryAdminQueueFailed = <ThrowOnError extends boolean = false>(opti
  * Purge failed jobs from a queue
  *
  * Permanently deletes all failed jobs from a queue.
- * This does **not** re-sync the affected segments — use the reindex endpoint for that.
- *
- * **Use cases:**
- * - Clean up old failed jobs after investigating
- * - Reset a queue after fixing the underlying issue
- *
- * **Permissions:** `ADD_MEDIA`
+ * This does **not** re-sync the affected segments -- use the reindex endpoint for that.
  *
  */
 export const purgeAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<PurgeAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).delete<PurgeAdminQueueFailedResponses, PurgeAdminQueueFailedErrors, ThrowOnError>({
@@ -1406,8 +1132,6 @@ export const impersonateAdminUser = <ThrowOnError extends boolean = false>(optio
  * Returns all reports with filtering and cursor pagination.
  * Supports filtering by source (USER/AUTO) to separate user reports from auto-check findings.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const listAdminReports = <ThrowOnError extends boolean = false>(options?: Options<ListAdminReportsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminReportsResponses, ListAdminReportsErrors, ThrowOnError>({
     security: [{
@@ -1423,8 +1147,6 @@ export const listAdminReports = <ThrowOnError extends boolean = false>(options?:
  * Batch update reports
  *
  * Updates the status (and optionally admin notes) of multiple reports at once.
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const batchUpdateAdminReports = <ThrowOnError extends boolean = false>(options: Options<BatchUpdateAdminReportsData, ThrowOnError>) => (options.client ?? client).patch<BatchUpdateAdminReportsResponses, BatchUpdateAdminReportsErrors, ThrowOnError>({
@@ -1442,12 +1164,10 @@ export const batchUpdateAdminReports = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Update a report
+ * Update report
  *
  * Updates the status and/or admin notes of a report.
  * Works for both USER and AUTO reports.
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const updateAdminReport = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminReportData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminReportResponses, UpdateAdminReportErrors, ThrowOnError>({
@@ -1469,8 +1189,6 @@ export const updateAdminReport = <ThrowOnError extends boolean = false>(options:
  *
  * Returns all audit definitions with current config, threshold schema, and latest run info.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const listAdminMediaAudits = <ThrowOnError extends boolean = false>(options?: Options<ListAdminMediaAuditsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminMediaAuditsResponses, ListAdminMediaAuditsErrors, ThrowOnError>({
     security: [{
@@ -1483,11 +1201,9 @@ export const listAdminMediaAudits = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
- * Update a media audit config
+ * Update media audit config
  *
  * Updates the threshold values or enabled status of an audit.
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const updateAdminMediaAudit = <ThrowOnError extends boolean = false>(options: Options<UpdateAdminMediaAuditData, ThrowOnError>) => (options.client ?? client).patch<UpdateAdminMediaAuditResponses, UpdateAdminMediaAuditErrors, ThrowOnError>({
@@ -1505,11 +1221,9 @@ export const updateAdminMediaAudit = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Run a media audit
+ * Run media audit
  *
  * Triggers all enabled audits (or a specific one). Creates MediaAuditRun records and AUTO reports for any findings.
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const runAdminMediaAudit = <ThrowOnError extends boolean = false>(options: Options<RunAdminMediaAuditData, ThrowOnError>) => (options.client ?? client).post<RunAdminMediaAuditResponses, RunAdminMediaAuditErrors, ThrowOnError>({
@@ -1527,8 +1241,6 @@ export const runAdminMediaAudit = <ThrowOnError extends boolean = false>(options
  *
  * Returns past media audit runs with summary stats. Supports filtering by audit name and cursor pagination.
  *
- * **Permissions:** `ADD_MEDIA`
- *
  */
 export const listAdminMediaAuditRuns = <ThrowOnError extends boolean = false>(options?: Options<ListAdminMediaAuditRunsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminMediaAuditRunsResponses, ListAdminMediaAuditRunsErrors, ThrowOnError>({
     security: [{
@@ -1541,11 +1253,9 @@ export const listAdminMediaAuditRuns = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Get a specific audit run's details
+ * Get audit run details
  *
  * Returns a specific media audit run record with its linked reports.
- *
- * **Permissions:** `ADD_MEDIA`
  *
  */
 export const getAdminMediaAuditRun = <ThrowOnError extends boolean = false>(options: Options<GetAdminMediaAuditRunData, ThrowOnError>) => (options.client ?? client).get<GetAdminMediaAuditRunResponses, GetAdminMediaAuditRunErrors, ThrowOnError>({
@@ -1559,7 +1269,7 @@ export const getAdminMediaAuditRun = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * Get the current announcement
+ * Get current announcement
  *
  * Returns the current announcement if one is active. Public endpoint (no auth required).
  *
@@ -1567,7 +1277,7 @@ export const getAdminMediaAuditRun = <ThrowOnError extends boolean = false>(opti
 export const getAnnouncement = <ThrowOnError extends boolean = false>(options?: Options<GetAnnouncementData, ThrowOnError>) => (options?.client ?? client).get<GetAnnouncementResponses, GetAnnouncementErrors, ThrowOnError>({ url: '/v1/admin/announcement', ...options });
 
 /**
- * Create or update the announcement
+ * Create or update announcement
  *
  * Upserts the site-wide announcement. Only one announcement exists at a time.
  *
