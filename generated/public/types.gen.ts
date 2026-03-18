@@ -998,6 +998,10 @@ export type MediaAutocompleteItem = {
      */
     id: number;
     /**
+     * Public identifier for the media
+     */
+    publicId: string;
+    /**
      * Original Japanese name of the media
      */
     nameJa: string;
@@ -1808,7 +1812,10 @@ export type UserPreferences = {
      * Media hidden from search results by the user
      */
     hiddenMedia?: Array<{
-        mediaId: number;
+        /**
+         * Public identifier of the hidden media
+         */
+        mediaPublicId: string;
         nameEn?: string;
         nameJa?: string;
         nameRomaji?: string;
@@ -5254,6 +5261,384 @@ export type GetAdminDashboardResponses = {
 };
 
 export type GetAdminDashboardResponse = GetAdminDashboardResponses[keyof GetAdminDashboardResponses];
+
+export type GetAdminDashboardOverviewData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Number of days for daily activity range (7, 30, or 90)
+         */
+        days?: string;
+    };
+    url: '/v1/admin/dashboard/overview';
+};
+
+export type GetAdminDashboardOverviewErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminDashboardOverviewError = GetAdminDashboardOverviewErrors[keyof GetAdminDashboardOverviewErrors];
+
+export type GetAdminDashboardOverviewResponses = {
+    /**
+     * OK
+     */
+    200: {
+        media: {
+            totalMedia: number;
+            totalEpisodes: number;
+            totalSegments: number;
+            totalCharacters: number;
+            totalSeiyuu: number;
+        };
+        users: {
+            totalUsers: number;
+            /**
+             * Users registered in the last 30 days
+             */
+            recentlyRegisteredCount: number;
+            /**
+             * Users active in the last 30 days
+             */
+            recentlyActiveCount: number;
+        };
+        activity: {
+            totalSearches: number;
+            totalExports: number;
+            totalPlays: number;
+            totalShares: number;
+            /**
+             * Unique users who searched in the last 7 days
+             */
+            activeSearchers7d: number;
+            dailyActivity: Array<{
+                date: string;
+                count: number;
+            }>;
+        };
+    };
+};
+
+export type GetAdminDashboardOverviewResponse = GetAdminDashboardOverviewResponses[keyof GetAdminDashboardOverviewResponses];
+
+export type GetAdminDashboardMediaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/dashboard/media';
+};
+
+export type GetAdminDashboardMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminDashboardMediaError = GetAdminDashboardMediaErrors[keyof GetAdminDashboardMediaErrors];
+
+export type GetAdminDashboardMediaResponses = {
+    /**
+     * OK
+     */
+    200: {
+        byCategory: Array<{
+            label: string;
+            count: number;
+        }>;
+        byFormat: Array<{
+            label: string;
+            count: number;
+        }>;
+        byStatus: Array<{
+            label: string;
+            count: number;
+        }>;
+        byGenre: Array<{
+            label: string;
+            count: number;
+        }>;
+        byStudio: Array<{
+            label: string;
+            count: number;
+        }>;
+        segmentsByContentRating: Array<{
+            label: string;
+            count: number;
+        }>;
+        segmentsByStatus: Array<{
+            label: string;
+            count: number;
+        }>;
+        topMediaByPlays: Array<{
+            mediaId: number;
+            mediaName: string;
+            count: number;
+        }>;
+        topMediaBySearches: Array<{
+            mediaId: number;
+            mediaName: string;
+            count: number;
+        }>;
+        topMediaByExports: Array<{
+            mediaId: number;
+            mediaName: string;
+            count: number;
+        }>;
+    };
+};
+
+export type GetAdminDashboardMediaResponse = GetAdminDashboardMediaResponses[keyof GetAdminDashboardMediaResponses];
+
+export type GetAdminDashboardActivityData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Number of days for activity range (7, 30, or 90)
+         */
+        days?: string;
+    };
+    url: '/v1/admin/dashboard/activity';
+};
+
+export type GetAdminDashboardActivityErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminDashboardActivityError = GetAdminDashboardActivityErrors[keyof GetAdminDashboardActivityErrors];
+
+export type GetAdminDashboardActivityResponses = {
+    /**
+     * OK
+     */
+    200: {
+        dailyActivityByType: Array<{
+            date: string;
+            search: number;
+            ankiExport: number;
+            segmentPlay: number;
+            share: number;
+        }>;
+        topSearches: Array<{
+            query: string;
+            count: number;
+        }>;
+        dailyExports: Array<{
+            date: string;
+            count: number;
+        }>;
+        topExportedMedia: Array<{
+            mediaId: number;
+            mediaName: string;
+            count: number;
+        }>;
+    };
+};
+
+export type GetAdminDashboardActivityResponse = GetAdminDashboardActivityResponses[keyof GetAdminDashboardActivityResponses];
+
+export type GetAdminDashboardCollectionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/dashboard/collections';
+};
+
+export type GetAdminDashboardCollectionsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminDashboardCollectionsError = GetAdminDashboardCollectionsErrors[keyof GetAdminDashboardCollectionsErrors];
+
+export type GetAdminDashboardCollectionsResponses = {
+    /**
+     * OK
+     */
+    200: {
+        totalCollections: number;
+        byTypeAndVisibility: Array<{
+            type: string;
+            visibility: string;
+            count: number;
+        }>;
+        averageSize: number;
+        topCollections: Array<{
+            id: number;
+            name: string;
+            type: string;
+            visibility: string;
+            segmentCount: number;
+        }>;
+    };
+};
+
+export type GetAdminDashboardCollectionsResponse = GetAdminDashboardCollectionsResponses[keyof GetAdminDashboardCollectionsResponses];
+
+export type GetAdminDashboardApiKeysData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/dashboard/api-keys';
+};
+
+export type GetAdminDashboardApiKeysErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminDashboardApiKeysError = GetAdminDashboardApiKeysErrors[keyof GetAdminDashboardApiKeysErrors];
+
+export type GetAdminDashboardApiKeysResponses = {
+    /**
+     * OK
+     */
+    200: {
+        keys: Array<{
+            id: number;
+            name?: string;
+            hint?: string;
+            isActive: boolean;
+            username?: string;
+            email?: string;
+            requestCount: number;
+        }>;
+    };
+};
+
+export type GetAdminDashboardApiKeysResponse = GetAdminDashboardApiKeysResponses[keyof GetAdminDashboardApiKeysResponses];
+
+export type GetAdminDashboardSystemData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/dashboard/system';
+};
+
+export type GetAdminDashboardSystemErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminDashboardSystemError = GetAdminDashboardSystemErrors[keyof GetAdminDashboardSystemErrors];
+
+export type GetAdminDashboardSystemResponses = {
+    /**
+     * OK
+     */
+    200: {
+        status: 'healthy' | 'degraded';
+        app: {
+            version: string;
+        };
+        elasticsearch: {
+            status: 'connected' | 'disconnected';
+            version?: string;
+            clusterName?: string;
+            clusterStatus?: string;
+            indexName?: string;
+            documentCount?: number;
+            indexSizeBytes?: number;
+        };
+        database: {
+            status: 'connected' | 'disconnected';
+            version?: string;
+        };
+        queues: Array<{
+            queue: string;
+            stuckCount: number;
+            failedCount: number;
+        }>;
+    };
+};
+
+export type GetAdminDashboardSystemResponse = GetAdminDashboardSystemResponses[keyof GetAdminDashboardSystemResponses];
 
 export type GetAdminHealthData = {
     body?: never;
