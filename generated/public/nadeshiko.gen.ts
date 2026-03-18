@@ -3,7 +3,7 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getCharacter, getSeiyuu, getMedia, listEpisodes, getEpisode, getSegment, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
@@ -64,14 +64,6 @@ export type NadeshikoClient = {
       (options: Options<Types.GetSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request } | { error: Types.GetSeriesErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetSeriesData, boolean>): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request }>;
     };
-    getCharacter: {
-      (options: Options<Types.GetCharacterData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request } | { error: Types.GetCharacterErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCharacterData, boolean>): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request }>;
-    };
-    getSeiyuu: {
-      (options: Options<Types.GetSeiyuuData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request } | { error: Types.GetSeiyuuErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSeiyuuData, boolean>): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request }>;
-    };
     getMedia: {
       (options: Options<Types.GetMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetMediaData, boolean>): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request }>;
@@ -131,8 +123,6 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getSegmentContext: (options?: any) => getSegmentContext({ throwOnError: true, ...options, client: clientInstance }),
     listSeries: (options?: any) => listSeries({ throwOnError: true, ...options, client: clientInstance }),
     getSeries: (options?: any) => getSeries({ throwOnError: true, ...options, client: clientInstance }),
-    getCharacter: (options?: any) => getCharacter({ throwOnError: true, ...options, client: clientInstance }),
-    getSeiyuu: (options?: any) => getSeiyuu({ throwOnError: true, ...options, client: clientInstance }),
     getMedia: (options?: any) => getMedia({ throwOnError: true, ...options, client: clientInstance }),
     listEpisodes: (options?: any) => listEpisodes({ throwOnError: true, ...options, client: clientInstance }),
     getEpisode: (options?: any) => getEpisode({ throwOnError: true, ...options, client: clientInstance }),
