@@ -4285,7 +4285,7 @@ export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserA
 
 export type TrackUserActivityData = {
     body: {
-        activityType: 'SEARCH' | 'SEGMENT_PLAY' | 'SHARE';
+        activityType: 'SEARCH' | 'SEGMENT_PLAY' | 'SHARE' | 'ANKI_EXPORT';
         segmentId?: string;
         mediaId?: number;
         mediaName?: string;
