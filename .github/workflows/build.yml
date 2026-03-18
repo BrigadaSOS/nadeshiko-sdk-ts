@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate SDKs
         env:
-          OPENAPI_SPEC_PATH: https://raw.githubusercontent.com/BrigadaSOS/Nadeshiko/main-v2/backend/docs/generated/openapi.yaml
+          OPENAPI_SPEC_PATH: https://raw.githubusercontent.com/BrigadaSOS/Nadeshiko/main/backend/docs/generated/openapi.yaml
         run: bun run codegen
 
       - name: Build packages
