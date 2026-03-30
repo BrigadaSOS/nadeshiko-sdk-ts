@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminDashboardOverview, getAdminDashboardMedia, getAdminDashboardActivity, getAdminDashboardCollections, getAdminDashboardApiKeys, getAdminDashboardSystem, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, impersonateAdminUser, clearAdminImpersonation, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminDashboardOverview, getAdminDashboardMedia, getAdminDashboardActivity, getAdminDashboardCollections, getAdminDashboardApiKeys, getAdminDashboardSystem, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
@@ -331,14 +331,6 @@ export type NadeshikoClient = {
       (options: Options<Types.PurgeAdminQueueFailedData, boolean> & { throwOnError: false }): Promise<{ data: Types.PurgeAdminQueueFailedResponse; response: Response; request: Request } | { error: Types.PurgeAdminQueueFailedErrors; response: Response; request: Request }>;
       (options?: Options<Types.PurgeAdminQueueFailedData, boolean>): Promise<{ data: Types.PurgeAdminQueueFailedResponse; response: Response; request: Request }>;
     };
-    impersonateAdminUser: {
-      (options: Options<Types.ImpersonateAdminUserData, boolean> & { throwOnError: false }): Promise<{ data: Types.ImpersonateAdminUserResponse; response: Response; request: Request } | { error: Types.ImpersonateAdminUserErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ImpersonateAdminUserData, boolean>): Promise<{ data: Types.ImpersonateAdminUserResponse; response: Response; request: Request }>;
-    };
-    clearAdminImpersonation: {
-      (options: Options<Types.ClearAdminImpersonationData, boolean> & { throwOnError: false }): Promise<{ data: Types.ClearAdminImpersonationResponse; response: Response; request: Request } | { error: Types.ClearAdminImpersonationErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ClearAdminImpersonationData, boolean>): Promise<{ data: Types.ClearAdminImpersonationResponse; response: Response; request: Request }>;
-    };
     listAdminReports: {
       (options: Options<Types.ListAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request } | { error: Types.ListAdminReportsErrors; response: Response; request: Request }>;
       (options?: Options<Types.ListAdminReportsData, boolean>): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request }>;
@@ -498,8 +490,6 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listAdminQueueFailed: (options?: any) => listAdminQueueFailed({ throwOnError: true, ...options, client: clientInstance }),
     retryAdminQueueFailed: (options?: any) => retryAdminQueueFailed({ throwOnError: true, ...options, client: clientInstance }),
     purgeAdminQueueFailed: (options?: any) => purgeAdminQueueFailed({ throwOnError: true, ...options, client: clientInstance }),
-    impersonateAdminUser: (options?: any) => impersonateAdminUser({ throwOnError: true, ...options, client: clientInstance }),
-    clearAdminImpersonation: (options?: any) => clearAdminImpersonation({ throwOnError: true, ...options, client: clientInstance }),
     listAdminReports: (options?: any) => listAdminReports({ throwOnError: true, ...options, client: clientInstance }),
     batchUpdateAdminReports: (options?: any) => batchUpdateAdminReports({ throwOnError: true, ...options, client: clientInstance }),
     updateAdminReport: (options?: any) => updateAdminReport({ throwOnError: true, ...options, client: clientInstance }),
