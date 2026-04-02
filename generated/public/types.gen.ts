@@ -381,6 +381,10 @@ export type Media = {
      * Public identifier for the media (use this in public URLs)
      */
     publicId: string;
+    /**
+     * URL-friendly slug for the media
+     */
+    slug: string;
     externalIds: ExternalId;
     /**
      * Original Japanese name of the media
@@ -803,6 +807,46 @@ export type SearchMultipleResponse = {
 };
 
 /**
+ * Coverage statistics for a frequency tier
+ */
+export type WordCoverageTier = {
+    /**
+     * The frequency tier (e.g. 1000 means top 1000 words)
+     */
+    tier: number;
+    /**
+     * Number of words with at least one match in the corpus
+     */
+    covered: number;
+    /**
+     * Total number of words in this tier
+     */
+    total: number;
+    /**
+     * Coverage percentage
+     */
+    percentage: number;
+};
+
+/**
+ * A word from the frequency list with coverage information
+ */
+export type CoveredWord = {
+    /**
+     * Frequency rank
+     */
+    rank: number;
+    /**
+     * The Japanese word
+     */
+    word: string;
+    /**
+     * Number of matching sentences in the corpus
+     */
+    matchCount: number;
+};
+
+/**
  * Resource to expand in media responses
  */
 export type MediaIncludeExpansion = 'media.characters';
@@ -1001,6 +1045,10 @@ export type MediaAutocompleteItem = {
      * Public identifier for the media
      */
     publicId: string;
+    /**
+     * URL-friendly slug for the media
+     */
+    slug: string;
     /**
      * Original Japanese name of the media
      */
@@ -2353,6 +2401,182 @@ export type SearchWordsResponses = {
 };
 
 export type SearchWordsResponse = SearchWordsResponses[keyof SearchWordsResponses];
+
+export type GetStatsOverviewData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/stats/overview';
+};
+
+export type GetStatsOverviewErrors = {
+    /**
+     * Internal server error
+     */
+    500: Error500;
+};
+
+export type GetStatsOverviewError = GetStatsOverviewErrors[keyof GetStatsOverviewErrors];
+
+export type GetStatsOverviewResponses = {
+    /**
+     * Corpus statistics overview
+     */
+    200: {
+        /**
+         * Total number of active segments in the corpus
+         */
+        totalSegments: number;
+        /**
+         * Total number of episodes
+         */
+        totalEpisodes: number;
+        /**
+         * Total number of media entries
+         */
+        totalMedia: number;
+        /**
+         * Total number of words in the frequency list
+         */
+        totalFrequencyWords: number;
+        /**
+         * Total hours of Japanese dialogue (subtitle coverage time)
+         */
+        dialogueHours: number;
+        tiers: Array<WordCoverageTier>;
+        /**
+         * When the word coverage data was last updated
+         */
+        lastUpdated: string;
+        translations: {
+            /**
+             * Total active segments
+             */
+            total: number;
+            /**
+             * Segments with human English translations
+             */
+            enHuman: number;
+            /**
+             * Segments with machine English translations
+             */
+            enMachine: number;
+            /**
+             * Segments with human Spanish translations
+             */
+            esHuman: number;
+            /**
+             * Segments with machine Spanish translations
+             */
+            esMachine: number;
+        };
+    };
+};
+
+export type GetStatsOverviewResponse = GetStatsOverviewResponses[keyof GetStatsOverviewResponses];
+
+export type GetCoveredWordsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Frequency tier (max rank) to query
+         */
+        tier: number;
+        /**
+         * Minimum rank (exclusive). Use to query a slice, e.g. minRank=1000&tier=2000 for ranks 1001-2000.
+         */
+        minRank?: number;
+        /**
+         * Filter by coverage status
+         */
+        filter?: 'all' | 'covered' | 'uncovered';
+        /**
+         * Rank to start from (exclusive) for pagination within the slice.
+         */
+        cursor?: number;
+        /**
+         * Number of results per page
+         */
+        take?: number;
+    };
+    url: '/v1/stats/covered-words';
+};
+
+export type GetCoveredWordsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Internal server error
+     */
+    500: Error500;
+};
+
+export type GetCoveredWordsError = GetCoveredWordsErrors[keyof GetCoveredWordsErrors];
+
+export type GetCoveredWordsResponses = {
+    /**
+     * Paginated list of words
+     */
+    200: {
+        words: Array<CoveredWord>;
+        /**
+         * Rank cursor for the next page, or null if this is the last page
+         */
+        nextCursor: number;
+        /**
+         * Tier-level word counts (cached)
+         */
+        tierStats: {
+            total: number;
+            covered: number;
+            uncovered: number;
+        };
+    };
+};
+
+export type GetCoveredWordsResponse = GetCoveredWordsResponses[keyof GetCoveredWordsResponses];
+
+export type TriggerCoveredWordsUpdateData = {
+    body?: {
+        /**
+         * Maximum frequency rank to check (defaults to all words)
+         */
+        maxRank?: number;
+        /**
+         * Only check words that currently have zero matches (faster for incremental updates)
+         */
+        onlyUncovered?: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/stats/covered-words/update';
+};
+
+export type TriggerCoveredWordsUpdateErrors = {
+    /**
+     * Internal server error
+     */
+    500: Error500;
+};
+
+export type TriggerCoveredWordsUpdateError = TriggerCoveredWordsUpdateErrors[keyof TriggerCoveredWordsUpdateErrors];
+
+export type TriggerCoveredWordsUpdateResponses = {
+    /**
+     * Coverage update result
+     */
+    200: {
+        wordsChecked: number;
+        newlyCovered: number;
+        totalCovered: number;
+        percentage: number;
+    };
+};
+
+export type TriggerCoveredWordsUpdateResponse = TriggerCoveredWordsUpdateResponses[keyof TriggerCoveredWordsUpdateResponses];
 
 export type ListMediaData = {
     body?: never;
