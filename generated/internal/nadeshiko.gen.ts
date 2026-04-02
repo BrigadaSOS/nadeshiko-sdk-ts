@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminDashboardOverview, getAdminDashboardMedia, getAdminDashboardActivity, getAdminDashboardCollections, getAdminDashboardApiKeys, getAdminDashboardSystem, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, getStatsOverview, getCoveredWords, triggerCoveredWordsUpdate, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminDashboardOverview, getAdminDashboardMedia, getAdminDashboardActivity, getAdminDashboardCollections, getAdminDashboardApiKeys, getAdminDashboardSystem, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
@@ -50,6 +50,18 @@ export type NadeshikoClient = {
     searchWords: {
       (options: Options<Types.SearchWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request } | { error: Types.SearchWordsErrors; response: Response; request: Request }>;
       (options?: Options<Types.SearchWordsData, boolean>): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request }>;
+    };
+    getStatsOverview: {
+      (options: Options<Types.GetStatsOverviewData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request } | { error: Types.GetStatsOverviewErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetStatsOverviewData, boolean>): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request }>;
+    };
+    getCoveredWords: {
+      (options: Options<Types.GetCoveredWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetCoveredWordsData, boolean>): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request }>;
+    };
+    triggerCoveredWordsUpdate: {
+      (options: Options<Types.TriggerCoveredWordsUpdateData, boolean> & { throwOnError: false }): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request } | { error: Types.TriggerCoveredWordsUpdateErrors; response: Response; request: Request }>;
+      (options?: Options<Types.TriggerCoveredWordsUpdateData, boolean>): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request }>;
     };
     listMedia: {
       (options: Options<Types.ListMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request } | { error: Types.ListMediaErrors; response: Response; request: Request }>;
@@ -420,6 +432,9 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     search: (options?: any) => search({ throwOnError: true, ...options, client: clientInstance }),
     getSearchStats: (options?: any) => getSearchStats({ throwOnError: true, ...options, client: clientInstance }),
     searchWords: (options?: any) => searchWords({ throwOnError: true, ...options, client: clientInstance }),
+    getStatsOverview: (options?: any) => getStatsOverview({ throwOnError: true, ...options, client: clientInstance }),
+    getCoveredWords: (options?: any) => getCoveredWords({ throwOnError: true, ...options, client: clientInstance }),
+    triggerCoveredWordsUpdate: (options?: any) => triggerCoveredWordsUpdate({ throwOnError: true, ...options, client: clientInstance }),
     listMedia: (options?: any) => listMedia({ throwOnError: true, ...options, client: clientInstance }),
     getSegmentByUuid: (options?: any) => getSegmentByUuid({ throwOnError: true, ...options, client: clientInstance }),
     getSegmentContext: (options?: any) => getSegmentContext({ throwOnError: true, ...options, client: clientInstance }),
