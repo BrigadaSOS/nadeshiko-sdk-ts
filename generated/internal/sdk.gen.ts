@@ -99,7 +99,11 @@ export const searchWords = <ThrowOnError extends boolean = false>(options: Optio
  * data source for the public /stats page.
  *
  */
-export const getStatsOverview = <ThrowOnError extends boolean = false>(options?: Options<GetStatsOverviewData, ThrowOnError>) => (options?.client ?? client).get<GetStatsOverviewResponses, GetStatsOverviewErrors, ThrowOnError>({ url: '/v1/stats/overview', ...options });
+export const getStatsOverview = <ThrowOnError extends boolean = false>(options?: Options<GetStatsOverviewData, ThrowOnError>) => (options?.client ?? client).get<GetStatsOverviewResponses, GetStatsOverviewErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/stats/overview',
+    ...options
+});
 
 /**
  * List words with coverage information
@@ -108,7 +112,11 @@ export const getStatsOverview = <ThrowOnError extends boolean = false>(options?:
  * tier, with optional filtering by coverage status.
  *
  */
-export const getCoveredWords = <ThrowOnError extends boolean = false>(options: Options<GetCoveredWordsData, ThrowOnError>) => (options.client ?? client).get<GetCoveredWordsResponses, GetCoveredWordsErrors, ThrowOnError>({ url: '/v1/stats/covered-words', ...options });
+export const getCoveredWords = <ThrowOnError extends boolean = false>(options: Options<GetCoveredWordsData, ThrowOnError>) => (options.client ?? client).get<GetCoveredWordsResponses, GetCoveredWordsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/stats/covered-words',
+    ...options
+});
 
 /**
  * Trigger word coverage update
