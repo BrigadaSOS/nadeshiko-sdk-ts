@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddMediaToSeriesData, AddMediaToSeriesErrors, AddMediaToSeriesResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, AutocompleteMediaData, AutocompleteMediaErrors, AutocompleteMediaResponses, BatchUpdateAdminReportsData, BatchUpdateAdminReportsErrors, BatchUpdateAdminReportsResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSegmentsBatchData, CreateSegmentsBatchErrors, CreateSegmentsBatchResponses, CreateSeriesData, CreateSeriesErrors, CreateSeriesResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteSegmentData, DeleteSegmentErrors, DeleteSegmentResponses, DeleteSeriesData, DeleteSeriesErrors, DeleteSeriesResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, EnrollUserLabData, EnrollUserLabErrors, EnrollUserLabResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminDashboardActivityData, GetAdminDashboardActivityErrors, GetAdminDashboardActivityResponses, GetAdminDashboardApiKeysData, GetAdminDashboardApiKeysErrors, GetAdminDashboardApiKeysResponses, GetAdminDashboardCollectionsData, GetAdminDashboardCollectionsErrors, GetAdminDashboardCollectionsResponses, GetAdminDashboardData, GetAdminDashboardErrors, GetAdminDashboardMediaData, GetAdminDashboardMediaErrors, GetAdminDashboardMediaResponses, GetAdminDashboardOverviewData, GetAdminDashboardOverviewErrors, GetAdminDashboardOverviewResponses, GetAdminDashboardResponses, GetAdminDashboardSystemData, GetAdminDashboardSystemErrors, GetAdminDashboardSystemResponses, GetAdminHealthData, GetAdminHealthErrors, GetAdminHealthResponses, GetAdminMediaAuditRunData, GetAdminMediaAuditRunErrors, GetAdminMediaAuditRunResponses, GetAdminQueueData, GetAdminQueueErrors, GetAdminQueueResponses, GetAnnouncementData, GetAnnouncementErrors, GetAnnouncementResponses, GetCharacterData, GetCharacterErrors, GetCharacterResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetCoveredWordsData, GetCoveredWordsErrors, GetCoveredWordsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentByUuidData, GetSegmentByUuidErrors, GetSegmentByUuidResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetSeiyuuData, GetSeiyuuErrors, GetSeiyuuResponses, GetSeriesData, GetSeriesErrors, GetSeriesResponses, GetStatsOverviewData, GetStatsOverviewErrors, GetStatsOverviewResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, GetUserQuotaData, GetUserQuotaErrors, GetUserQuotaResponses, ListAdminMediaAuditRunsData, ListAdminMediaAuditRunsErrors, ListAdminMediaAuditRunsResponses, ListAdminMediaAuditsData, ListAdminMediaAuditsErrors, ListAdminMediaAuditsResponses, ListAdminQueueFailedData, ListAdminQueueFailedErrors, ListAdminQueueFailedResponses, ListAdminQueueStatsData, ListAdminQueueStatsErrors, ListAdminQueueStatsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentRevisionsData, ListSegmentRevisionsErrors, ListSegmentRevisionsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListSeriesData, ListSeriesErrors, ListSeriesResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ListUserLabsData, ListUserLabsErrors, ListUserLabsResponses, PurgeAdminQueueFailedData, PurgeAdminQueueFailedErrors, PurgeAdminQueueFailedResponses, RemoveMediaFromSeriesData, RemoveMediaFromSeriesErrors, RemoveMediaFromSeriesResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RetryAdminQueueFailedData, RetryAdminQueueFailedErrors, RetryAdminQueueFailedResponses, RunAdminMediaAuditData, RunAdminMediaAuditErrors, RunAdminMediaAuditResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerCoveredWordsUpdateData, TriggerCoveredWordsUpdateErrors, TriggerCoveredWordsUpdateResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UnenrollUserLabData, UnenrollUserLabErrors, UnenrollUserLabResponses, UpdateAdminMediaAuditData, UpdateAdminMediaAuditErrors, UpdateAdminMediaAuditResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAnnouncementData, UpdateAnnouncementErrors, UpdateAnnouncementResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentByUuidData, UpdateSegmentByUuidErrors, UpdateSegmentByUuidResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateSeriesData, UpdateSeriesErrors, UpdateSeriesMediaData, UpdateSeriesMediaErrors, UpdateSeriesMediaResponses, UpdateSeriesResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
+import type { AddExcludedMediaData, AddExcludedMediaErrors, AddExcludedMediaResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, BatchUpdateAdminReportsData, BatchUpdateAdminReportsErrors, BatchUpdateAdminReportsResponses, BulkDeleteAdminReportsData, BulkDeleteAdminReportsErrors, BulkDeleteAdminReportsResponses, BulkUpdateAdminReportsData, BulkUpdateAdminReportsErrors, BulkUpdateAdminReportsResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSegmentsBatchData, CreateSegmentsBatchErrors, CreateSegmentsBatchResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReportData, DeleteAdminReportErrors, DeleteAdminReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, EnrollUserLabData, EnrollUserLabErrors, EnrollUserLabResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminMediaAuditRunData, GetAdminMediaAuditRunErrors, GetAdminMediaAuditRunResponses, GetAnnouncementData, GetAnnouncementErrors, GetAnnouncementResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetCoveredWordsData, GetCoveredWordsErrors, GetCoveredWordsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMeData, GetMediaData, GetMediaErrors, GetMediaResponses, GetMeErrors, GetMeResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetStatsOverviewData, GetStatsOverviewErrors, GetStatsOverviewResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, ListAdminMediaAuditRunsData, ListAdminMediaAuditRunsErrors, ListAdminMediaAuditRunsResponses, ListAdminMediaAuditsData, ListAdminMediaAuditsErrors, ListAdminMediaAuditsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListExcludedMediaData, ListExcludedMediaErrors, ListExcludedMediaResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentRevisionsData, ListSegmentRevisionsErrors, ListSegmentRevisionsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ListUserLabsData, ListUserLabsErrors, ListUserLabsResponses, RemoveExcludedMediaData, RemoveExcludedMediaErrors, RemoveExcludedMediaResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RunAdminMediaAuditData, RunAdminMediaAuditErrors, RunAdminMediaAuditResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchMediaData, SearchMediaErrors, SearchMediaResponses, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerCoveredWordsUpdateData, TriggerCoveredWordsUpdateErrors, TriggerCoveredWordsUpdateResponses, TriggerReindexData, TriggerReindexErrors, TriggerReindexResponses, UnenrollUserLabData, UnenrollUserLabErrors, UnenrollUserLabResponses, UpdateAdminMediaAuditData, UpdateAdminMediaAuditErrors, UpdateAdminMediaAuditResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAnnouncementData, UpdateAnnouncementErrors, UpdateAnnouncementResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -35,50 +35,47 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * **Input Type Handling**
  * | Input Type | Search Strategy |
  * |------------|-----------------|
- * | **Romaji** (`go`, `taberu`) | Boosts EN/ES translations, reading form (pronunciation), and base form |
- * | **Kanji** (`食べる`, `彼女`) | Searches content and base form (dictionary form). Ignores matches by reading (homophones). |
- * | **Kana** (`たべる`, `かのじょ`) | Standard search across content, base form, and reading form |
- * | **English/Spanish** | Direct translation search |
+ * | **Kanji** (`食べる`, `彼女`) | Matches against surface form, dictionary form, and normalized form. Reading-only field is disabled to avoid homophones. |
+ * | **Kana** (`たべる`, `かのじょ`) | Matches against surface form, dictionary form, normalized form, and reading form. |
+ * | **Romaji / English / Spanish** (`go`, `taberu`, `good morning`) | Boosts EN/ES translations. Also matches kana (reading) and normalized Japanese forms as fallbacks. |
  *
  */
-export const search = <ThrowOnError extends boolean = false>(options?: Options<SearchData, ThrowOnError>) => (options?.client ?? client).post<SearchResponses, SearchErrors, ThrowOnError>({
+export const search = <ThrowOnError extends boolean = false>(options: Options<SearchData, ThrowOnError>) => (options.client ?? client).post<SearchResponses, SearchErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search',
     ...options,
     headers: {
         'Content-Type': 'application/json',
-        ...options?.headers
+        ...options.headers
     }
 });
 
 /**
  * Get search statistics
  *
- * Returns statistics for search filters and category tabs without fetching segment rows.
+ * Returns filter statistics for a query without returning segment results. Useful for populating filter UIs:
+ * - `media`: media matching the query, with per-episode hit counts
+ * - `categories`: segment counts grouped by media category
  *
- * This endpoint is optimized for UI filter panels:
- * - `media` powers the media dropdown on the right side.
- * - `categories` powers category tabs below the search bar.
- *
- * The stats are scoped by query and category filters, but are not narrowed by a selected media/episode.
+ * Stats are scoped by the query and category filters but are not narrowed by a selected media/episode — so selecting a media in the UI doesn't zero out other media from the list.
  *
  */
-export const getSearchStats = <ThrowOnError extends boolean = false>(options?: Options<GetSearchStatsData, ThrowOnError>) => (options?.client ?? client).post<GetSearchStatsResponses, GetSearchStatsErrors, ThrowOnError>({
+export const getSearchStats = <ThrowOnError extends boolean = false>(options: Options<GetSearchStatsData, ThrowOnError>) => (options.client ?? client).post<GetSearchStatsResponses, GetSearchStatsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/search/stats',
     ...options,
     headers: {
         'Content-Type': 'application/json',
-        ...options?.headers
+        ...options.headers
     }
 });
 
 /**
  * Search by multiple words
  *
- * Searches for multiple words simultaneously and aggregates results by media.
+ * Searches for multiple words simultaneously and aggregates matches per media.
  *
- * Unlike the main search endpoint, this returns a summary of matches per media rather than individual segments.
+ * Unlike the main search endpoint, this returns a per-word summary of matches across media rather than individual segments. Filters apply the same way as `/v1/search`.
  *
  */
 export const searchWords = <ThrowOnError extends boolean = false>(options: Options<SearchWordsData, ThrowOnError>) => (options.client ?? client).post<SearchWordsResponses, SearchWordsErrors, ThrowOnError>({
@@ -92,11 +89,30 @@ export const searchWords = <ThrowOnError extends boolean = false>(options: Optio
 });
 
 /**
+ * Find media by name
+ *
+ * Returns a short list of media matching a name prefix or substring.
+ * Results are ranked by exact match, then prefix match, then contains match,
+ * and further sorted by name length.
+ *
+ */
+export const searchMedia = <ThrowOnError extends boolean = false>(options: Options<SearchMediaData, ThrowOnError>) => (options.client ?? client).post<SearchMediaResponses, SearchMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/search/media',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Get corpus statistics overview
  *
  * Returns a comprehensive overview of corpus statistics including headline numbers,
- * word frequency coverage tiers, and translation availability. This is the primary
- * data source for the public /stats page.
+ * word frequency coverage tiers, and translation availability.
+ *
+ * The same data powers the public stats page at https://nadeshiko.co/stats.
  *
  */
 export const getStatsOverview = <ThrowOnError extends boolean = false>(options?: Options<GetStatsOverviewData, ThrowOnError>) => (options?.client ?? client).get<GetStatsOverviewResponses, GetStatsOverviewErrors, ThrowOnError>({
@@ -169,42 +185,26 @@ export const createMedia = <ThrowOnError extends boolean = false>(options: Optio
 });
 
 /**
- * Autocomplete media by name
+ * Get single segment
  *
- * Returns a short list of media matching a name prefix or substring.
- * Results are ranked by exact match, then prefix match, then contains match,
- * and further sorted by name length.
+ * Returns a specific segment by its public ID.
  *
  */
-export const autocompleteMedia = <ThrowOnError extends boolean = false>(options: Options<AutocompleteMediaData, ThrowOnError>) => (options.client ?? client).get<AutocompleteMediaResponses, AutocompleteMediaErrors, ThrowOnError>({
+export const getSegment = <ThrowOnError extends boolean = false>(options: Options<GetSegmentData, ThrowOnError>) => (options.client ?? client).get<GetSegmentResponses, GetSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/autocomplete',
+    url: '/v1/media/segments/{segmentPublicId}',
     ...options
 });
 
 /**
- * Get segment by publicId
+ * Update segment
  *
- * Returns a specific segment by its publicId. A shortcut alternative to the nested `/media/{mediaId}/episodes/{episodeNumber}/segments/{id}` path.
- *
- * Pass `include[]=ratingAnalysis` and/or `include[]=posAnalysis` to receive raw analysis fields alongside the standard segment data.
+ * Updates an existing segment. Only provided fields will be updated.
  *
  */
-export const getSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<GetSegmentByUuidData, ThrowOnError>) => (options.client ?? client).get<GetSegmentByUuidResponses, GetSegmentByUuidErrors, ThrowOnError>({
+export const updateSegment = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentResponses, UpdateSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/segments/{uuid}',
-    ...options
-});
-
-/**
- * Update segment by publicId
- *
- * Updates an existing segment identified by its publicId. Only provided fields will be updated.
- *
- */
-export const updateSegmentByUuid = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentByUuidData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentByUuidResponses, UpdateSegmentByUuidErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/segments/{uuid}',
+    url: '/v1/media/segments/{segmentPublicId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -221,7 +221,7 @@ export const updateSegmentByUuid = <ThrowOnError extends boolean = false>(option
  */
 export const getSegmentContext = <ThrowOnError extends boolean = false>(options: Options<GetSegmentContextData, ThrowOnError>) => (options.client ?? client).get<GetSegmentContextResponses, GetSegmentContextErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/segments/{uuid}/context',
+    url: '/v1/media/segments/{segmentPublicId}/context',
     ...options
 });
 
@@ -233,143 +233,7 @@ export const getSegmentContext = <ThrowOnError extends boolean = false>(options:
  */
 export const listSegmentRevisions = <ThrowOnError extends boolean = false>(options: Options<ListSegmentRevisionsData, ThrowOnError>) => (options.client ?? client).get<ListSegmentRevisionsResponses, ListSegmentRevisionsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/segments/{uuid}/revisions',
-    ...options
-});
-
-/**
- * List all series
- *
- * Returns a paginated list of media series groupings.
- *
- */
-export const listSeries = <ThrowOnError extends boolean = false>(options?: Options<ListSeriesData, ThrowOnError>) => (options?.client ?? client).get<ListSeriesResponses, ListSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series',
-    ...options
-});
-
-/**
- * Create series
- *
- * Creates a new media series grouping.
- *
- */
-export const createSeries = <ThrowOnError extends boolean = false>(options: Options<CreateSeriesData, ThrowOnError>) => (options.client ?? client).post<CreateSeriesResponses, CreateSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Delete series
- *
- * Deletes a series and all its media associations.
- *
- */
-export const deleteSeries = <ThrowOnError extends boolean = false>(options: Options<DeleteSeriesData, ThrowOnError>) => (options.client ?? client).delete<DeleteSeriesResponses, DeleteSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}',
-    ...options
-});
-
-/**
- * Get series details
- *
- * Returns a series with all media entries sorted by position.
- *
- */
-export const getSeries = <ThrowOnError extends boolean = false>(options: Options<GetSeriesData, ThrowOnError>) => (options.client ?? client).get<GetSeriesResponses, GetSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}',
-    ...options
-});
-
-/**
- * Update series metadata
- *
- * Updates series localized names.
- *
- */
-export const updateSeries = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesResponses, UpdateSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Add media to series
- *
- * Adds a media entry to a series at a specific position.
- *
- */
-export const addMediaToSeries = <ThrowOnError extends boolean = false>(options: Options<AddMediaToSeriesData, ThrowOnError>) => (options.client ?? client).post<AddMediaToSeriesResponses, AddMediaToSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}/media',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Remove media from series
- *
- * Removes a media entry from a series.
- *
- */
-export const removeMediaFromSeries = <ThrowOnError extends boolean = false>(options: Options<RemoveMediaFromSeriesData, ThrowOnError>) => (options.client ?? client).delete<RemoveMediaFromSeriesResponses, RemoveMediaFromSeriesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}/media/{mediaId}',
-    ...options
-});
-
-/**
- * Update media position in series
- *
- * Updates the position of a media entry in a series.
- *
- */
-export const updateSeriesMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateSeriesMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateSeriesMediaResponses, UpdateSeriesMediaErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/series/{id}/media/{mediaId}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Get character details
- *
- * Returns a character with their voice actors (seiyuu) and all media appearances.
- *
- */
-export const getCharacter = <ThrowOnError extends boolean = false>(options: Options<GetCharacterData, ThrowOnError>) => (options.client ?? client).get<GetCharacterResponses, GetCharacterErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/characters/{id}',
-    ...options
-});
-
-/**
- * Get seiyuu details
- *
- * Returns a voice actor (seiyuu) with all characters they voiced and their media appearances.
- *
- */
-export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options<GetSeiyuuData, ThrowOnError>) => (options.client ?? client).get<GetSeiyuuResponses, GetSeiyuuErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/seiyuu/{id}',
+    url: '/v1/media/segments/{segmentPublicId}/revisions',
     ...options
 });
 
@@ -381,19 +245,19 @@ export const getSeiyuu = <ThrowOnError extends boolean = false>(options: Options
  */
 export const deleteMedia = <ThrowOnError extends boolean = false>(options: Options<DeleteMediaData, ThrowOnError>) => (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{id}',
+    url: '/v1/media/{mediaPublicId}',
     ...options
 });
 
 /**
  * Get single media
  *
- * Returns a single media entry by its ID with full metadata.
+ * Returns a single media entry by its public ID with full metadata.
  *
  */
 export const getMedia = <ThrowOnError extends boolean = false>(options: Options<GetMediaData, ThrowOnError>) => (options.client ?? client).get<GetMediaResponses, GetMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{id}',
+    url: '/v1/media/{mediaPublicId}',
     ...options
 });
 
@@ -405,7 +269,7 @@ export const getMedia = <ThrowOnError extends boolean = false>(options: Options<
  */
 export const updateMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateMediaData, ThrowOnError>) => (options.client ?? client).patch<UpdateMediaResponses, UpdateMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{id}',
+    url: '/v1/media/{mediaPublicId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -421,7 +285,7 @@ export const updateMedia = <ThrowOnError extends boolean = false>(options: Optio
  */
 export const listEpisodes = <ThrowOnError extends boolean = false>(options: Options<ListEpisodesData, ThrowOnError>) => (options.client ?? client).get<ListEpisodesResponses, ListEpisodesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes',
+    url: '/v1/media/{mediaPublicId}/episodes',
     ...options
 });
 
@@ -433,7 +297,7 @@ export const listEpisodes = <ThrowOnError extends boolean = false>(options: Opti
  */
 export const createEpisode = <ThrowOnError extends boolean = false>(options: Options<CreateEpisodeData, ThrowOnError>) => (options.client ?? client).post<CreateEpisodeResponses, CreateEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes',
+    url: '/v1/media/{mediaPublicId}/episodes',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -449,19 +313,19 @@ export const createEpisode = <ThrowOnError extends boolean = false>(options: Opt
  */
 export const deleteEpisode = <ThrowOnError extends boolean = false>(options: Options<DeleteEpisodeData, ThrowOnError>) => (options.client ?? client).delete<DeleteEpisodeResponses, DeleteEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}',
     ...options
 });
 
 /**
  * Get single episode
  *
- * Returns a specific episode by media ID and episode number.
+ * Returns a specific episode by media public ID and episode number.
  *
  */
 export const getEpisode = <ThrowOnError extends boolean = false>(options: Options<GetEpisodeData, ThrowOnError>) => (options.client ?? client).get<GetEpisodeResponses, GetEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}',
     ...options
 });
 
@@ -473,7 +337,7 @@ export const getEpisode = <ThrowOnError extends boolean = false>(options: Option
  */
 export const updateEpisode = <ThrowOnError extends boolean = false>(options: Options<UpdateEpisodeData, ThrowOnError>) => (options.client ?? client).patch<UpdateEpisodeResponses, UpdateEpisodeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}',
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -489,7 +353,7 @@ export const updateEpisode = <ThrowOnError extends boolean = false>(options: Opt
  */
 export const listSegments = <ThrowOnError extends boolean = false>(options: Options<ListSegmentsData, ThrowOnError>) => (options.client ?? client).get<ListSegmentsResponses, ListSegmentsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments',
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments',
     ...options
 });
 
@@ -501,7 +365,7 @@ export const listSegments = <ThrowOnError extends boolean = false>(options: Opti
  */
 export const createSegment = <ThrowOnError extends boolean = false>(options: Options<CreateSegmentData, ThrowOnError>) => (options.client ?? client).post<CreateSegmentResponses, CreateSegmentErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments',
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -513,12 +377,12 @@ export const createSegment = <ThrowOnError extends boolean = false>(options: Opt
  * Batch create segments
  *
  * Creates multiple segments for a specific episode in a single request.
- * Duplicate UUIDs are silently skipped.
+ * Duplicate segments are silently skipped.
  *
  */
 export const createSegmentsBatch = <ThrowOnError extends boolean = false>(options: Options<CreateSegmentsBatchData, ThrowOnError>) => (options.client ?? client).post<CreateSegmentsBatchResponses, CreateSegmentsBatchErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/batch',
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments/batch',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -527,38 +391,41 @@ export const createSegmentsBatch = <ThrowOnError extends boolean = false>(option
 });
 
 /**
- * Delete segment
+ * Get current user profile
  *
- * Soft-deletes a segment by setting its status to DELETED.
+ * Returns the authenticated user's profile and current month API quota.
+ *
+ * You can also check your usage stats at https://nadeshiko.co/user/developer.
  *
  */
-export const deleteSegment = <ThrowOnError extends boolean = false>(options: Options<DeleteSegmentData, ThrowOnError>) => (options.client ?? client).delete<DeleteSegmentResponses, DeleteSegmentErrors, ThrowOnError>({
+export const getMe = <ThrowOnError extends boolean = false>(options?: Options<GetMeData, ThrowOnError>) => (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
+    url: '/v1/user/me',
     ...options
 });
 
 /**
- * Get single segment
+ * List excluded media
  *
- * Returns a specific segment by its ID within the media/episode hierarchy.
+ * Returns the list of media entries the authenticated user has excluded from search results.
  *
  */
-export const getSegment = <ThrowOnError extends boolean = false>(options: Options<GetSegmentData, ThrowOnError>) => (options.client ?? client).get<GetSegmentResponses, GetSegmentErrors, ThrowOnError>({
+export const listExcludedMedia = <ThrowOnError extends boolean = false>(options?: Options<ListExcludedMediaData, ThrowOnError>) => (options?.client ?? client).get<ListExcludedMediaResponses, ListExcludedMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
+    url: '/v1/user/excluded-media',
     ...options
 });
 
 /**
- * Update segment
+ * Exclude media from search results
  *
- * Updates an existing segment. Only provided fields will be updated.
+ * Adds a media entry to the authenticated user's excluded media list.
+ * Excluded media is hidden from search results.
  *
  */
-export const updateSegment = <ThrowOnError extends boolean = false>(options: Options<UpdateSegmentData, ThrowOnError>) => (options.client ?? client).patch<UpdateSegmentResponses, UpdateSegmentErrors, ThrowOnError>({
+export const addExcludedMedia = <ThrowOnError extends boolean = false>(options: Options<AddExcludedMediaData, ThrowOnError>) => (options.client ?? client).post<AddExcludedMediaResponses, AddExcludedMediaErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}',
+    url: '/v1/user/excluded-media',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -567,18 +434,15 @@ export const updateSegment = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * Get current monthly API quota
+ * Remove media from excluded list
  *
- * Returns the API quota usage for the current billing period.
+ * Removes a media entry from the authenticated user's excluded list,
+ * making it visible in search results again.
  *
  */
-export const getUserQuota = <ThrowOnError extends boolean = false>(options?: Options<GetUserQuotaData, ThrowOnError>) => (options?.client ?? client).get<GetUserQuotaResponses, GetUserQuotaErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/user/quota',
+export const removeExcludedMedia = <ThrowOnError extends boolean = false>(options: Options<RemoveExcludedMediaData, ThrowOnError>) => (options.client ?? client).delete<RemoveExcludedMediaResponses, RemoveExcludedMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/user/excluded-media/{mediaPublicId}',
     ...options
 });
 
@@ -662,11 +526,7 @@ export const deleteUserActivity = <ThrowOnError extends boolean = false>(options
  *
  */
 export const listUserActivity = <ThrowOnError extends boolean = false>(options?: Options<ListUserActivityData, ThrowOnError>) => (options?.client ?? client).get<ListUserActivityResponses, ListUserActivityErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/user/activity',
     ...options
 });
@@ -699,11 +559,7 @@ export const trackUserActivity = <ThrowOnError extends boolean = false>(options:
  *
  */
 export const getUserActivityHeatmap = <ThrowOnError extends boolean = false>(options?: Options<GetUserActivityHeatmapData, ThrowOnError>) => (options?.client ?? client).get<GetUserActivityHeatmapResponses, GetUserActivityHeatmapErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/user/activity/heatmap',
     ...options
 });
@@ -712,15 +568,11 @@ export const getUserActivityHeatmap = <ThrowOnError extends boolean = false>(opt
  * Get user activity statistics
  *
  * Returns aggregate statistics about the authenticated user's activity:
- * total searches, exports, plays, and top media.
+ * total searches, exports, plays, list adds, shares, and top media.
  *
  */
 export const getUserActivityStats = <ThrowOnError extends boolean = false>(options?: Options<GetUserActivityStatsData, ThrowOnError>) => (options?.client ?? client).get<GetUserActivityStatsResponses, GetUserActivityStatsErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/user/activity/stats',
     ...options
 });
@@ -753,7 +605,7 @@ export const deleteUserActivityById = <ThrowOnError extends boolean = false>(opt
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/user/activity/{id}',
+    url: '/v1/user/activity/{activityId}',
     ...options
 });
 
@@ -826,17 +678,13 @@ export const enrollUserLab = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * List user's collections
+ * List collections
  *
- * Returns all collections for the authenticated user. Can filter by visibility.
+ * Returns the authenticated user's collections. Can be filtered by visibility.
  *
  */
 export const listCollections = <ThrowOnError extends boolean = false>(options?: Options<ListCollectionsData, ThrowOnError>) => (options?.client ?? client).get<ListCollectionsResponses, ListCollectionsErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/collections',
     ...options
 });
@@ -848,11 +696,7 @@ export const listCollections = <ThrowOnError extends boolean = false>(options?: 
  *
  */
 export const createCollection = <ThrowOnError extends boolean = false>(options: Options<CreateCollectionData, ThrowOnError>) => (options.client ?? client).post<CreateCollectionResponses, CreateCollectionErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/collections',
     ...options,
     headers: {
@@ -868,28 +712,23 @@ export const createCollection = <ThrowOnError extends boolean = false>(options: 
  *
  */
 export const deleteCollection = <ThrowOnError extends boolean = false>(options: Options<DeleteCollectionData, ThrowOnError>) => (options.client ?? client).delete<DeleteCollectionResponses, DeleteCollectionErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/collections/{id}',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/collections/{collectionPublicId}',
     ...options
 });
 
 /**
  * Get collection details
  *
- * Returns a collection with paginated segments and their search result data.
+ * Returns collection metadata only.
+ * To query segments inside the collection, use
+ * `POST /v1/collections/{collectionPublicId}/search`.
+ * To add or remove saved segments, use the `/segments` endpoints.
  *
  */
 export const getCollection = <ThrowOnError extends boolean = false>(options: Options<GetCollectionData, ThrowOnError>) => (options.client ?? client).get<GetCollectionResponses, GetCollectionErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/collections/{id}',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/collections/{collectionPublicId}',
     ...options
 });
 
@@ -905,7 +744,7 @@ export const updateCollection = <ThrowOnError extends boolean = false>(options: 
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/collections/{id}',
+    url: '/v1/collections/{collectionPublicId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -920,12 +759,28 @@ export const updateCollection = <ThrowOnError extends boolean = false>(options: 
  *
  */
 export const addSegmentToCollection = <ThrowOnError extends boolean = false>(options: Options<AddSegmentToCollectionData, ThrowOnError>) => (options.client ?? client).post<AddSegmentToCollectionResponses, AddSegmentToCollectionErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/collections/{id}/segments',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/collections/{collectionPublicId}/segments',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Search segments in a collection
+ *
+ * Searches within a collection.
+ *
+ * All search semantics, query parsing, sorting, filters, pagination, and `include`
+ * expansions behave the same as `/v1/search`, with one additional constraint:
+ * results are limited to segments already present in the target collection.
+ *
+ */
+export const searchCollectionSegments = <ThrowOnError extends boolean = false>(options: Options<SearchCollectionSegmentsData, ThrowOnError>) => (options.client ?? client).post<SearchCollectionSegmentsResponses, SearchCollectionSegmentsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/collections/{collectionPublicId}/search',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -940,12 +795,8 @@ export const addSegmentToCollection = <ThrowOnError extends boolean = false>(opt
  *
  */
 export const removeSegmentFromCollection = <ThrowOnError extends boolean = false>(options: Options<RemoveSegmentFromCollectionData, ThrowOnError>) => (options.client ?? client).delete<RemoveSegmentFromCollectionResponses, RemoveSegmentFromCollectionErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/collections/{id}/segments/{segmentId}',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/collections/{collectionPublicId}/segments/{segmentPublicId}',
     ...options
 });
 
@@ -961,29 +812,12 @@ export const updateCollectionSegment = <ThrowOnError extends boolean = false>(op
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/collections/{id}/segments/{segmentId}',
+    url: '/v1/collections/{collectionPublicId}/segments/{segmentPublicId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
-});
-
-/**
- * Search collection segments
- *
- * Returns collection segments in search-response format with pagination.
- * Reshapes the collection data: extracts segment results, includes media, computes pagination.
- *
- */
-export const searchCollectionSegments = <ThrowOnError extends boolean = false>(options: Options<SearchCollectionSegmentsData, ThrowOnError>) => (options.client ?? client).get<SearchCollectionSegmentsResponses, SearchCollectionSegmentsErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/collections/{id}/search',
-    ...options
 });
 
 /**
@@ -999,141 +833,7 @@ export const getCollectionStats = <ThrowOnError extends boolean = false>(options
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/collections/{id}/stats',
-    ...options
-});
-
-/**
- * Get dashboard statistics
- *
- * Returns at-a-glance statistics for the admin dashboard including media counts,
- * user counts, and system health information.
- *
- */
-export const getAdminDashboard = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardResponses, GetAdminDashboardErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard',
-    ...options
-});
-
-/**
- * Get dashboard overview statistics
- *
- * Returns key metrics and daily activity for the admin dashboard overview tab.
- *
- */
-export const getAdminDashboardOverview = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardOverviewData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardOverviewResponses, GetAdminDashboardOverviewErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard/overview',
-    ...options
-});
-
-/**
- * Get media breakdown statistics
- *
- * Returns media breakdowns by category, format, status, genre, studio,
- * segment content ratings, segment statuses, and top media by interaction.
- *
- */
-export const getAdminDashboardMedia = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardMediaData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardMediaResponses, GetAdminDashboardMediaErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard/media',
-    ...options
-});
-
-/**
- * Get activity analytics
- *
- * Returns time-series activity data by type, top searches, export trends,
- * and most exported media.
- *
- */
-export const getAdminDashboardActivity = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardActivityData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardActivityResponses, GetAdminDashboardActivityErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard/activity',
-    ...options
-});
-
-/**
- * Get collection statistics
- *
- * Returns collection statistics by type and visibility, average collection size,
- * and top collections by segment count.
- *
- */
-export const getAdminDashboardCollections = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardCollectionsData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardCollectionsResponses, GetAdminDashboardCollectionsErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard/collections',
-    ...options
-});
-
-/**
- * Get API key usage statistics
- *
- * Returns all API keys with their current quota usage for the current billing period.
- *
- */
-export const getAdminDashboardApiKeys = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardApiKeysData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardApiKeysResponses, GetAdminDashboardApiKeysErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard/api-keys',
-    ...options
-});
-
-/**
- * Get real-time system health
- *
- * Returns real-time system health including Elasticsearch and database status,
- * queue statistics, and index size.
- *
- */
-export const getAdminDashboardSystem = <ThrowOnError extends boolean = false>(options?: Options<GetAdminDashboardSystemData, ThrowOnError>) => (options?.client ?? client).get<GetAdminDashboardSystemResponses, GetAdminDashboardSystemErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/dashboard/system',
-    ...options
-});
-
-/**
- * Check system health
- *
- * Returns connectivity status and version information for all backend subsystems
- * (Elasticsearch, PostgreSQL, application).
- *
- */
-export const getAdminHealth = <ThrowOnError extends boolean = false>(options?: Options<GetAdminHealthData, ThrowOnError>) => (options?.client ?? client).get<GetAdminHealthResponses, GetAdminHealthErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/health',
+    url: '/v1/collections/{collectionPublicId}/stats',
     ...options
 });
 
@@ -1161,92 +861,6 @@ export const triggerReindex = <ThrowOnError extends boolean = false>(options?: O
         'Content-Type': 'application/json',
         ...options?.headers
     }
-});
-
-/**
- * Get queue statistics
- *
- * Returns statistics for all ES sync queues including pending and failed job counts.
- *
- */
-export const listAdminQueueStats = <ThrowOnError extends boolean = false>(options?: Options<ListAdminQueueStatsData, ThrowOnError>) => (options?.client ?? client).get<ListAdminQueueStatsResponses, ListAdminQueueStatsErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/queues/stats',
-    ...options
-});
-
-/**
- * Get detailed queue information
- *
- * Returns live queue stats and queue metadata from PgBoss for a specific queue.
- *
- * **Queue names:**
- * - `es-sync-create` - Jobs to create new segments in Elasticsearch
- * - `es-sync-update` - Jobs to update existing segments
- * - `es-sync-delete` - Jobs to delete segments
- *
- */
-export const getAdminQueue = <ThrowOnError extends boolean = false>(options: Options<GetAdminQueueData, ThrowOnError>) => (options.client ?? client).get<GetAdminQueueResponses, GetAdminQueueErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/queues/{queueName}',
-    ...options
-});
-
-/**
- * Get failed jobs from a queue
- *
- * Returns jobs that have exceeded their retry limit and permanently failed.
- *
- */
-export const listAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<ListAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).get<ListAdminQueueFailedResponses, ListAdminQueueFailedErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/queues/{queueName}/failed',
-    ...options
-});
-
-/**
- * Retry failed jobs from a queue
- *
- * Re-enqueues all failed jobs from a specific queue for another attempt.
- *
- */
-export const retryAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<RetryAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).post<RetryAdminQueueFailedResponses, RetryAdminQueueFailedErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/queues/{queueName}/retry',
-    ...options
-});
-
-/**
- * Purge failed jobs from a queue
- *
- * Permanently deletes all failed jobs from a queue.
- * This does **not** re-sync the affected segments -- use the reindex endpoint for that.
- *
- */
-export const purgeAdminQueueFailed = <ThrowOnError extends boolean = false>(options: Options<PurgeAdminQueueFailedData, ThrowOnError>) => (options.client ?? client).delete<PurgeAdminQueueFailedResponses, PurgeAdminQueueFailedErrors, ThrowOnError>({
-    security: [{
-            in: 'cookie',
-            name: 'nadeshiko.session_token',
-            type: 'apiKey'
-        }],
-    url: '/v1/admin/queues/{queueName}/purge',
-    ...options
 });
 
 /**
@@ -1287,6 +901,63 @@ export const batchUpdateAdminReports = <ThrowOnError extends boolean = false>(op
 });
 
 /**
+ * Bulk delete reports by filters
+ *
+ * Permanently deletes all reports matching the given filters.
+ *
+ */
+export const bulkDeleteAdminReports = <ThrowOnError extends boolean = false>(options: Options<BulkDeleteAdminReportsData, ThrowOnError>) => (options.client ?? client).delete<BulkDeleteAdminReportsResponses, BulkDeleteAdminReportsErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/admin/reports/bulk',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bulk update reports by filters
+ *
+ * Updates the status of all reports matching the given filters.
+ * Unlike the batch endpoint which takes explicit IDs, this updates all matching reports in one operation.
+ *
+ */
+export const bulkUpdateAdminReports = <ThrowOnError extends boolean = false>(options: Options<BulkUpdateAdminReportsData, ThrowOnError>) => (options.client ?? client).patch<BulkUpdateAdminReportsResponses, BulkUpdateAdminReportsErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/admin/reports/bulk',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete report and its group
+ *
+ * Deletes a report and all other reports with the same target and reason (the dedup group).
+ *
+ */
+export const deleteAdminReport = <ThrowOnError extends boolean = false>(options: Options<DeleteAdminReportData, ThrowOnError>) => (options.client ?? client).delete<DeleteAdminReportResponses, DeleteAdminReportErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: 'nadeshiko.session_token',
+            type: 'apiKey'
+        }],
+    url: '/v1/admin/reports/{reportId}',
+    ...options
+});
+
+/**
  * Update report
  *
  * Updates the status and/or admin notes of a report.
@@ -1299,7 +970,7 @@ export const updateAdminReport = <ThrowOnError extends boolean = false>(options:
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/admin/reports/{id}',
+    url: '/v1/admin/reports/{reportId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -1387,7 +1058,7 @@ export const getAdminMediaAuditRun = <ThrowOnError extends boolean = false>(opti
             name: 'nadeshiko.session_token',
             type: 'apiKey'
         }],
-    url: '/v1/admin/media/audits/runs/{id}',
+    url: '/v1/admin/media/audits/runs/{auditRunId}',
     ...options
 });
 

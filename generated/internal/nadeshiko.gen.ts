@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, getStatsOverview, getCoveredWords, triggerCoveredWordsUpdate, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, createMedia, autocompleteMedia, updateSegmentByUuid, listSegmentRevisions, createSeries, updateSeries, deleteSeries, addMediaToSeries, updateSeriesMedia, removeMediaFromSeries, getCharacter, getSeiyuu, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, updateSegment, deleteSegment, getUserQuota, createUserReport, getUserPreferences, updateUserPreferences, listUserActivity, trackUserActivity, deleteUserActivity, getUserActivityHeatmap, getUserActivityStats, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, listCollections, createCollection, getCollection, updateCollection, deleteCollection, addSegmentToCollection, updateCollectionSegment, removeSegmentFromCollection, searchCollectionSegments, getCollectionStats, getAdminDashboard, getAdminDashboardOverview, getAdminDashboardMedia, getAdminDashboardActivity, getAdminDashboardCollections, getAdminDashboardApiKeys, getAdminDashboardSystem, getAdminHealth, triggerReindex, listAdminQueueStats, getAdminQueue, listAdminQueueFailed, retryAdminQueueFailed, purgeAdminQueueFailed, listAdminReports, batchUpdateAdminReports, updateAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, updateCollection, updateCollectionSegment, getCollectionStats, triggerReindex, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 
@@ -51,37 +51,25 @@ export type NadeshikoClient = {
       (options: Options<Types.SearchWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request } | { error: Types.SearchWordsErrors; response: Response; request: Request }>;
       (options?: Options<Types.SearchWordsData, boolean>): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request }>;
     };
+    searchMedia: {
+      (options: Options<Types.SearchMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchMediaResponse; response: Response; request: Request } | { error: Types.SearchMediaErrors; response: Response; request: Request }>;
+      (options?: Options<Types.SearchMediaData, boolean>): Promise<{ data: Types.SearchMediaResponse; response: Response; request: Request }>;
+    };
     getStatsOverview: {
       (options: Options<Types.GetStatsOverviewData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request } | { error: Types.GetStatsOverviewErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetStatsOverviewData, boolean>): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request }>;
-    };
-    getCoveredWords: {
-      (options: Options<Types.GetCoveredWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCoveredWordsData, boolean>): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request }>;
-    };
-    triggerCoveredWordsUpdate: {
-      (options: Options<Types.TriggerCoveredWordsUpdateData, boolean> & { throwOnError: false }): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request } | { error: Types.TriggerCoveredWordsUpdateErrors; response: Response; request: Request }>;
-      (options?: Options<Types.TriggerCoveredWordsUpdateData, boolean>): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request }>;
     };
     listMedia: {
       (options: Options<Types.ListMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request } | { error: Types.ListMediaErrors; response: Response; request: Request }>;
       (options?: Options<Types.ListMediaData, boolean>): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request }>;
     };
-    getSegmentByUuid: {
-      (options: Options<Types.GetSegmentByUuidData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentByUuidResponse; response: Response; request: Request } | { error: Types.GetSegmentByUuidErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentByUuidData, boolean>): Promise<{ data: Types.GetSegmentByUuidResponse; response: Response; request: Request }>;
+    getSegment: {
+      (options: Options<Types.GetSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request } | { error: Types.GetSegmentErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetSegmentData, boolean>): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request }>;
     };
     getSegmentContext: {
       (options: Options<Types.GetSegmentContextData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request } | { error: Types.GetSegmentContextErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetSegmentContextData, boolean>): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request }>;
-    };
-    listSeries: {
-      (options: Options<Types.ListSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListSeriesResponse; response: Response; request: Request } | { error: Types.ListSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListSeriesData, boolean>): Promise<{ data: Types.ListSeriesResponse; response: Response; request: Request }>;
-    };
-    getSeries: {
-      (options: Options<Types.GetSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request } | { error: Types.GetSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSeriesData, boolean>): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request }>;
     };
     getMedia: {
       (options: Options<Types.GetMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
@@ -95,57 +83,81 @@ export type NadeshikoClient = {
       (options: Options<Types.GetEpisodeData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request } | { error: Types.GetEpisodeErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetEpisodeData, boolean>): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request }>;
     };
-    getSegment: {
-      (options: Options<Types.GetSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request } | { error: Types.GetSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentData, boolean>): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request }>;
+    getMe: {
+      (options: Options<Types.GetMeData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMeResponse; response: Response; request: Request } | { error: Types.GetMeErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetMeData, boolean>): Promise<{ data: Types.GetMeResponse; response: Response; request: Request }>;
+    };
+    listExcludedMedia: {
+      (options: Options<Types.ListExcludedMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request } | { error: Types.ListExcludedMediaErrors; response: Response; request: Request }>;
+      (options?: Options<Types.ListExcludedMediaData, boolean>): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request }>;
+    };
+    addExcludedMedia: {
+      (options: Options<Types.AddExcludedMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.AddExcludedMediaResponse; response: Response; request: Request } | { error: Types.AddExcludedMediaErrors; response: Response; request: Request }>;
+      (options?: Options<Types.AddExcludedMediaData, boolean>): Promise<{ data: Types.AddExcludedMediaResponse; response: Response; request: Request }>;
+    };
+    removeExcludedMedia: {
+      (options: Options<Types.RemoveExcludedMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request } | { error: Types.RemoveExcludedMediaErrors; response: Response; request: Request }>;
+      (options?: Options<Types.RemoveExcludedMediaData, boolean>): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request }>;
+    };
+    listUserActivity: {
+      (options: Options<Types.ListUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
+      (options?: Options<Types.ListUserActivityData, boolean>): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request }>;
+    };
+    getUserActivityHeatmap: {
+      (options: Options<Types.GetUserActivityHeatmapData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request } | { error: Types.GetUserActivityHeatmapErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetUserActivityHeatmapData, boolean>): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request }>;
+    };
+    getUserActivityStats: {
+      (options: Options<Types.GetUserActivityStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request } | { error: Types.GetUserActivityStatsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetUserActivityStatsData, boolean>): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request }>;
+    };
+    listCollections: {
+      (options: Options<Types.ListCollectionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request } | { error: Types.ListCollectionsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.ListCollectionsData, boolean>): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request }>;
+    };
+    createCollection: {
+      (options: Options<Types.CreateCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request } | { error: Types.CreateCollectionErrors; response: Response; request: Request }>;
+      (options?: Options<Types.CreateCollectionData, boolean>): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request }>;
+    };
+    getCollection: {
+      (options: Options<Types.GetCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request } | { error: Types.GetCollectionErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetCollectionData, boolean>): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request }>;
+    };
+    deleteCollection: {
+      (options: Options<Types.DeleteCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request } | { error: Types.DeleteCollectionErrors; response: Response; request: Request }>;
+      (options?: Options<Types.DeleteCollectionData, boolean>): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request }>;
+    };
+    addSegmentToCollection: {
+      (options: Options<Types.AddSegmentToCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request } | { error: Types.AddSegmentToCollectionErrors; response: Response; request: Request }>;
+      (options?: Options<Types.AddSegmentToCollectionData, boolean>): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request }>;
+    };
+    searchCollectionSegments: {
+      (options: Options<Types.SearchCollectionSegmentsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request } | { error: Types.SearchCollectionSegmentsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.SearchCollectionSegmentsData, boolean>): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request }>;
+    };
+    removeSegmentFromCollection: {
+      (options: Options<Types.RemoveSegmentFromCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request } | { error: Types.RemoveSegmentFromCollectionErrors; response: Response; request: Request }>;
+      (options?: Options<Types.RemoveSegmentFromCollectionData, boolean>): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request }>;
+    };
+    getCoveredWords: {
+      (options: Options<Types.GetCoveredWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.GetCoveredWordsData, boolean>): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request }>;
+    };
+    triggerCoveredWordsUpdate: {
+      (options: Options<Types.TriggerCoveredWordsUpdateData, boolean> & { throwOnError: false }): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request } | { error: Types.TriggerCoveredWordsUpdateErrors; response: Response; request: Request }>;
+      (options?: Options<Types.TriggerCoveredWordsUpdateData, boolean>): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request }>;
     };
     createMedia: {
       (options: Options<Types.CreateMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateMediaResponse; response: Response; request: Request } | { error: Types.CreateMediaErrors; response: Response; request: Request }>;
       (options?: Options<Types.CreateMediaData, boolean>): Promise<{ data: Types.CreateMediaResponse; response: Response; request: Request }>;
     };
-    autocompleteMedia: {
-      (options: Options<Types.AutocompleteMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.AutocompleteMediaResponse; response: Response; request: Request } | { error: Types.AutocompleteMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.AutocompleteMediaData, boolean>): Promise<{ data: Types.AutocompleteMediaResponse; response: Response; request: Request }>;
-    };
-    updateSegmentByUuid: {
-      (options: Options<Types.UpdateSegmentByUuidData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateSegmentByUuidResponse; response: Response; request: Request } | { error: Types.UpdateSegmentByUuidErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateSegmentByUuidData, boolean>): Promise<{ data: Types.UpdateSegmentByUuidResponse; response: Response; request: Request }>;
+    updateSegment: {
+      (options: Options<Types.UpdateSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request } | { error: Types.UpdateSegmentErrors; response: Response; request: Request }>;
+      (options?: Options<Types.UpdateSegmentData, boolean>): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request }>;
     };
     listSegmentRevisions: {
       (options: Options<Types.ListSegmentRevisionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListSegmentRevisionsResponse; response: Response; request: Request } | { error: Types.ListSegmentRevisionsErrors; response: Response; request: Request }>;
       (options?: Options<Types.ListSegmentRevisionsData, boolean>): Promise<{ data: Types.ListSegmentRevisionsResponse; response: Response; request: Request }>;
-    };
-    createSeries: {
-      (options: Options<Types.CreateSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateSeriesResponse; response: Response; request: Request } | { error: Types.CreateSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateSeriesData, boolean>): Promise<{ data: Types.CreateSeriesResponse; response: Response; request: Request }>;
-    };
-    updateSeries: {
-      (options: Options<Types.UpdateSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateSeriesResponse; response: Response; request: Request } | { error: Types.UpdateSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateSeriesData, boolean>): Promise<{ data: Types.UpdateSeriesResponse; response: Response; request: Request }>;
-    };
-    deleteSeries: {
-      (options: Options<Types.DeleteSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteSeriesResponse; response: Response; request: Request } | { error: Types.DeleteSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteSeriesData, boolean>): Promise<{ data: Types.DeleteSeriesResponse; response: Response; request: Request }>;
-    };
-    addMediaToSeries: {
-      (options: Options<Types.AddMediaToSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.AddMediaToSeriesResponse; response: Response; request: Request } | { error: Types.AddMediaToSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.AddMediaToSeriesData, boolean>): Promise<{ data: Types.AddMediaToSeriesResponse; response: Response; request: Request }>;
-    };
-    updateSeriesMedia: {
-      (options: Options<Types.UpdateSeriesMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateSeriesMediaResponse; response: Response; request: Request } | { error: Types.UpdateSeriesMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateSeriesMediaData, boolean>): Promise<{ data: Types.UpdateSeriesMediaResponse; response: Response; request: Request }>;
-    };
-    removeMediaFromSeries: {
-      (options: Options<Types.RemoveMediaFromSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveMediaFromSeriesResponse; response: Response; request: Request } | { error: Types.RemoveMediaFromSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.RemoveMediaFromSeriesData, boolean>): Promise<{ data: Types.RemoveMediaFromSeriesResponse; response: Response; request: Request }>;
-    };
-    getCharacter: {
-      (options: Options<Types.GetCharacterData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request } | { error: Types.GetCharacterErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCharacterData, boolean>): Promise<{ data: Types.GetCharacterResponse; response: Response; request: Request }>;
-    };
-    getSeiyuu: {
-      (options: Options<Types.GetSeiyuuData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request } | { error: Types.GetSeiyuuErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSeiyuuData, boolean>): Promise<{ data: Types.GetSeiyuuResponse; response: Response; request: Request }>;
     };
     updateMedia: {
       (options: Options<Types.UpdateMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateMediaResponse; response: Response; request: Request } | { error: Types.UpdateMediaErrors; response: Response; request: Request }>;
@@ -179,18 +191,6 @@ export type NadeshikoClient = {
       (options: Options<Types.CreateSegmentsBatchData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateSegmentsBatchResponse; response: Response; request: Request } | { error: Types.CreateSegmentsBatchErrors; response: Response; request: Request }>;
       (options?: Options<Types.CreateSegmentsBatchData, boolean>): Promise<{ data: Types.CreateSegmentsBatchResponse; response: Response; request: Request }>;
     };
-    updateSegment: {
-      (options: Options<Types.UpdateSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request } | { error: Types.UpdateSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateSegmentData, boolean>): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request }>;
-    };
-    deleteSegment: {
-      (options: Options<Types.DeleteSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteSegmentResponse; response: Response; request: Request } | { error: Types.DeleteSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteSegmentData, boolean>): Promise<{ data: Types.DeleteSegmentResponse; response: Response; request: Request }>;
-    };
-    getUserQuota: {
-      (options: Options<Types.GetUserQuotaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserQuotaResponse; response: Response; request: Request } | { error: Types.GetUserQuotaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetUserQuotaData, boolean>): Promise<{ data: Types.GetUserQuotaResponse; response: Response; request: Request }>;
-    };
     createUserReport: {
       (options: Options<Types.CreateUserReportData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateUserReportResponse; response: Response; request: Request } | { error: Types.CreateUserReportErrors; response: Response; request: Request }>;
       (options?: Options<Types.CreateUserReportData, boolean>): Promise<{ data: Types.CreateUserReportResponse; response: Response; request: Request }>;
@@ -203,10 +203,6 @@ export type NadeshikoClient = {
       (options: Options<Types.UpdateUserPreferencesData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateUserPreferencesResponse; response: Response; request: Request } | { error: Types.UpdateUserPreferencesErrors; response: Response; request: Request }>;
       (options?: Options<Types.UpdateUserPreferencesData, boolean>): Promise<{ data: Types.UpdateUserPreferencesResponse; response: Response; request: Request }>;
     };
-    listUserActivity: {
-      (options: Options<Types.ListUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListUserActivityData, boolean>): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request }>;
-    };
     trackUserActivity: {
       (options: Options<Types.TrackUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.TrackUserActivityResponse; response: Response; request: Request } | { error: Types.TrackUserActivityErrors; response: Response; request: Request }>;
       (options?: Options<Types.TrackUserActivityData, boolean>): Promise<{ data: Types.TrackUserActivityResponse; response: Response; request: Request }>;
@@ -214,14 +210,6 @@ export type NadeshikoClient = {
     deleteUserActivity: {
       (options: Options<Types.DeleteUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityErrors; response: Response; request: Request }>;
       (options?: Options<Types.DeleteUserActivityData, boolean>): Promise<{ data: Types.DeleteUserActivityResponse; response: Response; request: Request }>;
-    };
-    getUserActivityHeatmap: {
-      (options: Options<Types.GetUserActivityHeatmapData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request } | { error: Types.GetUserActivityHeatmapErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetUserActivityHeatmapData, boolean>): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request }>;
-    };
-    getUserActivityStats: {
-      (options: Options<Types.GetUserActivityStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request } | { error: Types.GetUserActivityStatsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetUserActivityStatsData, boolean>): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request }>;
     };
     deleteUserActivityByDate: {
       (options: Options<Types.DeleteUserActivityByDateData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityByDateResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityByDateErrors; response: Response; request: Request }>;
@@ -247,101 +235,21 @@ export type NadeshikoClient = {
       (options: Options<Types.UnenrollUserLabData, boolean> & { throwOnError: false }): Promise<{ data: Types.UnenrollUserLabResponse; response: Response; request: Request } | { error: Types.UnenrollUserLabErrors; response: Response; request: Request }>;
       (options?: Options<Types.UnenrollUserLabData, boolean>): Promise<{ data: Types.UnenrollUserLabResponse; response: Response; request: Request }>;
     };
-    listCollections: {
-      (options: Options<Types.ListCollectionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request } | { error: Types.ListCollectionsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListCollectionsData, boolean>): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request }>;
-    };
-    createCollection: {
-      (options: Options<Types.CreateCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request } | { error: Types.CreateCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateCollectionData, boolean>): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request }>;
-    };
-    getCollection: {
-      (options: Options<Types.GetCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request } | { error: Types.GetCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCollectionData, boolean>): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request }>;
-    };
     updateCollection: {
       (options: Options<Types.UpdateCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateCollectionResponse; response: Response; request: Request } | { error: Types.UpdateCollectionErrors; response: Response; request: Request }>;
       (options?: Options<Types.UpdateCollectionData, boolean>): Promise<{ data: Types.UpdateCollectionResponse; response: Response; request: Request }>;
-    };
-    deleteCollection: {
-      (options: Options<Types.DeleteCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request } | { error: Types.DeleteCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteCollectionData, boolean>): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request }>;
-    };
-    addSegmentToCollection: {
-      (options: Options<Types.AddSegmentToCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request } | { error: Types.AddSegmentToCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.AddSegmentToCollectionData, boolean>): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request }>;
     };
     updateCollectionSegment: {
       (options: Options<Types.UpdateCollectionSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateCollectionSegmentResponse; response: Response; request: Request } | { error: Types.UpdateCollectionSegmentErrors; response: Response; request: Request }>;
       (options?: Options<Types.UpdateCollectionSegmentData, boolean>): Promise<{ data: Types.UpdateCollectionSegmentResponse; response: Response; request: Request }>;
     };
-    removeSegmentFromCollection: {
-      (options: Options<Types.RemoveSegmentFromCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request } | { error: Types.RemoveSegmentFromCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.RemoveSegmentFromCollectionData, boolean>): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request }>;
-    };
-    searchCollectionSegments: {
-      (options: Options<Types.SearchCollectionSegmentsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request } | { error: Types.SearchCollectionSegmentsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchCollectionSegmentsData, boolean>): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request }>;
-    };
     getCollectionStats: {
       (options: Options<Types.GetCollectionStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCollectionStatsResponse; response: Response; request: Request } | { error: Types.GetCollectionStatsErrors; response: Response; request: Request }>;
       (options?: Options<Types.GetCollectionStatsData, boolean>): Promise<{ data: Types.GetCollectionStatsResponse; response: Response; request: Request }>;
     };
-    getAdminDashboard: {
-      (options: Options<Types.GetAdminDashboardData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardData, boolean>): Promise<{ data: Types.GetAdminDashboardResponse; response: Response; request: Request }>;
-    };
-    getAdminDashboardOverview: {
-      (options: Options<Types.GetAdminDashboardOverviewData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardOverviewResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardOverviewErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardOverviewData, boolean>): Promise<{ data: Types.GetAdminDashboardOverviewResponse; response: Response; request: Request }>;
-    };
-    getAdminDashboardMedia: {
-      (options: Options<Types.GetAdminDashboardMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardMediaResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardMediaData, boolean>): Promise<{ data: Types.GetAdminDashboardMediaResponse; response: Response; request: Request }>;
-    };
-    getAdminDashboardActivity: {
-      (options: Options<Types.GetAdminDashboardActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardActivityResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardActivityErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardActivityData, boolean>): Promise<{ data: Types.GetAdminDashboardActivityResponse; response: Response; request: Request }>;
-    };
-    getAdminDashboardCollections: {
-      (options: Options<Types.GetAdminDashboardCollectionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardCollectionsResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardCollectionsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardCollectionsData, boolean>): Promise<{ data: Types.GetAdminDashboardCollectionsResponse; response: Response; request: Request }>;
-    };
-    getAdminDashboardApiKeys: {
-      (options: Options<Types.GetAdminDashboardApiKeysData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardApiKeysResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardApiKeysErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardApiKeysData, boolean>): Promise<{ data: Types.GetAdminDashboardApiKeysResponse; response: Response; request: Request }>;
-    };
-    getAdminDashboardSystem: {
-      (options: Options<Types.GetAdminDashboardSystemData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminDashboardSystemResponse; response: Response; request: Request } | { error: Types.GetAdminDashboardSystemErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminDashboardSystemData, boolean>): Promise<{ data: Types.GetAdminDashboardSystemResponse; response: Response; request: Request }>;
-    };
-    getAdminHealth: {
-      (options: Options<Types.GetAdminHealthData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminHealthResponse; response: Response; request: Request } | { error: Types.GetAdminHealthErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminHealthData, boolean>): Promise<{ data: Types.GetAdminHealthResponse; response: Response; request: Request }>;
-    };
     triggerReindex: {
       (options: Options<Types.TriggerReindexData, boolean> & { throwOnError: false }): Promise<{ data: Types.TriggerReindexResponse; response: Response; request: Request } | { error: Types.TriggerReindexErrors; response: Response; request: Request }>;
       (options?: Options<Types.TriggerReindexData, boolean>): Promise<{ data: Types.TriggerReindexResponse; response: Response; request: Request }>;
-    };
-    listAdminQueueStats: {
-      (options: Options<Types.ListAdminQueueStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminQueueStatsResponse; response: Response; request: Request } | { error: Types.ListAdminQueueStatsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListAdminQueueStatsData, boolean>): Promise<{ data: Types.ListAdminQueueStatsResponse; response: Response; request: Request }>;
-    };
-    getAdminQueue: {
-      (options: Options<Types.GetAdminQueueData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminQueueResponse; response: Response; request: Request } | { error: Types.GetAdminQueueErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminQueueData, boolean>): Promise<{ data: Types.GetAdminQueueResponse; response: Response; request: Request }>;
-    };
-    listAdminQueueFailed: {
-      (options: Options<Types.ListAdminQueueFailedData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminQueueFailedResponse; response: Response; request: Request } | { error: Types.ListAdminQueueFailedErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListAdminQueueFailedData, boolean>): Promise<{ data: Types.ListAdminQueueFailedResponse; response: Response; request: Request }>;
-    };
-    retryAdminQueueFailed: {
-      (options: Options<Types.RetryAdminQueueFailedData, boolean> & { throwOnError: false }): Promise<{ data: Types.RetryAdminQueueFailedResponse; response: Response; request: Request } | { error: Types.RetryAdminQueueFailedErrors; response: Response; request: Request }>;
-      (options?: Options<Types.RetryAdminQueueFailedData, boolean>): Promise<{ data: Types.RetryAdminQueueFailedResponse; response: Response; request: Request }>;
-    };
-    purgeAdminQueueFailed: {
-      (options: Options<Types.PurgeAdminQueueFailedData, boolean> & { throwOnError: false }): Promise<{ data: Types.PurgeAdminQueueFailedResponse; response: Response; request: Request } | { error: Types.PurgeAdminQueueFailedErrors; response: Response; request: Request }>;
-      (options?: Options<Types.PurgeAdminQueueFailedData, boolean>): Promise<{ data: Types.PurgeAdminQueueFailedResponse; response: Response; request: Request }>;
     };
     listAdminReports: {
       (options: Options<Types.ListAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request } | { error: Types.ListAdminReportsErrors; response: Response; request: Request }>;
@@ -351,9 +259,21 @@ export type NadeshikoClient = {
       (options: Options<Types.BatchUpdateAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.BatchUpdateAdminReportsResponse; response: Response; request: Request } | { error: Types.BatchUpdateAdminReportsErrors; response: Response; request: Request }>;
       (options?: Options<Types.BatchUpdateAdminReportsData, boolean>): Promise<{ data: Types.BatchUpdateAdminReportsResponse; response: Response; request: Request }>;
     };
+    bulkUpdateAdminReports: {
+      (options: Options<Types.BulkUpdateAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.BulkUpdateAdminReportsResponse; response: Response; request: Request } | { error: Types.BulkUpdateAdminReportsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.BulkUpdateAdminReportsData, boolean>): Promise<{ data: Types.BulkUpdateAdminReportsResponse; response: Response; request: Request }>;
+    };
+    bulkDeleteAdminReports: {
+      (options: Options<Types.BulkDeleteAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.BulkDeleteAdminReportsResponse; response: Response; request: Request } | { error: Types.BulkDeleteAdminReportsErrors; response: Response; request: Request }>;
+      (options?: Options<Types.BulkDeleteAdminReportsData, boolean>): Promise<{ data: Types.BulkDeleteAdminReportsResponse; response: Response; request: Request }>;
+    };
     updateAdminReport: {
       (options: Options<Types.UpdateAdminReportData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminReportResponse; response: Response; request: Request } | { error: Types.UpdateAdminReportErrors; response: Response; request: Request }>;
       (options?: Options<Types.UpdateAdminReportData, boolean>): Promise<{ data: Types.UpdateAdminReportResponse; response: Response; request: Request }>;
+    };
+    deleteAdminReport: {
+      (options: Options<Types.DeleteAdminReportData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteAdminReportResponse; response: Response; request: Request } | { error: Types.DeleteAdminReportErrors; response: Response; request: Request }>;
+      (options?: Options<Types.DeleteAdminReportData, boolean>): Promise<{ data: Types.DeleteAdminReportResponse; response: Response; request: Request }>;
     };
     listAdminMediaAudits: {
       (options: Options<Types.ListAdminMediaAuditsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminMediaAuditsResponse; response: Response; request: Request } | { error: Types.ListAdminMediaAuditsErrors; response: Response; request: Request }>;
@@ -432,30 +352,33 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     search: (options?: any) => search({ throwOnError: true, ...options, client: clientInstance }),
     getSearchStats: (options?: any) => getSearchStats({ throwOnError: true, ...options, client: clientInstance }),
     searchWords: (options?: any) => searchWords({ throwOnError: true, ...options, client: clientInstance }),
+    searchMedia: (options?: any) => searchMedia({ throwOnError: true, ...options, client: clientInstance }),
     getStatsOverview: (options?: any) => getStatsOverview({ throwOnError: true, ...options, client: clientInstance }),
-    getCoveredWords: (options?: any) => getCoveredWords({ throwOnError: true, ...options, client: clientInstance }),
-    triggerCoveredWordsUpdate: (options?: any) => triggerCoveredWordsUpdate({ throwOnError: true, ...options, client: clientInstance }),
     listMedia: (options?: any) => listMedia({ throwOnError: true, ...options, client: clientInstance }),
-    getSegmentByUuid: (options?: any) => getSegmentByUuid({ throwOnError: true, ...options, client: clientInstance }),
+    getSegment: (options?: any) => getSegment({ throwOnError: true, ...options, client: clientInstance }),
     getSegmentContext: (options?: any) => getSegmentContext({ throwOnError: true, ...options, client: clientInstance }),
-    listSeries: (options?: any) => listSeries({ throwOnError: true, ...options, client: clientInstance }),
-    getSeries: (options?: any) => getSeries({ throwOnError: true, ...options, client: clientInstance }),
     getMedia: (options?: any) => getMedia({ throwOnError: true, ...options, client: clientInstance }),
     listEpisodes: (options?: any) => listEpisodes({ throwOnError: true, ...options, client: clientInstance }),
     getEpisode: (options?: any) => getEpisode({ throwOnError: true, ...options, client: clientInstance }),
-    getSegment: (options?: any) => getSegment({ throwOnError: true, ...options, client: clientInstance }),
+    getMe: (options?: any) => getMe({ throwOnError: true, ...options, client: clientInstance }),
+    listExcludedMedia: (options?: any) => listExcludedMedia({ throwOnError: true, ...options, client: clientInstance }),
+    addExcludedMedia: (options?: any) => addExcludedMedia({ throwOnError: true, ...options, client: clientInstance }),
+    removeExcludedMedia: (options?: any) => removeExcludedMedia({ throwOnError: true, ...options, client: clientInstance }),
+    listUserActivity: (options?: any) => listUserActivity({ throwOnError: true, ...options, client: clientInstance }),
+    getUserActivityHeatmap: (options?: any) => getUserActivityHeatmap({ throwOnError: true, ...options, client: clientInstance }),
+    getUserActivityStats: (options?: any) => getUserActivityStats({ throwOnError: true, ...options, client: clientInstance }),
+    listCollections: (options?: any) => listCollections({ throwOnError: true, ...options, client: clientInstance }),
+    createCollection: (options?: any) => createCollection({ throwOnError: true, ...options, client: clientInstance }),
+    getCollection: (options?: any) => getCollection({ throwOnError: true, ...options, client: clientInstance }),
+    deleteCollection: (options?: any) => deleteCollection({ throwOnError: true, ...options, client: clientInstance }),
+    addSegmentToCollection: (options?: any) => addSegmentToCollection({ throwOnError: true, ...options, client: clientInstance }),
+    searchCollectionSegments: (options?: any) => searchCollectionSegments({ throwOnError: true, ...options, client: clientInstance }),
+    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ throwOnError: true, ...options, client: clientInstance }),
+    getCoveredWords: (options?: any) => getCoveredWords({ throwOnError: true, ...options, client: clientInstance }),
+    triggerCoveredWordsUpdate: (options?: any) => triggerCoveredWordsUpdate({ throwOnError: true, ...options, client: clientInstance }),
     createMedia: (options?: any) => createMedia({ throwOnError: true, ...options, client: clientInstance }),
-    autocompleteMedia: (options?: any) => autocompleteMedia({ throwOnError: true, ...options, client: clientInstance }),
-    updateSegmentByUuid: (options?: any) => updateSegmentByUuid({ throwOnError: true, ...options, client: clientInstance }),
+    updateSegment: (options?: any) => updateSegment({ throwOnError: true, ...options, client: clientInstance }),
     listSegmentRevisions: (options?: any) => listSegmentRevisions({ throwOnError: true, ...options, client: clientInstance }),
-    createSeries: (options?: any) => createSeries({ throwOnError: true, ...options, client: clientInstance }),
-    updateSeries: (options?: any) => updateSeries({ throwOnError: true, ...options, client: clientInstance }),
-    deleteSeries: (options?: any) => deleteSeries({ throwOnError: true, ...options, client: clientInstance }),
-    addMediaToSeries: (options?: any) => addMediaToSeries({ throwOnError: true, ...options, client: clientInstance }),
-    updateSeriesMedia: (options?: any) => updateSeriesMedia({ throwOnError: true, ...options, client: clientInstance }),
-    removeMediaFromSeries: (options?: any) => removeMediaFromSeries({ throwOnError: true, ...options, client: clientInstance }),
-    getCharacter: (options?: any) => getCharacter({ throwOnError: true, ...options, client: clientInstance }),
-    getSeiyuu: (options?: any) => getSeiyuu({ throwOnError: true, ...options, client: clientInstance }),
     updateMedia: (options?: any) => updateMedia({ throwOnError: true, ...options, client: clientInstance }),
     deleteMedia: (options?: any) => deleteMedia({ throwOnError: true, ...options, client: clientInstance }),
     createEpisode: (options?: any) => createEpisode({ throwOnError: true, ...options, client: clientInstance }),
@@ -464,50 +387,27 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listSegments: (options?: any) => listSegments({ throwOnError: true, ...options, client: clientInstance }),
     createSegment: (options?: any) => createSegment({ throwOnError: true, ...options, client: clientInstance }),
     createSegmentsBatch: (options?: any) => createSegmentsBatch({ throwOnError: true, ...options, client: clientInstance }),
-    updateSegment: (options?: any) => updateSegment({ throwOnError: true, ...options, client: clientInstance }),
-    deleteSegment: (options?: any) => deleteSegment({ throwOnError: true, ...options, client: clientInstance }),
-    getUserQuota: (options?: any) => getUserQuota({ throwOnError: true, ...options, client: clientInstance }),
     createUserReport: (options?: any) => createUserReport({ throwOnError: true, ...options, client: clientInstance }),
     getUserPreferences: (options?: any) => getUserPreferences({ throwOnError: true, ...options, client: clientInstance }),
     updateUserPreferences: (options?: any) => updateUserPreferences({ throwOnError: true, ...options, client: clientInstance }),
-    listUserActivity: (options?: any) => listUserActivity({ throwOnError: true, ...options, client: clientInstance }),
     trackUserActivity: (options?: any) => trackUserActivity({ throwOnError: true, ...options, client: clientInstance }),
     deleteUserActivity: (options?: any) => deleteUserActivity({ throwOnError: true, ...options, client: clientInstance }),
-    getUserActivityHeatmap: (options?: any) => getUserActivityHeatmap({ throwOnError: true, ...options, client: clientInstance }),
-    getUserActivityStats: (options?: any) => getUserActivityStats({ throwOnError: true, ...options, client: clientInstance }),
     deleteUserActivityByDate: (options?: any) => deleteUserActivityByDate({ throwOnError: true, ...options, client: clientInstance }),
     deleteUserActivityById: (options?: any) => deleteUserActivityById({ throwOnError: true, ...options, client: clientInstance }),
     exportUserData: (options?: any) => exportUserData({ throwOnError: true, ...options, client: clientInstance }),
     listUserLabs: (options?: any) => listUserLabs({ throwOnError: true, ...options, client: clientInstance }),
     enrollUserLab: (options?: any) => enrollUserLab({ throwOnError: true, ...options, client: clientInstance }),
     unenrollUserLab: (options?: any) => unenrollUserLab({ throwOnError: true, ...options, client: clientInstance }),
-    listCollections: (options?: any) => listCollections({ throwOnError: true, ...options, client: clientInstance }),
-    createCollection: (options?: any) => createCollection({ throwOnError: true, ...options, client: clientInstance }),
-    getCollection: (options?: any) => getCollection({ throwOnError: true, ...options, client: clientInstance }),
     updateCollection: (options?: any) => updateCollection({ throwOnError: true, ...options, client: clientInstance }),
-    deleteCollection: (options?: any) => deleteCollection({ throwOnError: true, ...options, client: clientInstance }),
-    addSegmentToCollection: (options?: any) => addSegmentToCollection({ throwOnError: true, ...options, client: clientInstance }),
     updateCollectionSegment: (options?: any) => updateCollectionSegment({ throwOnError: true, ...options, client: clientInstance }),
-    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ throwOnError: true, ...options, client: clientInstance }),
-    searchCollectionSegments: (options?: any) => searchCollectionSegments({ throwOnError: true, ...options, client: clientInstance }),
     getCollectionStats: (options?: any) => getCollectionStats({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboard: (options?: any) => getAdminDashboard({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboardOverview: (options?: any) => getAdminDashboardOverview({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboardMedia: (options?: any) => getAdminDashboardMedia({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboardActivity: (options?: any) => getAdminDashboardActivity({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboardCollections: (options?: any) => getAdminDashboardCollections({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboardApiKeys: (options?: any) => getAdminDashboardApiKeys({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminDashboardSystem: (options?: any) => getAdminDashboardSystem({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminHealth: (options?: any) => getAdminHealth({ throwOnError: true, ...options, client: clientInstance }),
     triggerReindex: (options?: any) => triggerReindex({ throwOnError: true, ...options, client: clientInstance }),
-    listAdminQueueStats: (options?: any) => listAdminQueueStats({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminQueue: (options?: any) => getAdminQueue({ throwOnError: true, ...options, client: clientInstance }),
-    listAdminQueueFailed: (options?: any) => listAdminQueueFailed({ throwOnError: true, ...options, client: clientInstance }),
-    retryAdminQueueFailed: (options?: any) => retryAdminQueueFailed({ throwOnError: true, ...options, client: clientInstance }),
-    purgeAdminQueueFailed: (options?: any) => purgeAdminQueueFailed({ throwOnError: true, ...options, client: clientInstance }),
     listAdminReports: (options?: any) => listAdminReports({ throwOnError: true, ...options, client: clientInstance }),
     batchUpdateAdminReports: (options?: any) => batchUpdateAdminReports({ throwOnError: true, ...options, client: clientInstance }),
+    bulkUpdateAdminReports: (options?: any) => bulkUpdateAdminReports({ throwOnError: true, ...options, client: clientInstance }),
+    bulkDeleteAdminReports: (options?: any) => bulkDeleteAdminReports({ throwOnError: true, ...options, client: clientInstance }),
     updateAdminReport: (options?: any) => updateAdminReport({ throwOnError: true, ...options, client: clientInstance }),
+    deleteAdminReport: (options?: any) => deleteAdminReport({ throwOnError: true, ...options, client: clientInstance }),
     listAdminMediaAudits: (options?: any) => listAdminMediaAudits({ throwOnError: true, ...options, client: clientInstance }),
     updateAdminMediaAudit: (options?: any) => updateAdminMediaAudit({ throwOnError: true, ...options, client: clientInstance }),
     runAdminMediaAudit: (options?: any) => runAdminMediaAudit({ throwOnError: true, ...options, client: clientInstance }),
