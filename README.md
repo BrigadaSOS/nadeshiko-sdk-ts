@@ -1,12 +1,11 @@
 # Nadeshiko SDK
 
-TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co).
+TypeScript SDK for the [Nadeshiko API](https://nadeshiko.co). Full API reference at [nadeshiko.co/docs/api](https://nadeshiko.co/docs/api/index.html).
 
 ## Install
 
 ```bash
 npm add @brigadasos/nadeshiko-sdk
-# pnpm / bun also work
 ```
 
 ## Quick start
@@ -20,9 +19,24 @@ const client = createNadeshikoClient({
 
 const data = await client.search({ query: { search: '彼女' } });
 console.log(data.segments);
+// [
+//   {
+//     segmentPublicId: 'xK9mP2nQwR4t',
+//     mediaPublicId: 'steins-gate',
+//     episode: 1,
+//     startTimeMs: 62340,
+//     endTimeMs: 65180,
+//     textJa: { content: '彼女に会いたい' },
+//     textEn: { content: 'I want to see her' },
+//     urls: {
+//       imageUrl: 'https://...',
+//       audioUrl: 'https://...',
+//       videoUrl: 'https://...',
+//     },
+//   },
+//   // ...
+// ]
 ```
-
-Methods return data directly and accept flat parameters — no `{ body: ... }` or `{ path: ... }` wrapping needed.
 
 ## Authentication
 
@@ -31,40 +45,8 @@ Pass your API key to `createNadeshikoClient`. It is sent as `Authorization: Bear
 ```typescript
 const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
-  baseURL: 'PRODUCTION', // 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | custom URL
-  headers: { 'User-Agent': 'MyApp/1.0' },
+  baseURL: 'PRODUCTION'
 });
-```
-
-The `apiKey` field accepts a plain string or an async function — useful when the key is rotated at runtime:
-
-```typescript
-const client = createNadeshikoClient({
-  apiKey: async () => getApiKeyFromVault(),
-});
-```
-
-## Flat parameters
-
-All methods accept flat parameters — body fields, path params, and query params are all passed at the top level:
-
-```typescript
-// POST endpoints — body fields at top level
-const data = await client.search({ query: { search: '猫' }, take: 5 });
-
-// GET with query params — at top level
-const media = await client.listMedia({ search: 'naruto', category: 'ANIME' });
-
-// GET with path params — at top level
-const episode = await client.getEpisode({ mediaPublicId: 'abc', episodeNumber: 5 });
-```
-
-Single-path-param endpoints also accept the ID as a plain string:
-
-```typescript
-const media = await client.getMedia('some-public-id');
-const segment = await client.getSegment('some-uuid');
-const context = await client.getSegmentContext('some-uuid');
 ```
 
 ## Available endpoints
@@ -116,7 +98,7 @@ const context = await client.getSegmentContext('some-uuid');
 
 ## Error handling
 
-Errors throw a `NadeshikoError` — a proper `Error` subclass with all RFC 7807 Problem Details fields.
+Errors throw a `NadeshikoError`. A proper `Error` subclass with all RFC 7807 Problem Details fields.
 
 ```typescript
 import { NadeshikoError } from '@brigadasos/nadeshiko-sdk';
