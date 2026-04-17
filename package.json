@@ -1,6 +1,6 @@
 {
   "name": "@brigadasos/nadeshiko-sdk-build",
-  "version": "2.0.7",
+  "version": "2.1.0",
   "description": "TypeScript SDK for Nadeshiko API",
   "private": true,
   "license": "MIT",
@@ -25,6 +25,7 @@
     "openapi"
   ],
   "scripts": {
+    "dev": "bun run scripts/dev.ts",
     "codegen": "bun run codegen:public && bun run codegen:internal",
     "codegen:public": "SDK_TYPE=public bun run scripts/generate.ts",
     "codegen:internal": "SDK_TYPE=internal bun run scripts/generate.ts",

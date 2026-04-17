@@ -5,15 +5,48 @@ export type ClientOptions = {
 };
 
 /**
+ * What to search for (omit for queryless browse/stats)
+ */
+export type SearchQuery = {
+    /**
+     * Search expression (supports boolean operators, wildcards, phrase matching)
+     */
+    search?: string;
+    /**
+     * Require exact phrase matching (disables fuzzy and partial matches)
+     */
+    exactMatch?: boolean;
+};
+
+/**
+ * Sort configuration
+ */
+export type SearchSort = {
+    /**
+     * Sort mode.
+     * - `RELEVANCE` (default): Elasticsearch relevance score
+     * - `ASC` / `DESC`: by segment length (character count)
+     * - `TIME_ASC` / `TIME_DESC`: by episode & position within an episode
+     * - `RANDOM`: deterministic random order (pass `seed` for reproducibility)
+     *
+     */
+    mode?: 'RELEVANCE' | 'ASC' | 'DESC' | 'TIME_ASC' | 'TIME_DESC' | 'RANDOM';
+    /**
+     * Non-negative integer seed for deterministic random sorting (only used when mode is RANDOM)
+     */
+    seed?: number;
+};
+
+/**
  * A media filter entry with optional episode restriction
  */
 export type MediaFilterItem = {
     /**
-     * Media identifier (publicId or AniList external ID)
+     * Media public ID (nanoid)
      */
-    mediaId: string;
+    mediaPublicId: string;
     /**
-     * Specific episodes (omit for all episodes)
+     * Specific episodes (omit for all episodes). Use 0 for movies/specials
      */
     episodes?: Array<number>;
 };
@@ -27,6 +60,11 @@ export type Category = 'ANIME' | 'JDRAMA';
  * Content rating level for the segment
  */
 export type ContentRating = 'SAFE' | 'SUGGESTIVE' | 'QUESTIONABLE' | 'EXPLICIT';
+
+/**
+ * Segment status
+ */
+export type SegmentStatus = 'ACTIVE' | 'HIDDEN' | 'DELETED';
 
 /**
  * Search filters for narrowing segment results
@@ -56,7 +94,7 @@ export type SearchFilters = {
     /**
      * Segment status filter
      */
-    status?: Array<'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG'>;
+    status?: Array<SegmentStatus>;
     /**
      * Content character count range filter
      */
@@ -84,59 +122,39 @@ export type SearchFilters = {
         max?: number;
     };
     /**
-     * Language inclusion/exclusion for search matching
+     * Translation languages to include alongside Japanese in search matching.
+     * - Omitted / `null`: match against Japanese and all translation languages (default)
+     * - `[]`: match against Japanese only
+     * - `["EN"]` / `["ES"]` / `["EN", "ES"]`: match against Japanese plus the listed translation languages
+     *
      */
-    languages?: {
-        /**
-         * Language codes to exclude from search matching (e.g., ["en"], ["es"], ["en","es"])
-         */
-        exclude?: Array<'en' | 'es'>;
-    };
+    languages?: Array<'EN' | 'ES'>;
 };
 
 /**
- * Resource to expand in the response includes block
+ * Resource to expand in the response `includes` block. Currently only `media` is supported; additional expansions may be added in future versions without breaking existing clients.
+ *
  */
 export type IncludeExpansion = 'media';
 
+/**
+ * Search request. All fields are optional — omit `query` for queryless browse (segments matching filters only).
+ *
+ */
 export type SearchRequest = {
+    query?: SearchQuery;
     /**
-     * What to search for (omit for queryless browse)
-     */
-    query?: {
-        /**
-         * Search expression (supports boolean operators, wildcards, phrase matching)
-         */
-        search?: string;
-        /**
-         * Whether to use exact phrase matching
-         */
-        exactMatch?: boolean;
-    };
-    /**
-     * Max amount of entries by response
+     * Max number of entries per response
      */
     take?: number;
     /**
      * Opaque cursor token returned from the previous search page
      */
     cursor?: string;
-    /**
-     * Sort configuration
-     */
-    sort?: {
-        /**
-         * Sort mode
-         */
-        mode?: 'ASC' | 'DESC' | 'NONE' | 'TIME_ASC' | 'TIME_DESC' | 'RANDOM';
-        /**
-         * Non-negative integer seed for deterministic random sorting (only used when mode is RANDOM)
-         */
-        seed?: number;
-    };
+    sort?: SearchSort;
     filters?: SearchFilters;
     /**
-     * Resources to expand in the response includes block
+     * Optional resources to expand in the response `includes` block
      */
     include?: Array<IncludeExpansion>;
 };
@@ -172,45 +190,34 @@ export type Token = {
     /**
      * POS subtype 1 (UniDic pos[1])
      */
-    p1?: string;
+    p1: string;
     /**
      * POS subtype 2 (UniDic pos[2])
      */
-    p2?: string;
+    p2: string;
     /**
      * Conjugation type (UniDic pos[4])
      */
-    p4?: string;
+    p4: string;
     /**
      * Conjugation form (UniDic pos[5])
      */
-    cf?: string;
+    cf: string;
 };
 
 /**
- * Segment with content, optional highlights, and media URLs
+ * Segment with content, translations, search-related highlights, and media URLs
  */
 export type Segment = {
     /**
-     * Numeric identifier for the segment
+     * Public ID for the segment (nanoid)
      */
-    id: number;
-    /**
-     * Unique identifier for the segment
-     */
-    uuid: string;
-    /**
-     * Public identifier for the segment (use this instead of uuid in public URLs)
-     */
-    publicId: string;
+    segmentPublicId: string;
     /**
      * Position of the segment within the episode
      */
     position: number;
-    /**
-     * Segment status
-     */
-    status: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
+    status: SegmentStatus;
     /**
      * Start time of the segment in milliseconds from the beginning of the episode
      */
@@ -221,15 +228,11 @@ export type Segment = {
     endTimeMs: number;
     contentRating: ContentRating;
     /**
-     * Episode number this segment belongs to
+     * Episode number this segment belongs to (0 for movies/specials)
      */
     episode: number;
     /**
-     * Media ID this segment belongs to
-     */
-    mediaId: number;
-    /**
-     * Public ID of the media this segment belongs to
+     * Public ID of the media this segment belongs to (nanoid)
      */
     mediaPublicId: string;
     textJa: {
@@ -238,13 +241,13 @@ export type Segment = {
          */
         content: string;
         /**
-         * Japanese content with search terms highlighted
+         * Japanese `content` with `<mark>` tags wrapping terms that matched a search query. Only populated on segments returned from a search endpoint.
          */
-        highlight?: string;
+        highlight: string;
         /**
-         * Morphological tokens for interactive display (Labs feature)
+         * Morphological tokens for interactive display. Populated only for segments with available POS analysis.
          */
-        tokens?: Array<Token>;
+        tokens: Array<Token>;
     };
     textEn: {
         /**
@@ -256,9 +259,9 @@ export type Segment = {
          */
         isMachineTranslated: boolean;
         /**
-         * English content with search terms highlighted
+         * English `content` with `<mark>` tags wrapping terms that matched a search query. Only populated on segments returned from a search endpoint that matched this language.
          */
-        highlight?: string;
+        highlight: string;
     };
     textEs: {
         /**
@@ -270,9 +273,9 @@ export type Segment = {
          */
         isMachineTranslated: boolean;
         /**
-         * Spanish content with search terms highlighted
+         * Spanish `content` with `<mark>` tags wrapping terms that matched a search query. Only populated on segments returned from a search endpoint that matched this language.
          */
-        highlight?: string;
+        highlight: string;
     };
     /**
      * URLs to media resources for this segment
@@ -294,79 +297,25 @@ export type Segment = {
 };
 
 /**
- * Map of external IDs keyed by source. Only sources with values are included.
+ * External IDs for this media, keyed by source. Every source appears as a key; absent mappings are represented with a null value.
  */
 export type ExternalId = {
     /**
      * AniList ID
      */
-    anilist?: string;
+    anilist: string;
     /**
      * IMDB ID
      */
-    imdb?: string;
+    imdb: string;
     /**
      * TVDB ID
      */
-    tvdb?: string;
+    tvdb: string;
     /**
      * TMDB ID
      */
-    tmdb?: string;
-};
-
-/**
- * Japanese voice actor (seiyuu)
- */
-export type Seiyuu = {
-    /**
-     * Internal seiyuu ID
-     */
-    id: number;
-    /**
-     * Public identifier for the seiyuu (use this in public URLs)
-     */
-    publicId: string;
-    externalIds: ExternalId;
-    /**
-     * Japanese name of the voice actor
-     */
-    nameJa: string;
-    /**
-     * English name of the voice actor
-     */
-    nameEn: string;
-    /**
-     * Profile image URL
-     */
-    imageUrl: string;
-};
-
-/**
- * Character appearing in a media with their voice actor and role
- */
-export type MediaCharacter = {
-    /**
-     * AniList character ID
-     */
-    id: number;
-    /**
-     * Japanese name of the character
-     */
-    nameJa: string;
-    /**
-     * English name of the character
-     */
-    nameEn: string;
-    /**
-     * Character image URL
-     */
-    imageUrl: string;
-    seiyuu: Seiyuu;
-    /**
-     * Character's role in the media
-     */
-    role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
+    tmdb: string;
 };
 
 /**
@@ -374,13 +323,9 @@ export type MediaCharacter = {
  */
 export type Media = {
     /**
-     * Internal unique identifier for the media
+     * Public ID for the media (use this in public URLs)
      */
-    id: number;
-    /**
-     * Public identifier for the media (use this in public URLs)
-     */
-    publicId: string;
+    mediaPublicId: string;
     /**
      * URL-friendly slug for the media
      */
@@ -399,13 +344,13 @@ export type Media = {
      */
     nameEn: string;
     /**
-     * Format of the media release (e.g., TV, OVA, Movie)
+     * Format of the media release
      */
-    airingFormat: string;
+    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
     /**
-     * Current airing status (FINISHED, RELEASING, NOT_YET_RELEASED, CANCELLED)
+     * Current airing status
      */
-    airingStatus: string;
+    airingStatus: 'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED';
     /**
      * List of genres associated with the media
      */
@@ -425,7 +370,7 @@ export type Media = {
     /**
      * End date of the media (last airing/release)
      */
-    endDate?: string;
+    endDate: string;
     category: Category;
     /**
      * Total number of subtitle segments available
@@ -438,25 +383,21 @@ export type Media = {
     /**
      * Animation studio that produced the media
      */
-    studio?: string;
+    studio: string;
     /**
      * Airing season label for the media
      */
-    seasonName: string;
+    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
     /**
      * Airing year for the media
      */
     seasonYear: number;
-    /**
-     * Characters appearing in the media with their voice actors
-     */
-    characters?: Array<MediaCharacter>;
 };
 
 /**
  * Pagination metadata for search results
  */
-export type PaginationInfo = {
+export type SearchPagination = {
     /**
      * Whether there are more results after this page
      */
@@ -466,26 +407,32 @@ export type PaginationInfo = {
      */
     estimatedTotalHits: number;
     /**
-     * Whether estimatedTotalHits is exact or a lower bound
+     * Whether `estimatedTotalHits` is exact or a lower bound.
+     * - `EXACT`: the value is the precise total
+     * - `AT_LEAST`: at least this many matches exist (true total may be higher)
+     *
      */
-    estimatedTotalHitsRelation: 'EXACT' | 'LOWER_BOUND';
+    estimatedTotalHitsRelation: 'EXACT' | 'AT_LEAST';
     /**
-     * Opaque cursor token for fetching the next page (`null` when hasMore is false)
+     * Opaque cursor token to pass on the next request to fetch the following page
      */
     cursor: string;
 };
 
 export type SearchResponse = {
     segments: Array<Segment>;
-    includes: {
+    /**
+     * Optional related resources requested via `include[]`
+     */
+    includes?: {
         /**
-         * Media objects keyed by media publicId
+         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
          */
-        media: {
+        media?: {
             [key: string]: Media;
         };
     };
-    pagination: PaginationInfo;
+    pagination: SearchPagination;
 };
 
 /**
@@ -668,23 +615,15 @@ export type Error500 = {
     };
 };
 
+/**
+ * Stats request. All fields are optional — omit `query` to get filter counts for the full corpus.
+ *
+ */
 export type SearchStatsRequest = {
-    /**
-     * What to search for (omit for queryless stats)
-     */
-    query?: {
-        /**
-         * Search expression (supports boolean operators, wildcards, phrase matching)
-         */
-        search?: string;
-        /**
-         * Whether to use exact phrase matching
-         */
-        exactMatch?: boolean;
-    };
+    query?: SearchQuery;
     filters?: SearchFilters;
     /**
-     * Resources to expand in the response includes block
+     * Optional resources to expand in the response `includes` block
      */
     include?: Array<IncludeExpansion>;
 };
@@ -694,23 +633,26 @@ export type SearchStatsRequest = {
  */
 export type MediaSearchStats = {
     /**
-     * Media identifier (look up full details in includes.media)
+     * Media public ID (look up full details in `includes.media` when `include[]=media` is requested)
      */
-    mediaId: number;
-    /**
-     * Public identifier for use in URLs and filters
-     */
-    publicId: string;
+    mediaPublicId: string;
     /**
      * Number of matching segments found in this media
      */
     matchCount: number;
     /**
-     * Mapping of episode numbers to segment hit counts
+     * Episode-level hit counts
      */
-    episodeHits: {
-        [key: string]: number;
-    };
+    episodeHits: Array<{
+        /**
+         * Episode number
+         */
+        episode: number;
+        /**
+         * Number of matching segments in this episode
+         */
+        hitCount: number;
+    }>;
 };
 
 /**
@@ -727,33 +669,38 @@ export type CategoryCount = {
 export type SearchStatsResponse = {
     media: Array<MediaSearchStats>;
     categories: Array<CategoryCount>;
-    includes: {
+    /**
+     * Optional related resources requested via `include[]`
+     */
+    includes?: {
         /**
-         * Media objects keyed by media publicId
+         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
          */
-        media: {
+        media?: {
             [key: string]: Media;
         };
     };
 };
 
-export type SearchMultipleRequest = {
+/**
+ * What to search for (multiple words)
+ */
+export type SearchMultipleQuery = {
     /**
-     * What to search for
+     * List of words to search for
      */
-    query: {
-        /**
-         * List of words to search for
-         */
-        words: Array<string>;
-        /**
-         * Whether to use exact matching
-         */
-        exactMatch?: boolean;
-    };
+    words: Array<string>;
+    /**
+     * Require exact phrase matching (disables fuzzy and partial matches)
+     */
+    exactMatch?: boolean;
+};
+
+export type SearchMultipleRequest = {
+    query: SearchMultipleQuery;
     filters?: SearchFilters;
     /**
-     * Resources to expand in the response includes block
+     * Optional resources to expand in the response `includes` block
      */
     include?: Array<IncludeExpansion>;
 };
@@ -763,9 +710,9 @@ export type SearchMultipleRequest = {
  */
 export type WordMatchMedia = {
     /**
-     * Media identifier (look up full details in includes.media)
+     * Media public ID (look up full details in `includes.media` when `include[]=media` is requested)
      */
-    mediaId: number;
+    mediaPublicId: string;
     /**
      * Number of times the word appears in this media
      */
@@ -796,14 +743,74 @@ export type WordMatch = {
 
 export type SearchMultipleResponse = {
     results: Array<WordMatch>;
-    includes: {
+    /**
+     * Optional related resources requested via `include[]`
+     */
+    includes?: {
         /**
-         * Media objects keyed by mediaId
+         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
          */
-        media: {
+        media?: {
             [key: string]: Media;
         };
     };
+};
+
+/**
+ * Filters for narrowing media search results
+ */
+export type SearchMediaFilters = {
+    /**
+     * Media category filter
+     */
+    category?: Array<Category>;
+};
+
+export type SearchMediaRequest = {
+    /**
+     * Search term to match against media names (English, Japanese, romaji)
+     */
+    query: string;
+    /**
+     * Maximum number of results to return
+     */
+    take?: number;
+    filters?: SearchMediaFilters;
+};
+
+/**
+ * Slim media item returned by autocomplete (names + cover only)
+ */
+export type MediaSummary = {
+    /**
+     * Public ID for the media
+     */
+    mediaPublicId: string;
+    /**
+     * URL-friendly slug for the media
+     */
+    slug: string;
+    /**
+     * Original Japanese name of the media
+     */
+    nameJa: string;
+    /**
+     * Romaji transliteration of the media name
+     */
+    nameRomaji: string;
+    /**
+     * English name of the media
+     */
+    nameEn: string;
+    /**
+     * Full URL to the cover image
+     */
+    coverUrl: string;
+    category: Category;
+};
+
+export type MediaAutocompleteResponse = {
+    media: Array<MediaSummary>;
 };
 
 /**
@@ -829,6 +836,59 @@ export type WordCoverageTier = {
 };
 
 /**
+ * Corpus statistics overview
+ */
+export type StatsOverview = {
+    /**
+     * Total number of active segments in the corpus
+     */
+    totalSegments: number;
+    /**
+     * Total number of episodes
+     */
+    totalEpisodes: number;
+    /**
+     * Total number of media entries
+     */
+    totalMedia: number;
+    /**
+     * Total number of words in the frequency list
+     */
+    totalFrequencyWords: number;
+    /**
+     * Total hours of Japanese dialogue (subtitle coverage time)
+     */
+    dialogueHours: number;
+    tiers: Array<WordCoverageTier>;
+    /**
+     * When the word coverage data was last updated
+     */
+    lastUpdated: string;
+    translations: {
+        /**
+         * Total active segments
+         */
+        total: number;
+        /**
+         * Segments with human English translations
+         */
+        enHuman: number;
+        /**
+         * Segments with machine English translations
+         */
+        enMachine: number;
+        /**
+         * Segments with human Spanish translations
+         */
+        esHuman: number;
+        /**
+         * Segments with machine Spanish translations
+         */
+        esMachine: number;
+    };
+};
+
+/**
  * A word from the frequency list with coverage information
  */
 export type CoveredWord = {
@@ -847,79 +907,81 @@ export type CoveredWord = {
 };
 
 /**
- * Resource to expand in media responses
- */
-export type MediaIncludeExpansion = 'media.characters';
-
-/**
  * Opaque cursor pagination metadata
  */
-export type OpaqueCursorPagination = {
+export type CursorPagination = {
     /**
      * Whether more results are available
      */
     hasMore: boolean;
     /**
-     * Opaque token for the next page (`null` when `hasMore` is `false`)
+     * Opaque token to pass on the next request to fetch the following page
      */
     cursor: string;
 };
 
-export type MediaListResponse = {
-    media: Array<Media>;
-    pagination: OpaqueCursorPagination;
-    stats: {
-        /**
-         * Total number of media across all pages
-         */
-        totalMedia: number;
-        /**
-         * Total number of non-deleted segments
-         */
-        totalSegments: number;
-        /**
-         * Total number of episodes
-         */
-        totalEpisodes: number;
+/**
+ * Paginated list of frequency-list words with coverage information
+ */
+export type CoveredWordsResponse = {
+    words: Array<CoveredWord>;
+    pagination: CursorPagination;
+    /**
+     * Tier-level word counts (cached)
+     */
+    tierStats: {
+        total: number;
+        covered: number;
+        uncovered: number;
     };
 };
 
 /**
- * Character data for creating/updating media
+ * Request body for triggering a word coverage update
  */
-export type CharacterInput = {
-    externalIds: ExternalId;
+export type CoveredWordsUpdateRequest = {
     /**
-     * Japanese name of the character
+     * Maximum frequency rank to check (defaults to all words)
      */
-    nameJa: string;
+    maxRank?: number;
     /**
-     * English name of the character
+     * Only check words that currently have zero matches (faster for incremental updates)
      */
-    nameEn: string;
+    onlyUncovered?: boolean;
+};
+
+/**
+ * Result of a word coverage update run
+ */
+export type CoveredWordsUpdateResponse = {
+    wordsChecked: number;
+    newlyCovered: number;
+    totalCovered: number;
+    percentage: number;
+};
+
+/**
+ * Global corpus totals across all media
+ */
+export type MediaGlobalStats = {
     /**
-     * Character image URL
+     * Total number of media across all pages
      */
-    imageUrl: string;
+    totalMedia: number;
     /**
-     * Character's role in the media
+     * Total number of non-deleted segments
      */
-    role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
-    seiyuu: {
-        externalIds: ExternalId;
-        /**
-         * Japanese name of the voice actor
-         */
-        nameJa: string;
-        /**
-         * English name of the voice actor
-         */
-        nameEn: string;
-        /**
-         * Voice actor profile image URL
-         */
-        imageUrl: string;
-    };
+    totalSegments: number;
+    /**
+     * Total number of episodes
+     */
+    totalEpisodes: number;
+};
+
+export type MediaListResponse = {
+    media: Array<Media>;
+    pagination: CursorPagination;
+    stats: MediaGlobalStats;
 };
 
 /**
@@ -940,13 +1002,13 @@ export type MediaCreateRequest = {
      */
     nameEn: string;
     /**
-     * Format of the media release (e.g., TV, OVA, Movie)
+     * Format of the media release
      */
-    airingFormat: string;
+    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
     /**
-     * Current airing status (FINISHED, RELEASING, NOT_YET_RELEASED, CANCELLED)
+     * Current airing status
      */
-    airingStatus: string;
+    airingStatus: 'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED';
     /**
      * List of genres associated with the media
      */
@@ -963,10 +1025,7 @@ export type MediaCreateRequest = {
      * End date of the media (last airing/release)
      */
     endDate?: string;
-    /**
-     * Media category
-     */
-    category: 'ANIME' | 'JDRAMA';
+    category: Category;
     /**
      * Version of the media-sub-splitter used
      */
@@ -976,13 +1035,13 @@ export type MediaCreateRequest = {
      */
     hashSalt: string;
     /**
-     * Animation studio that produced the media
+     * Animation studio that produced the media. Pass `null` to explicitly mark as unknown.
      */
     studio?: string;
     /**
      * Airing season label for the media
      */
-    seasonName: string;
+    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
     /**
      * Airing year for the media
      */
@@ -991,10 +1050,6 @@ export type MediaCreateRequest = {
      * Base path for R2/CDN storage (e.g. "media/21459")
      */
     storageBasePath?: string;
-    /**
-     * List of characters appearing in the media with their voice actors
-     */
-    characters?: Array<CharacterInput>;
 };
 
 /**
@@ -1030,77 +1085,6 @@ export type Error409 = {
      */
     errors?: {
         [key: string]: string;
-    };
-};
-
-/**
- * Slim media item returned by autocomplete (names + cover only)
- */
-export type MediaAutocompleteItem = {
-    /**
-     * Unique identifier for the media
-     */
-    id: number;
-    /**
-     * Public identifier for the media
-     */
-    publicId: string;
-    /**
-     * URL-friendly slug for the media
-     */
-    slug: string;
-    /**
-     * Original Japanese name of the media
-     */
-    nameJa: string;
-    /**
-     * Romaji transliteration of the media name
-     */
-    nameRomaji: string;
-    /**
-     * English name of the media
-     */
-    nameEn: string;
-    /**
-     * Full URL to the cover image
-     */
-    coverUrl: string;
-    category: Category;
-};
-
-export type MediaAutocompleteResponse = {
-    media: Array<MediaAutocompleteItem>;
-};
-
-/**
- * Segment with internal fields. For write operations (create, update) all fields are always populated.
- * For GET, optional fields are only populated when requested via include[].
- *
- */
-export type SegmentInternal = Segment & {
-    /**
-     * Storage backend for segment assets
-     */
-    storage?: 'LOCAL' | 'R2';
-    /**
-     * Hash identifier for the segment
-     */
-    hashedId?: string;
-    /**
-     * Base path in the storage backend
-     */
-    storageBasePath?: string;
-    /**
-     * Raw WD Tagger v3 classifier output used to derive content rating
-     */
-    ratingAnalysis?: {
-        [key: string]: unknown;
-    };
-    /**
-     * POS tokenization results keyed by engine (sudachi, unidic)
-     */
-    posAnalysis?: {
-        [key: string]: unknown;
     };
 };
 
@@ -1148,10 +1132,7 @@ export type SegmentUpdateRequest = {
      * Position of the segment within the episode
      */
     position?: number;
-    /**
-     * Segment status
-     */
-    status?: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
+    status?: SegmentStatus;
     /**
      * Start time of the segment in milliseconds from the beginning of the episode
      */
@@ -1209,11 +1190,46 @@ export type SegmentUpdateRequest = {
     hashedId?: string;
 };
 
+/**
+ * Segment with internal fields. For write operations (create, update) all fields are always populated.
+ * For GET, optional fields are only populated when requested via include[].
+ *
+ */
+export type SegmentInternal = Segment & {
+    /**
+     * Storage backend for segment assets
+     */
+    storage?: 'LOCAL' | 'R2';
+    /**
+     * Hash identifier for the segment
+     */
+    hashedId?: string;
+    /**
+     * Base path in the storage backend
+     */
+    storageBasePath?: string;
+    /**
+     * Raw WD Tagger v3 classifier output used to derive content rating
+     */
+    ratingAnalysis?: {
+        [key: string]: unknown;
+    };
+    /**
+     * POS tokenization results keyed by engine (sudachi, unidic)
+     */
+    posAnalysis?: {
+        [key: string]: unknown;
+    };
+};
+
 export type SegmentContextResponse = {
     segments: Array<Segment>;
-    includes: {
+    /**
+     * Optional related resources requested via `include[]`
+     */
+    includes?: {
         /**
-         * Media objects keyed by mediaId
+         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
          */
         media?: {
             [key: string]: Media;
@@ -1247,146 +1263,6 @@ export type SegmentRevision = {
 };
 
 /**
- * Ordered media series grouping
- */
-export type Series = {
-    /**
-     * Series ID
-     */
-    id: number;
-    /**
-     * Public identifier for the series
-     */
-    publicId: string;
-    /**
-     * Japanese name of the series
-     */
-    nameJa: string;
-    /**
-     * Romaji name of the series
-     */
-    nameRomaji: string;
-    /**
-     * English name of the series
-     */
-    nameEn: string;
-};
-
-export type SeriesListResponse = {
-    series: Array<Series>;
-    pagination: OpaqueCursorPagination;
-};
-
-/**
- * Series with ordered media entries
- */
-export type SeriesWithMedia = {
-    /**
-     * Series ID
-     */
-    id: number;
-    /**
-     * Japanese name of the series
-     */
-    nameJa: string;
-    /**
-     * Romaji name of the series
-     */
-    nameRomaji: string;
-    /**
-     * English name of the series
-     */
-    nameEn: string;
-    /**
-     * All media in the series, sorted by position
-     */
-    media: Array<{
-        /**
-         * Position in the series (1-indexed)
-         */
-        position: number;
-        media: Media;
-    }>;
-};
-
-/**
- * Anime character
- */
-export type Character = {
-    /**
-     * Internal character ID
-     */
-    id: number;
-    /**
-     * Public identifier for the character (use this in public URLs)
-     */
-    publicId: string;
-    externalIds: ExternalId;
-    /**
-     * Japanese name of the character
-     */
-    nameJa: string;
-    /**
-     * English name of the character
-     */
-    nameEn: string;
-    /**
-     * Character image URL
-     */
-    imageUrl: string;
-};
-
-/**
- * Character with voice actor and all media appearances
- */
-export type CharacterWithMedia = Character & {
-    seiyuu: Seiyuu;
-    /**
-     * All media this character appears in
-     */
-    mediaAppearances: Array<{
-        media: Media;
-        /**
-         * Character role in this media
-         */
-        role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
-    }>;
-};
-
-/**
- * Seiyuu details with optional character appearances
- */
-export type SeiyuuWithRoles = {
-    /**
-     * AniList staff ID
-     */
-    id: number;
-    externalIds: ExternalId;
-    /**
-     * Japanese name of the voice actor
-     */
-    nameJa: string;
-    /**
-     * English name of the voice actor
-     */
-    nameEn: string;
-    /**
-     * Profile image URL
-     */
-    imageUrl: string;
-    /**
-     * Characters voiced by this seiyuu with their media appearances
-     */
-    characters: Array<Character & {
-        media: Media;
-        /**
-         * Character role in this media
-         */
-        role: 'MAIN' | 'SUPPORTING' | 'BACKGROUND';
-    }>;
-};
-
-/**
  * Request body for updating an existing media entry (all fields optional)
  */
 export type MediaUpdateRequest = {
@@ -1404,13 +1280,13 @@ export type MediaUpdateRequest = {
      */
     nameEn?: string;
     /**
-     * Format of the media release (e.g., TV, OVA, Movie)
+     * Format of the media release
      */
-    airingFormat?: string;
+    airingFormat?: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
     /**
-     * Current airing status (FINISHED, RELEASING, NOT_YET_RELEASED, CANCELLED)
+     * Current airing status
      */
-    airingStatus?: string;
+    airingStatus?: 'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED';
     /**
      * List of genres associated with the media
      */
@@ -1424,13 +1300,10 @@ export type MediaUpdateRequest = {
      */
     startDate?: string;
     /**
-     * End date of the media (last airing/release)
+     * End date of the media (last airing/release). Pass `null` to clear (return the show to ongoing).
      */
     endDate?: string;
-    /**
-     * Media category
-     */
-    category?: 'ANIME' | 'JDRAMA';
+    category?: Category;
     /**
      * Version of the media-sub-splitter used
      */
@@ -1440,13 +1313,13 @@ export type MediaUpdateRequest = {
      */
     hashSalt?: string;
     /**
-     * Animation studio that produced the media
+     * Animation studio that produced the media. Pass `null` to clear back to unknown.
      */
     studio?: string;
     /**
      * Airing season label for the media
      */
-    seasonName?: string;
+    seasonName?: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
     /**
      * Airing year for the media
      */
@@ -1456,52 +1329,51 @@ export type MediaUpdateRequest = {
      */
     storageBasePath?: string;
     /**
-     * List of characters appearing in the media with their voice actors
-     */
-    characters?: Array<CharacterInput>;
-    /**
      * Total number of subtitle segments available
      */
     segmentCount?: number;
 };
 
+/**
+ * Episode entry with metadata and dialogue segment count
+ */
 export type Episode = {
     /**
-     * ID of the media this episode belongs to
+     * Media public ID this episode belongs to
      */
-    mediaId: number;
+    mediaPublicId: string;
     /**
-     * Episode number within the media
+     * Episode number within the media (0 for movies/specials)
      */
     episodeNumber: number;
     /**
      * English title of the episode
      */
-    titleEn?: string;
+    titleEn: string;
     /**
      * Romanized title of the episode
      */
-    titleRomaji?: string;
+    titleRomaji: string;
     /**
      * Japanese title of the episode
      */
-    titleJa?: string;
+    titleJa: string;
     /**
      * Episode description or synopsis
      */
-    description?: string;
+    description: string;
     /**
      * When the episode originally aired
      */
-    airedAt?: string;
+    airedAt: string;
     /**
      * Episode duration in seconds
      */
-    lengthSeconds?: number;
+    lengthSeconds: number;
     /**
      * URL to episode thumbnail image
      */
-    thumbnailUrl?: string;
+    thumbnailUrl: string;
     /**
      * Number of segments in this episode
      */
@@ -1509,11 +1381,8 @@ export type Episode = {
 };
 
 export type EpisodeListResponse = {
-    /**
-     * Array of episode objects
-     */
     episodes: Array<Episode>;
-    pagination: OpaqueCursorPagination;
+    pagination: CursorPagination;
 };
 
 export type EpisodeCreateRequest = {
@@ -1585,15 +1454,17 @@ export type EpisodeUpdateRequest = {
     thumbnailUrl?: string;
 };
 
+export type SegmentListResponse = {
+    segments: Array<Segment>;
+    pagination: CursorPagination;
+};
+
 export type SegmentCreateRequest = {
     /**
      * Position of the segment within the episode
      */
     position: number;
-    /**
-     * Segment status
-     */
-    status?: 'DELETED' | 'ACTIVE' | 'SUSPENDED' | 'VERIFIED' | 'INVALID' | 'TOO_LONG';
+    status?: SegmentStatus;
     /**
      * Start time of the segment in milliseconds from the beginning of the episode
      */
@@ -1655,31 +1526,47 @@ export type SegmentBatchCreateRequest = {
     segments: Array<SegmentCreateRequest>;
 };
 
-export type UserQuotaResponse = {
-    /**
-     * Number of API requests used in the current billing period.
-     */
-    quotaUsed: number;
-    /**
-     * Maximum number of API requests allowed in the current billing period.
-     */
-    quotaLimit: number;
-    /**
-     * Number of API requests remaining in the current billing period.
-     */
-    quotaRemaining: number;
-    /**
-     * Current billing period in YYYYMM format.
-     */
-    periodYyyymm: number;
-    /**
-     * Start of the current billing period (UTC).
-     */
-    periodStart: string;
-    /**
-     * End of the current billing period (UTC).
-     */
-    periodEnd: string;
+export type UserMe = {
+    user: {
+        /**
+         * The user's display name.
+         */
+        username: string;
+        /**
+         * When the account was created.
+         */
+        createdAt: string;
+        /**
+         * The user's account tier or role.
+         */
+        role: string;
+    };
+    quota: {
+        /**
+         * Number of API requests used this month.
+         */
+        used: number;
+        /**
+         * Maximum number of API requests allowed per month.
+         */
+        limit: number;
+        /**
+         * Number of API requests remaining this month.
+         */
+        remaining: number;
+        /**
+         * Current month in YYYYMM format.
+         */
+        periodYyyymm: number;
+        /**
+         * Start of the current month (UTC).
+         */
+        periodStart: string;
+        /**
+         * End of the current month (UTC).
+         */
+        periodEnd: string;
+    };
 };
 
 export type ReportTargetMedia = {
@@ -1688,7 +1575,7 @@ export type ReportTargetMedia = {
      */
     type: 'MEDIA';
     /**
-     * Public ID of the media this report targets
+     * publicId of the media this report targets
      */
     mediaId: string;
 };
@@ -1699,7 +1586,7 @@ export type ReportTargetSegmentInput = {
      */
     type: 'SEGMENT';
     /**
-     * Public ID of the media this report targets
+     * publicId of the media this report targets
      */
     mediaId: string;
     /**
@@ -1707,7 +1594,7 @@ export type ReportTargetSegmentInput = {
      */
     episodeNumber?: number;
     /**
-     * Segment public ID or UUID
+     * Segment publicId
      */
     segmentId: string;
 };
@@ -1730,13 +1617,18 @@ export type CreateReportRequest = {
     description?: string;
 };
 
+/**
+ * Origin of the report
+ */
+export type ReportSource = 'USER' | 'AUTO';
+
 export type ReportTargetEpisode = {
     /**
      * Report target type
      */
     type: 'EPISODE';
     /**
-     * Public ID of the media this report targets
+     * publicId of the media this report targets
      */
     mediaId: string;
     /**
@@ -1751,7 +1643,7 @@ export type ReportTargetSegment = {
      */
     type: 'SEGMENT';
     /**
-     * Public ID of the media this report targets
+     * publicId of the media this report targets
      */
     mediaId: string;
     /**
@@ -1759,7 +1651,7 @@ export type ReportTargetSegment = {
      */
     episodeNumber?: number;
     /**
-     * Segment public ID or UUID
+     * Segment publicId
      */
     segmentId: string;
 };
@@ -1772,24 +1664,28 @@ export type ReportTarget = ({
     type: 'SEGMENT';
 } & ReportTargetSegment);
 
+/**
+ * Reason for the report
+ */
+export type ReportReason = 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'WRONG_TITLE' | 'DUPLICATE_MEDIA' | 'WRONG_EPISODE_NUMBER' | 'IMAGE_ISSUE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
+
+/**
+ * Current status of a report
+ */
+export type ReportStatus = 'OPEN' | 'PROCESSING' | 'FIXED' | 'DISMISSED';
+
 export type Report = {
     /**
      * Report ID
      */
     id: number;
-    /**
-     * Who created this report
-     */
-    source: 'USER' | 'AUTO';
+    source: ReportSource;
     target: ReportTarget;
     /**
      * ID of the audit run that created this report (AUTO only)
      */
     auditRunId: number;
-    /**
-     * Reason for the report
-     */
-    reason: 'WRONG_TRANSLATION' | 'WRONG_TIMING' | 'WRONG_AUDIO' | 'WRONG_JAPANESE_TEXT' | 'LOW_QUALITY_AUDIO' | 'NSFW_NOT_TAGGED' | 'DUPLICATE_SEGMENT' | 'WRONG_METADATA' | 'MISSING_EPISODES' | 'WRONG_COVER_IMAGE' | 'WRONG_TITLE' | 'DUPLICATE_MEDIA' | 'WRONG_EPISODE_NUMBER' | 'IMAGE_ISSUE' | 'INAPPROPRIATE_CONTENT' | 'OTHER' | 'LOW_SEGMENT_MEDIA' | 'EMPTY_EPISODES' | 'MISSING_EPISODES_AUTO' | 'BAD_SEGMENT_RATIO' | 'MEDIA_WITH_NO_EPISODES' | 'MISSING_TRANSLATIONS' | 'DB_ES_SYNC_ISSUES' | 'HIGH_REPORT_DENSITY';
+    reason: ReportReason;
     /**
      * Optional description with additional details
      */
@@ -1800,10 +1696,7 @@ export type Report = {
     data: {
         [key: string]: unknown;
     };
-    /**
-     * Current status of the report
-     */
-    status: 'PENDING' | 'CONCERN' | 'ACCEPTED' | 'REJECTED' | 'RESOLVED' | 'IGNORED';
+    status: ReportStatus;
     /**
      * Notes from the admin who reviewed the report
      */
@@ -1826,13 +1719,13 @@ export type UserPreferences = {
     /**
      * Preferred language for media names display
      */
-    mediaNameLanguage?: 'english' | 'japanese' | 'romaji';
+    mediaNameLanguage?: 'ENGLISH' | 'JAPANESE' | 'ROMAJI';
     /**
      * Per-category content rating display preferences
      */
     contentRatingPreferences?: {
-        suggestive?: 'show' | 'blur' | 'hide';
-        explicit?: 'show' | 'blur' | 'hide';
+        suggestive?: 'SHOW' | 'BLUR' | 'HIDE';
+        explicit?: 'SHOW' | 'BLUR' | 'HIDE';
     };
     searchHistory?: {
         /**
@@ -1861,7 +1754,7 @@ export type UserPreferences = {
      */
     hiddenMedia?: Array<{
         /**
-         * Public identifier of the hidden media
+         * Public ID of the hidden media
          */
         mediaPublicId: string;
         nameEn?: string;
@@ -1878,12 +1771,34 @@ export type ActivityType = 'SEARCH' | 'ANKI_EXPORT' | 'SEGMENT_PLAY' | 'SHARE';
 export type UserActivity = {
     id: number;
     activityType: ActivityType;
-    segmentId: string;
-    mediaId: number;
+    segmentPublicId: string;
+    mediaPublicId: string;
     searchQuery: string;
     mediaName: string;
     japaneseText: string;
     createdAt: string;
+};
+
+/**
+ * Request body for tracking a user activity event
+ */
+export type UserActivityRequest = {
+    activityType: 'SEARCH' | 'SEGMENT_PLAY' | 'SHARE' | 'ANKI_EXPORT';
+    segmentPublicId?: string;
+    mediaPublicId?: string;
+    mediaName?: string;
+    japaneseText?: string;
+    searchQuery?: string;
+};
+
+/**
+ * Number of records affected by a bulk operation
+ */
+export type AffectedCountResponse = {
+    /**
+     * Number of records affected
+     */
+    count: number;
 };
 
 /**
@@ -1897,17 +1812,34 @@ export type HeatmapDayCounts = {
 };
 
 /**
+ * Aggregate statistics about a user's activity
+ */
+export type UserActivityStats = {
+    totalSearches: number;
+    totalExports: number;
+    totalPlays: number;
+    totalListAdds: number;
+    totalShares: number;
+    topMedia: Array<{
+        mediaPublicId: string;
+        mediaName: string;
+        count: number;
+    }>;
+};
+
+/**
+ * Visibility of a collection
+ */
+export type CollectionVisibility = 'PUBLIC' | 'PRIVATE';
+
+/**
  * User segment collection
  */
 export type Collection = {
     /**
-     * Collection ID
+     * Public ID for the collection
      */
-    id: number;
-    /**
-     * Public identifier for the collection
-     */
-    publicId: string;
+    collectionPublicId: string;
     /**
      * Name of the collection
      */
@@ -1916,10 +1848,7 @@ export type Collection = {
      * Type of the collection
      */
     type: 'USER' | 'ANKI_EXPORT';
-    /**
-     * Visibility of the collection
-     */
-    visibility: 'PUBLIC' | 'PRIVATE';
+    visibility: CollectionVisibility;
     /**
      * Number of segments in the collection
      */
@@ -1981,78 +1910,45 @@ export type UserLabFeature = {
  */
 export type CollectionListResponse = {
     collections: Array<Collection>;
-    pagination: OpaqueCursorPagination;
+    pagination: CursorPagination;
 };
 
 /**
  * Request body for creating a new collection
  */
-export type CollectionRequests = {
+export type CollectionCreateRequest = {
     /**
      * Name of the collection
      */
     name: string;
-    /**
-     * Visibility of the collection
-     */
-    visibility?: 'PUBLIC' | 'PRIVATE';
+    visibility?: CollectionVisibility;
 };
 
-/**
- * Collection with saved segments (search result format)
- */
-export type CollectionWithSegments = {
+export type CollectionUpdateRequest = {
+    name?: string;
+    visibility?: CollectionVisibility;
+};
+
+export type AddSegmentToCollectionRequest = {
     /**
-     * Collection ID
+     * Segment public ID
      */
-    id: number;
+    segmentPublicId: string;
     /**
-     * Name of the collection
+     * Optional annotation
      */
-    name: string;
+    note?: string;
+};
+
+export type UpdateCollectionSegmentRequest = {
     /**
-     * Visibility of the collection
+     * New position in the collection
      */
-    visibility: 'PUBLIC' | 'PRIVATE';
+    position?: number;
     /**
-     * Number of segments in the collection
+     * Updated annotation
      */
-    segmentCount: number;
-    /**
-     * When the collection was created
-     */
-    createdAt: string;
-    /**
-     * When the collection was last updated
-     */
-    updatedAt: string;
-    /**
-     * Saved segments with their search result data
-     */
-    segments: Array<{
-        /**
-         * Position in the collection
-         */
-        position: number;
-        /**
-         * User annotation
-         */
-        note: string;
-        result: Segment;
-    }>;
-    includes: {
-        /**
-         * Media objects keyed by mediaId
-         */
-        media: {
-            [key: string]: Media;
-        };
-    };
-    /**
-     * Total number of segments in the collection
-     */
-    totalCount: number;
-    pagination: OpaqueCursorPagination;
+    note?: string;
 };
 
 /**
@@ -2125,20 +2021,68 @@ export type ReindexResponse = {
     }>;
 };
 
-export type AdminReport = Report & {
+/**
+ * Kind of entity a report is about
+ */
+export type ReportTargetType = 'SEGMENT' | 'EPISODE' | 'MEDIA';
+
+export type AdminReportGroupItem = {
     /**
-     * Number of reports for the same target
+     * Report ID
+     */
+    id: number;
+    reason: ReportReason;
+    /**
+     * Optional description with additional details
+     */
+    description: string;
+    source: ReportSource;
+    /**
+     * Name of the reporter
+     */
+    reporterName: string;
+    /**
+     * When the report was created
+     */
+    createdAt: string;
+    /**
+     * Notes from the admin who reviewed the report
+     */
+    adminNotes: string;
+};
+
+export type AdminReportGroup = {
+    target: ReportTarget;
+    /**
+     * Display name of the target media (romaji)
+     */
+    mediaName: string;
+    status: ReportStatus;
+    /**
+     * Total number of individual reports in this group
      */
     reportCount: number;
     /**
-     * Name of the user who submitted this report
+     * Number of distinct users who reported this target
      */
-    reporterName: string;
+    reporterCount: number;
+    /**
+     * When the earliest report in this group was created
+     */
+    firstReportedAt: string;
+    /**
+     * When the most recent status change occurred in this group
+     */
+    lastStatusChange: string;
+    /**
+     * Individual reports within this group
+     */
+    reports: Array<AdminReportGroupItem>;
 };
 
 export type AdminReportListResponse = {
-    reports: Array<AdminReport>;
-    pagination: OpaqueCursorPagination;
+    groups: Array<AdminReportGroup>;
+    pagination: CursorPagination;
 };
 
 export type BatchUpdateReportsRequest = {
@@ -2146,21 +2090,90 @@ export type BatchUpdateReportsRequest = {
      * Report IDs to update
      */
     ids: Array<number>;
-    /**
-     * New status for all selected reports
-     */
-    status: 'PENDING' | 'CONCERN' | 'ACCEPTED' | 'REJECTED' | 'RESOLVED' | 'IGNORED';
+    status: ReportStatus;
     /**
      * Optional admin notes to set on all selected reports
      */
     adminNotes?: string;
 };
 
-export type UpdateReportRequest = {
+export type BulkDeleteReportsRequest = {
     /**
-     * New status for the report
+     * Filters to select which reports to delete. If omitted, deletes all reports.
      */
-    status?: 'PENDING' | 'CONCERN' | 'ACCEPTED' | 'REJECTED' | 'RESOLVED' | 'IGNORED';
+    filters?: {
+        /**
+         * Filter by current report status. Accepts a single value or comma-separated list (e.g. "OPEN,DISMISSED").
+         *
+         */
+        status?: string;
+        source?: ReportSource;
+        targetType?: ReportTargetType;
+        /**
+         * Filter by target media ID
+         */
+        targetMediaId?: number;
+        /**
+         * Filter by target episode number
+         */
+        targetEpisodeNumber?: number;
+        /**
+         * Filter by target segment ID
+         */
+        targetSegmentId?: number;
+        /**
+         * Filter by audit run ID
+         */
+        auditRunId?: number;
+        /**
+         * Only delete reports whose target media no longer exists
+         */
+        orphaned?: boolean;
+    };
+};
+
+export type BulkUpdateReportsRequest = {
+    status: ReportStatus;
+    /**
+     * Optional admin notes to set on all matching reports
+     */
+    adminNotes?: string;
+    /**
+     * Filters to select which reports to update. If omitted, updates all reports.
+     */
+    filters?: {
+        /**
+         * Filter by current report status. Accepts a single value or comma-separated list (e.g. "OPEN,PROCESSING").
+         *
+         */
+        status?: string;
+        source?: ReportSource;
+        targetType?: ReportTargetType;
+        /**
+         * Filter by target media ID
+         */
+        targetMediaId?: number;
+        /**
+         * Filter by target episode number
+         */
+        targetEpisodeNumber?: number;
+        /**
+         * Filter by target segment ID
+         */
+        targetSegmentId?: number;
+        /**
+         * Filter by audit run ID
+         */
+        auditRunId?: number;
+        /**
+         * Only update reports whose target media no longer exists
+         */
+        orphaned?: boolean;
+    };
+};
+
+export type UpdateReportRequest = {
+    status?: ReportStatus;
     /**
      * Admin notes about the report
      */
@@ -2279,8 +2292,17 @@ export type MediaAuditRun = {
     createdAt: string;
 };
 
+/**
+ * Site-wide announcement banner
+ */
+export type Announcement = {
+    message: string;
+    type: 'INFO' | 'WARNING' | 'MAINTENANCE';
+    active: boolean;
+};
+
 export type SearchData = {
-    body?: SearchRequest;
+    body: SearchRequest;
     path?: never;
     query?: never;
     url: '/v1/search';
@@ -2300,7 +2322,7 @@ export type SearchErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2321,7 +2343,7 @@ export type SearchResponses = {
 export type SearchResponse2 = SearchResponses[keyof SearchResponses];
 
 export type GetSearchStatsData = {
-    body?: SearchStatsRequest;
+    body: SearchStatsRequest;
     path?: never;
     query?: never;
     url: '/v1/search/stats';
@@ -2341,7 +2363,7 @@ export type GetSearchStatsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2382,7 +2404,7 @@ export type SearchWordsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2402,6 +2424,47 @@ export type SearchWordsResponses = {
 
 export type SearchWordsResponse = SearchWordsResponses[keyof SearchWordsResponses];
 
+export type SearchMediaData = {
+    body: SearchMediaRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/search/media';
+};
+
+export type SearchMediaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type SearchMediaError = SearchMediaErrors[keyof SearchMediaErrors];
+
+export type SearchMediaResponses = {
+    /**
+     * OK
+     */
+    200: MediaAutocompleteResponse;
+};
+
+export type SearchMediaResponse = SearchMediaResponses[keyof SearchMediaResponses];
+
 export type GetStatsOverviewData = {
     body?: never;
     path?: never;
@@ -2411,7 +2474,19 @@ export type GetStatsOverviewData = {
 
 export type GetStatsOverviewErrors = {
     /**
-     * Internal server error
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
      */
     500: Error500;
 };
@@ -2420,57 +2495,9 @@ export type GetStatsOverviewError = GetStatsOverviewErrors[keyof GetStatsOvervie
 
 export type GetStatsOverviewResponses = {
     /**
-     * Corpus statistics overview
+     * OK
      */
-    200: {
-        /**
-         * Total number of active segments in the corpus
-         */
-        totalSegments: number;
-        /**
-         * Total number of episodes
-         */
-        totalEpisodes: number;
-        /**
-         * Total number of media entries
-         */
-        totalMedia: number;
-        /**
-         * Total number of words in the frequency list
-         */
-        totalFrequencyWords: number;
-        /**
-         * Total hours of Japanese dialogue (subtitle coverage time)
-         */
-        dialogueHours: number;
-        tiers: Array<WordCoverageTier>;
-        /**
-         * When the word coverage data was last updated
-         */
-        lastUpdated: string;
-        translations: {
-            /**
-             * Total active segments
-             */
-            total: number;
-            /**
-             * Segments with human English translations
-             */
-            enHuman: number;
-            /**
-             * Segments with machine English translations
-             */
-            enMachine: number;
-            /**
-             * Segments with human Spanish translations
-             */
-            esHuman: number;
-            /**
-             * Segments with machine Spanish translations
-             */
-            esMachine: number;
-        };
-    };
+    200: StatsOverview;
 };
 
 export type GetStatsOverviewResponse = GetStatsOverviewResponses[keyof GetStatsOverviewResponses];
@@ -2490,11 +2517,11 @@ export type GetCoveredWordsData = {
         /**
          * Filter by coverage status
          */
-        filter?: 'all' | 'covered' | 'uncovered';
+        filter?: 'ALL' | 'COVERED' | 'UNCOVERED';
         /**
-         * Rank to start from (exclusive) for pagination within the slice.
+         * Opaque pagination cursor returned from the previous page
          */
-        cursor?: number;
+        cursor?: string;
         /**
          * Number of results per page
          */
@@ -2509,7 +2536,19 @@ export type GetCoveredWordsErrors = {
      */
     400: Error400;
     /**
-     * Internal server error
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
      */
     500: Error500;
 };
@@ -2518,38 +2557,15 @@ export type GetCoveredWordsError = GetCoveredWordsErrors[keyof GetCoveredWordsEr
 
 export type GetCoveredWordsResponses = {
     /**
-     * Paginated list of words
+     * OK
      */
-    200: {
-        words: Array<CoveredWord>;
-        /**
-         * Rank cursor for the next page, or null if this is the last page
-         */
-        nextCursor: number;
-        /**
-         * Tier-level word counts (cached)
-         */
-        tierStats: {
-            total: number;
-            covered: number;
-            uncovered: number;
-        };
-    };
+    200: CoveredWordsResponse;
 };
 
 export type GetCoveredWordsResponse = GetCoveredWordsResponses[keyof GetCoveredWordsResponses];
 
 export type TriggerCoveredWordsUpdateData = {
-    body?: {
-        /**
-         * Maximum frequency rank to check (defaults to all words)
-         */
-        maxRank?: number;
-        /**
-         * Only check words that currently have zero matches (faster for incremental updates)
-         */
-        onlyUncovered?: boolean;
-    };
+    body?: CoveredWordsUpdateRequest;
     path?: never;
     query?: never;
     url: '/v1/stats/covered-words/update';
@@ -2557,7 +2573,23 @@ export type TriggerCoveredWordsUpdateData = {
 
 export type TriggerCoveredWordsUpdateErrors = {
     /**
-     * Internal server error
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
      */
     500: Error500;
 };
@@ -2566,14 +2598,9 @@ export type TriggerCoveredWordsUpdateError = TriggerCoveredWordsUpdateErrors[key
 
 export type TriggerCoveredWordsUpdateResponses = {
     /**
-     * Coverage update result
+     * OK
      */
-    200: {
-        wordsChecked: number;
-        newlyCovered: number;
-        totalCovered: number;
-        percentage: number;
-    };
+    200: CoveredWordsUpdateResponse;
 };
 
 export type TriggerCoveredWordsUpdateResponse = TriggerCoveredWordsUpdateResponses[keyof TriggerCoveredWordsUpdateResponses];
@@ -2595,13 +2622,9 @@ export type ListMediaData = {
          */
         category?: 'ANIME' | 'JDRAMA';
         /**
-         * Search query for filtering media by name
+         * Search term to match against media names (English, Japanese, romaji)
          */
         query?: string;
-        /**
-         * Resources to expand in the media response
-         */
-        include?: Array<MediaIncludeExpansion>;
     };
     url: '/v1/media';
 };
@@ -2620,7 +2643,7 @@ export type ListMediaErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2665,7 +2688,7 @@ export type CreateMediaErrors = {
      */
     409: Error409;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2685,78 +2708,19 @@ export type CreateMediaResponses = {
 
 export type CreateMediaResponse = CreateMediaResponses[keyof CreateMediaResponses];
 
-export type AutocompleteMediaData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Search term to match against media names (English, Japanese, romaji)
-         */
-        query: string;
-        /**
-         * Maximum number of results to return
-         */
-        take?: number;
-        /**
-         * Filter by media category
-         */
-        category?: 'ANIME' | 'JDRAMA';
-    };
-    url: '/v1/media/autocomplete';
-};
-
-export type AutocompleteMediaErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type AutocompleteMediaError = AutocompleteMediaErrors[keyof AutocompleteMediaErrors];
-
-export type AutocompleteMediaResponses = {
-    /**
-     * OK
-     */
-    200: MediaAutocompleteResponse;
-};
-
-export type AutocompleteMediaResponse = AutocompleteMediaResponses[keyof AutocompleteMediaResponses];
-
-export type GetSegmentByUuidData = {
+export type GetSegmentData = {
     body?: never;
     path: {
         /**
-         * Segment publicId
+         * Segment public ID
          */
-        uuid: string;
+        segmentPublicId: string;
     };
-    query?: {
-        /**
-         * Additional internal fields to include in the response
-         */
-        include?: Array<'ratingAnalysis' | 'posAnalysis' | 'hashedId' | 'storageBasePath' | 'storage'>;
-    };
-    url: '/v1/media/segments/{uuid}';
+    query?: never;
+    url: '/v1/media/segments/{segmentPublicId}';
 };
 
-export type GetSegmentByUuidErrors = {
+export type GetSegmentErrors = {
     /**
      * Bad Request
      */
@@ -2774,7 +2738,7 @@ export type GetSegmentByUuidErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2783,30 +2747,30 @@ export type GetSegmentByUuidErrors = {
     500: Error500;
 };
 
-export type GetSegmentByUuidError = GetSegmentByUuidErrors[keyof GetSegmentByUuidErrors];
+export type GetSegmentError = GetSegmentErrors[keyof GetSegmentErrors];
 
-export type GetSegmentByUuidResponses = {
+export type GetSegmentResponses = {
     /**
      * OK
      */
-    200: SegmentInternal;
+    200: Segment;
 };
 
-export type GetSegmentByUuidResponse = GetSegmentByUuidResponses[keyof GetSegmentByUuidResponses];
+export type GetSegmentResponse = GetSegmentResponses[keyof GetSegmentResponses];
 
-export type UpdateSegmentByUuidData = {
+export type UpdateSegmentData = {
     body: SegmentUpdateRequest;
     path: {
         /**
-         * Segment publicId
+         * Segment public ID
          */
-        uuid: string;
+        segmentPublicId: string;
     };
     query?: never;
-    url: '/v1/media/segments/{uuid}';
+    url: '/v1/media/segments/{segmentPublicId}';
 };
 
-export type UpdateSegmentByUuidErrors = {
+export type UpdateSegmentErrors = {
     /**
      * Bad Request
      */
@@ -2824,7 +2788,7 @@ export type UpdateSegmentByUuidErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2833,24 +2797,24 @@ export type UpdateSegmentByUuidErrors = {
     500: Error500;
 };
 
-export type UpdateSegmentByUuidError = UpdateSegmentByUuidErrors[keyof UpdateSegmentByUuidErrors];
+export type UpdateSegmentError = UpdateSegmentErrors[keyof UpdateSegmentErrors];
 
-export type UpdateSegmentByUuidResponses = {
+export type UpdateSegmentResponses = {
     /**
      * OK
      */
     200: SegmentInternal;
 };
 
-export type UpdateSegmentByUuidResponse = UpdateSegmentByUuidResponses[keyof UpdateSegmentByUuidResponses];
+export type UpdateSegmentResponse = UpdateSegmentResponses[keyof UpdateSegmentResponses];
 
 export type GetSegmentContextData = {
     body?: never;
     path: {
         /**
-         * Segment publicId
+         * Segment public ID
          */
-        uuid: string;
+        segmentPublicId: string;
     };
     query?: {
         /**
@@ -2861,8 +2825,12 @@ export type GetSegmentContextData = {
          * Content ratings to include (omit for all ratings)
          */
         contentRating?: Array<ContentRating>;
+        /**
+         * Optional resources to expand in the response `includes` block
+         */
+        include?: Array<IncludeExpansion>;
     };
-    url: '/v1/media/segments/{uuid}/context';
+    url: '/v1/media/segments/{segmentPublicId}/context';
 };
 
 export type GetSegmentContextErrors = {
@@ -2883,7 +2851,7 @@ export type GetSegmentContextErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2907,12 +2875,12 @@ export type ListSegmentRevisionsData = {
     body?: never;
     path: {
         /**
-         * Segment publicId
+         * Segment public ID
          */
-        uuid: string;
+        segmentPublicId: string;
     };
     query?: never;
-    url: '/v1/media/segments/{uuid}/revisions';
+    url: '/v1/media/segments/{segmentPublicId}/revisions';
 };
 
 export type ListSegmentRevisionsErrors = {
@@ -2933,7 +2901,7 @@ export type ListSegmentRevisionsErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -2955,564 +2923,16 @@ export type ListSegmentRevisionsResponses = {
 
 export type ListSegmentRevisionsResponse = ListSegmentRevisionsResponses[keyof ListSegmentRevisionsResponses];
 
-export type ListSeriesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Number of results per page
-         */
-        take?: number;
-        /**
-         * Opaque pagination cursor token
-         */
-        cursor?: string;
-        /**
-         * Case-insensitive search across English, Japanese, and Romaji names
-         */
-        query?: string;
-    };
-    url: '/v1/media/series';
-};
-
-export type ListSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListSeriesError = ListSeriesErrors[keyof ListSeriesErrors];
-
-export type ListSeriesResponses = {
-    /**
-     * OK
-     */
-    200: SeriesListResponse;
-};
-
-export type ListSeriesResponse = ListSeriesResponses[keyof ListSeriesResponses];
-
-export type CreateSeriesData = {
-    body: {
-        /**
-         * Japanese name of the series
-         */
-        nameJa: string;
-        /**
-         * Romaji name of the series
-         */
-        nameRomaji: string;
-        /**
-         * English name of the series
-         */
-        nameEn: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/v1/media/series';
-};
-
-export type CreateSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type CreateSeriesError = CreateSeriesErrors[keyof CreateSeriesErrors];
-
-export type CreateSeriesResponses = {
-    /**
-     * Created
-     */
-    201: Series;
-};
-
-export type CreateSeriesResponse = CreateSeriesResponses[keyof CreateSeriesResponses];
-
-export type DeleteSeriesData = {
-    body?: never;
-    path: {
-        /**
-         * Series public ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/v1/media/series/{id}';
-};
-
-export type DeleteSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type DeleteSeriesError = DeleteSeriesErrors[keyof DeleteSeriesErrors];
-
-export type DeleteSeriesResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type DeleteSeriesResponse = DeleteSeriesResponses[keyof DeleteSeriesResponses];
-
-export type GetSeriesData = {
-    body?: never;
-    path: {
-        /**
-         * Series public ID
-         */
-        id: string;
-    };
-    query?: {
-        /**
-         * Resources to expand in the series response
-         */
-        include?: Array<MediaIncludeExpansion>;
-    };
-    url: '/v1/media/series/{id}';
-};
-
-export type GetSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetSeriesError = GetSeriesErrors[keyof GetSeriesErrors];
-
-export type GetSeriesResponses = {
-    /**
-     * OK
-     */
-    200: SeriesWithMedia;
-};
-
-export type GetSeriesResponse = GetSeriesResponses[keyof GetSeriesResponses];
-
-export type UpdateSeriesData = {
-    body: {
-        /**
-         * Updated Japanese name
-         */
-        nameJa?: string;
-        /**
-         * Updated Romaji name
-         */
-        nameRomaji?: string;
-        /**
-         * Updated English name
-         */
-        nameEn?: string;
-    };
-    path: {
-        /**
-         * Series public ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/v1/media/series/{id}';
-};
-
-export type UpdateSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type UpdateSeriesError = UpdateSeriesErrors[keyof UpdateSeriesErrors];
-
-export type UpdateSeriesResponses = {
-    /**
-     * OK
-     */
-    200: Series;
-};
-
-export type UpdateSeriesResponse = UpdateSeriesResponses[keyof UpdateSeriesResponses];
-
-export type AddMediaToSeriesData = {
-    body: {
-        /**
-         * Media public ID to add
-         */
-        mediaId: string;
-        /**
-         * Position in the series (1-indexed)
-         */
-        position: number;
-    };
-    path: {
-        /**
-         * Series public ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/v1/media/series/{id}/media';
-};
-
-export type AddMediaToSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type AddMediaToSeriesError = AddMediaToSeriesErrors[keyof AddMediaToSeriesErrors];
-
-export type AddMediaToSeriesResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type AddMediaToSeriesResponse = AddMediaToSeriesResponses[keyof AddMediaToSeriesResponses];
-
-export type RemoveMediaFromSeriesData = {
-    body?: never;
-    path: {
-        /**
-         * Series public ID
-         */
-        id: string;
-        /**
-         * Media public ID
-         */
-        mediaId: string;
-    };
-    query?: never;
-    url: '/v1/media/series/{id}/media/{mediaId}';
-};
-
-export type RemoveMediaFromSeriesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type RemoveMediaFromSeriesError = RemoveMediaFromSeriesErrors[keyof RemoveMediaFromSeriesErrors];
-
-export type RemoveMediaFromSeriesResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type RemoveMediaFromSeriesResponse = RemoveMediaFromSeriesResponses[keyof RemoveMediaFromSeriesResponses];
-
-export type UpdateSeriesMediaData = {
-    body: {
-        /**
-         * New position in the series (1-indexed)
-         */
-        position: number;
-    };
-    path: {
-        /**
-         * Series public ID
-         */
-        id: string;
-        /**
-         * Media public ID
-         */
-        mediaId: string;
-    };
-    query?: never;
-    url: '/v1/media/series/{id}/media/{mediaId}';
-};
-
-export type UpdateSeriesMediaErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type UpdateSeriesMediaError = UpdateSeriesMediaErrors[keyof UpdateSeriesMediaErrors];
-
-export type UpdateSeriesMediaResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type UpdateSeriesMediaResponse = UpdateSeriesMediaResponses[keyof UpdateSeriesMediaResponses];
-
-export type GetCharacterData = {
-    body?: never;
-    path: {
-        /**
-         * Character ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/media/characters/{id}';
-};
-
-export type GetCharacterErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetCharacterError = GetCharacterErrors[keyof GetCharacterErrors];
-
-export type GetCharacterResponses = {
-    /**
-     * OK
-     */
-    200: CharacterWithMedia;
-};
-
-export type GetCharacterResponse = GetCharacterResponses[keyof GetCharacterResponses];
-
-export type GetSeiyuuData = {
-    body?: never;
-    path: {
-        /**
-         * Internal seiyuu ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/media/seiyuu/{id}';
-};
-
-export type GetSeiyuuErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetSeiyuuError = GetSeiyuuErrors[keyof GetSeiyuuErrors];
-
-export type GetSeiyuuResponses = {
-    /**
-     * OK
-     */
-    200: SeiyuuWithRoles;
-};
-
-export type GetSeiyuuResponse = GetSeiyuuResponses[keyof GetSeiyuuResponses];
-
 export type DeleteMediaData = {
     body?: never;
     path: {
         /**
          * Media public ID
          */
-        id: string;
+        mediaPublicId: string;
     };
     query?: never;
-    url: '/v1/media/{id}';
+    url: '/v1/media/{mediaPublicId}';
 };
 
 export type DeleteMediaErrors = {
@@ -3533,7 +2953,7 @@ export type DeleteMediaErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3559,15 +2979,10 @@ export type GetMediaData = {
         /**
          * Media public ID
          */
-        id: string;
+        mediaPublicId: string;
     };
-    query?: {
-        /**
-         * Resources to expand in the media response
-         */
-        include?: Array<MediaIncludeExpansion>;
-    };
-    url: '/v1/media/{id}';
+    query?: never;
+    url: '/v1/media/{mediaPublicId}';
 };
 
 export type GetMediaErrors = {
@@ -3588,7 +3003,7 @@ export type GetMediaErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3614,10 +3029,10 @@ export type UpdateMediaData = {
         /**
          * Media public ID
          */
-        id: string;
+        mediaPublicId: string;
     };
     query?: never;
-    url: '/v1/media/{id}';
+    url: '/v1/media/{mediaPublicId}';
 };
 
 export type UpdateMediaErrors = {
@@ -3638,7 +3053,7 @@ export type UpdateMediaErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3662,9 +3077,9 @@ export type ListEpisodesData = {
     body?: never;
     path: {
         /**
-         * Public ID of the media
+         * Media public ID
          */
-        mediaId: string;
+        mediaPublicId: string;
     };
     query?: {
         /**
@@ -3676,7 +3091,7 @@ export type ListEpisodesData = {
          */
         cursor?: string;
     };
-    url: '/v1/media/{mediaId}/episodes';
+    url: '/v1/media/{mediaPublicId}/episodes';
 };
 
 export type ListEpisodesErrors = {
@@ -3697,7 +3112,7 @@ export type ListEpisodesErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3721,12 +3136,12 @@ export type CreateEpisodeData = {
     body: EpisodeCreateRequest;
     path: {
         /**
-         * Public ID of the media
+         * Media public ID
          */
-        mediaId: string;
+        mediaPublicId: string;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes';
+    url: '/v1/media/{mediaPublicId}/episodes';
 };
 
 export type CreateEpisodeErrors = {
@@ -3751,7 +3166,7 @@ export type CreateEpisodeErrors = {
      */
     409: Error409;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3764,7 +3179,7 @@ export type CreateEpisodeError = CreateEpisodeErrors[keyof CreateEpisodeErrors];
 
 export type CreateEpisodeResponses = {
     /**
-     * OK
+     * Created
      */
     201: Episode;
 };
@@ -3775,16 +3190,16 @@ export type DeleteEpisodeData = {
     body?: never;
     path: {
         /**
-         * Public ID of the media
+         * Media public ID
          */
-        mediaId: string;
+        mediaPublicId: string;
         /**
          * Episode number
          */
         episodeNumber: number;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}';
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}';
 };
 
 export type DeleteEpisodeErrors = {
@@ -3805,7 +3220,7 @@ export type DeleteEpisodeErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3829,16 +3244,16 @@ export type GetEpisodeData = {
     body?: never;
     path: {
         /**
-         * Public ID of the media
+         * Media public ID
          */
-        mediaId: string;
+        mediaPublicId: string;
         /**
          * Episode number
          */
         episodeNumber: number;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}';
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}';
 };
 
 export type GetEpisodeErrors = {
@@ -3859,7 +3274,7 @@ export type GetEpisodeErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3883,16 +3298,16 @@ export type UpdateEpisodeData = {
     body: EpisodeUpdateRequest;
     path: {
         /**
-         * Public ID of the media
+         * Media public ID
          */
-        mediaId: string;
+        mediaPublicId: string;
         /**
          * Episode number
          */
         episodeNumber: number;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}';
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}';
 };
 
 export type UpdateEpisodeErrors = {
@@ -3913,7 +3328,7 @@ export type UpdateEpisodeErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3937,9 +3352,9 @@ export type ListSegmentsData = {
     body?: never;
     path: {
         /**
-         * Public ID of the media
+         * publicId of the media
          */
-        mediaId: string;
+        mediaPublicId: string;
         /**
          * Episode number
          */
@@ -3955,7 +3370,7 @@ export type ListSegmentsData = {
          */
         cursor?: string;
     };
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments';
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments';
 };
 
 export type ListSegmentsErrors = {
@@ -3976,7 +3391,7 @@ export type ListSegmentsErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -3991,13 +3406,7 @@ export type ListSegmentsResponses = {
     /**
      * OK
      */
-    200: {
-        /**
-         * Array of segment objects
-         */
-        segments: Array<Segment>;
-        pagination: OpaqueCursorPagination;
-    };
+    200: SegmentListResponse;
 };
 
 export type ListSegmentsResponse = ListSegmentsResponses[keyof ListSegmentsResponses];
@@ -4006,16 +3415,16 @@ export type CreateSegmentData = {
     body: SegmentCreateRequest;
     path: {
         /**
-         * Public ID of the media
+         * publicId of the media
          */
-        mediaId: string;
+        mediaPublicId: string;
         /**
          * Episode number
          */
         episodeNumber: number;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments';
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments';
 };
 
 export type CreateSegmentErrors = {
@@ -4040,7 +3449,7 @@ export type CreateSegmentErrors = {
      */
     409: Error409;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4053,7 +3462,7 @@ export type CreateSegmentError = CreateSegmentErrors[keyof CreateSegmentErrors];
 
 export type CreateSegmentResponses = {
     /**
-     * OK
+     * Created
      */
     201: SegmentInternal;
 };
@@ -4064,16 +3473,16 @@ export type CreateSegmentsBatchData = {
     body: SegmentBatchCreateRequest;
     path: {
         /**
-         * Public ID of the media
+         * publicId of the media
          */
-        mediaId: string;
+        mediaPublicId: string;
         /**
          * Episode number
          */
         episodeNumber: number;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/batch';
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments/batch';
 };
 
 export type CreateSegmentsBatchErrors = {
@@ -4094,7 +3503,7 @@ export type CreateSegmentsBatchErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4115,7 +3524,7 @@ export type CreateSegmentsBatchResponses = {
          */
         created: number;
         /**
-         * Number of segments skipped due to duplicate UUIDs
+         * Number of segments skipped because they already exist
          */
         skipped: number;
     };
@@ -4123,27 +3532,95 @@ export type CreateSegmentsBatchResponses = {
 
 export type CreateSegmentsBatchResponse = CreateSegmentsBatchResponses[keyof CreateSegmentsBatchResponses];
 
-export type DeleteSegmentData = {
+export type GetMeData = {
     body?: never;
-    path: {
-        /**
-         * Public ID of the media
-         */
-        mediaId: string;
-        /**
-         * Episode number
-         */
-        episodeNumber: number;
-        /**
-         * Segment ID
-         */
-        id: number;
-    };
+    path?: never;
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}';
+    url: '/v1/user/me';
 };
 
-export type DeleteSegmentErrors = {
+export type GetMeErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetMeError = GetMeErrors[keyof GetMeErrors];
+
+export type GetMeResponses = {
+    /**
+     * OK
+     */
+    200: UserMe;
+};
+
+export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type ListExcludedMediaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/excluded-media';
+};
+
+export type ListExcludedMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ListExcludedMediaError = ListExcludedMediaErrors[keyof ListExcludedMediaErrors];
+
+export type ListExcludedMediaResponses = {
+    /**
+     * OK
+     */
+    200: {
+        excludedMedia: Array<MediaSummary>;
+    };
+};
+
+export type ListExcludedMediaResponse = ListExcludedMediaResponses[keyof ListExcludedMediaResponses];
+
+export type AddExcludedMediaData = {
+    body: {
+        /**
+         * Public ID of the media to exclude
+         */
+        mediaPublicId: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/user/excluded-media';
+};
+
+export type AddExcludedMediaErrors = {
     /**
      * Bad Request
      */
@@ -4161,7 +3638,7 @@ export type DeleteSegmentErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4170,42 +3647,30 @@ export type DeleteSegmentErrors = {
     500: Error500;
 };
 
-export type DeleteSegmentError = DeleteSegmentErrors[keyof DeleteSegmentErrors];
+export type AddExcludedMediaError = AddExcludedMediaErrors[keyof AddExcludedMediaErrors];
 
-export type DeleteSegmentResponses = {
+export type AddExcludedMediaResponses = {
     /**
      * No Content
      */
     204: void;
 };
 
-export type DeleteSegmentResponse = DeleteSegmentResponses[keyof DeleteSegmentResponses];
+export type AddExcludedMediaResponse = AddExcludedMediaResponses[keyof AddExcludedMediaResponses];
 
-export type GetSegmentData = {
+export type RemoveExcludedMediaData = {
     body?: never;
     path: {
         /**
-         * Public ID of the media
+         * Public ID of the media to remove from the excluded list
          */
-        mediaId: string;
-        /**
-         * Episode number
-         */
-        episodeNumber: number;
-        /**
-         * Segment ID
-         */
-        id: number;
+        mediaPublicId: string;
     };
     query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}';
+    url: '/v1/user/excluded-media/{mediaPublicId}';
 };
 
-export type GetSegmentErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
+export type RemoveExcludedMediaErrors = {
     /**
      * Unauthorized
      */
@@ -4219,7 +3684,7 @@ export type GetSegmentErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4228,111 +3693,16 @@ export type GetSegmentErrors = {
     500: Error500;
 };
 
-export type GetSegmentError = GetSegmentErrors[keyof GetSegmentErrors];
+export type RemoveExcludedMediaError = RemoveExcludedMediaErrors[keyof RemoveExcludedMediaErrors];
 
-export type GetSegmentResponses = {
+export type RemoveExcludedMediaResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: Segment;
+    204: void;
 };
 
-export type GetSegmentResponse = GetSegmentResponses[keyof GetSegmentResponses];
-
-export type UpdateSegmentData = {
-    body: SegmentUpdateRequest;
-    path: {
-        /**
-         * Public ID of the media
-         */
-        mediaId: string;
-        /**
-         * Episode number
-         */
-        episodeNumber: number;
-        /**
-         * Segment ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/v1/media/{mediaId}/episodes/{episodeNumber}/segments/{id}';
-};
-
-export type UpdateSegmentErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type UpdateSegmentError = UpdateSegmentErrors[keyof UpdateSegmentErrors];
-
-export type UpdateSegmentResponses = {
-    /**
-     * OK
-     */
-    200: SegmentInternal;
-};
-
-export type UpdateSegmentResponse = UpdateSegmentResponses[keyof UpdateSegmentResponses];
-
-export type GetUserQuotaData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/user/quota';
-};
-
-export type GetUserQuotaErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetUserQuotaError = GetUserQuotaErrors[keyof GetUserQuotaErrors];
-
-export type GetUserQuotaResponses = {
-    /**
-     * OK
-     */
-    200: UserQuotaResponse;
-};
-
-export type GetUserQuotaResponse = GetUserQuotaResponses[keyof GetUserQuotaResponses];
+export type RemoveExcludedMediaResponse = RemoveExcludedMediaResponses[keyof RemoveExcludedMediaResponses];
 
 export type CreateUserReportData = {
     body: CreateReportRequest;
@@ -4354,6 +3724,10 @@ export type CreateUserReportErrors = {
      * Not Found
      */
     404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4384,6 +3758,14 @@ export type GetUserPreferencesErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -4409,9 +3791,21 @@ export type UpdateUserPreferencesData = {
 
 export type UpdateUserPreferencesErrors = {
     /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
      * Unauthorized
      */
     401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4447,6 +3841,14 @@ export type DeleteUserActivityErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -4458,9 +3860,7 @@ export type DeleteUserActivityResponses = {
     /**
      * OK
      */
-    200: {
-        deletedCount: number;
-    };
+    200: AffectedCountResponse;
 };
 
 export type DeleteUserActivityResponse = DeleteUserActivityResponses[keyof DeleteUserActivityResponses];
@@ -4495,6 +3895,14 @@ export type ListUserActivityErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -4508,21 +3916,14 @@ export type ListUserActivityResponses = {
      */
     200: {
         activities: Array<UserActivity>;
-        pagination: OpaqueCursorPagination;
+        pagination: CursorPagination;
     };
 };
 
 export type ListUserActivityResponse = ListUserActivityResponses[keyof ListUserActivityResponses];
 
 export type TrackUserActivityData = {
-    body: {
-        activityType: 'SEARCH' | 'SEGMENT_PLAY' | 'SHARE' | 'ANKI_EXPORT';
-        segmentId?: string;
-        mediaId?: number;
-        mediaName?: string;
-        japaneseText?: string;
-        searchQuery?: string;
-    };
+    body: UserActivityRequest;
     path?: never;
     query?: never;
     url: '/v1/user/activity';
@@ -4537,6 +3938,14 @@ export type TrackUserActivityErrors = {
      * Unauthorized
      */
     401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4571,6 +3980,14 @@ export type GetUserActivityHeatmapErrors = {
      * Unauthorized
      */
     401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4613,6 +4030,14 @@ export type GetUserActivityStatsErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -4624,17 +4049,7 @@ export type GetUserActivityStatsResponses = {
     /**
      * OK
      */
-    200: {
-        totalSearches: number;
-        totalExports: number;
-        totalPlays: number;
-        totalListAdds: number;
-        totalShares: number;
-        topMedia: Array<{
-            mediaId: number;
-            count: number;
-        }>;
-    };
+    200: UserActivityStats;
 };
 
 export type GetUserActivityStatsResponse = GetUserActivityStatsResponses[keyof GetUserActivityStatsResponses];
@@ -4657,6 +4072,14 @@ export type DeleteUserActivityByDateErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -4668,9 +4091,7 @@ export type DeleteUserActivityByDateResponses = {
     /**
      * OK
      */
-    200: {
-        deletedCount: number;
-    };
+    200: AffectedCountResponse;
 };
 
 export type DeleteUserActivityByDateResponse = DeleteUserActivityByDateResponses[keyof DeleteUserActivityByDateResponses];
@@ -4681,10 +4102,10 @@ export type DeleteUserActivityByIdData = {
         /**
          * Activity record ID
          */
-        id: number;
+        activityId: number;
     };
     query?: never;
-    url: '/v1/user/activity/{id}';
+    url: '/v1/user/activity/{activityId}';
 };
 
 export type DeleteUserActivityByIdErrors = {
@@ -4693,9 +4114,17 @@ export type DeleteUserActivityByIdErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
      * Not Found
      */
     404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4726,6 +4155,14 @@ export type ExportUserDataErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
      * Internal Server Error
      */
     500: Error500;
@@ -4754,6 +4191,14 @@ export type ListUserLabsErrors = {
      * Unauthorized
      */
     401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4789,9 +4234,17 @@ export type UnenrollUserLabErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
      * Not Found
      */
     404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4827,9 +4280,17 @@ export type EnrollUserLabErrors = {
      */
     401: Error401;
     /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
      * Not Found
      */
     404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
     /**
      * Internal Server Error
      */
@@ -4854,7 +4315,7 @@ export type ListCollectionsData = {
         /**
          * Filter by visibility
          */
-        visibility?: 'public' | 'private';
+        visibility?: CollectionVisibility;
         /**
          * Opaque pagination cursor token
          */
@@ -4881,7 +4342,7 @@ export type ListCollectionsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4902,7 +4363,7 @@ export type ListCollectionsResponses = {
 export type ListCollectionsResponse = ListCollectionsResponses[keyof ListCollectionsResponses];
 
 export type CreateCollectionData = {
-    body: CollectionRequests;
+    body: CollectionCreateRequest;
     path?: never;
     query?: never;
     url: '/v1/collections';
@@ -4922,7 +4383,7 @@ export type CreateCollectionErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4948,10 +4409,10 @@ export type DeleteCollectionData = {
         /**
          * Collection public ID
          */
-        id: string;
+        collectionPublicId: string;
     };
     query?: never;
-    url: '/v1/collections/{id}';
+    url: '/v1/collections/{collectionPublicId}';
 };
 
 export type DeleteCollectionErrors = {
@@ -4972,7 +4433,7 @@ export type DeleteCollectionErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -4998,19 +4459,10 @@ export type GetCollectionData = {
         /**
          * Collection public ID
          */
-        id: string;
+        collectionPublicId: string;
     };
-    query?: {
-        /**
-         * Opaque pagination cursor token for paginated segments
-         */
-        cursor?: string;
-        /**
-         * Items per page
-         */
-        take?: number;
-    };
-    url: '/v1/collections/{id}';
+    query?: never;
+    url: '/v1/collections/{collectionPublicId}';
 };
 
 export type GetCollectionErrors = {
@@ -5031,7 +4483,7 @@ export type GetCollectionErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -5046,24 +4498,21 @@ export type GetCollectionResponses = {
     /**
      * OK
      */
-    200: CollectionWithSegments;
+    200: Collection;
 };
 
 export type GetCollectionResponse = GetCollectionResponses[keyof GetCollectionResponses];
 
 export type UpdateCollectionData = {
-    body: {
-        name?: string;
-        visibility?: 'PUBLIC' | 'PRIVATE';
-    };
+    body: CollectionUpdateRequest;
     path: {
         /**
          * Collection public ID
          */
-        id: string;
+        collectionPublicId: string;
     };
     query?: never;
-    url: '/v1/collections/{id}';
+    url: '/v1/collections/{collectionPublicId}';
 };
 
 export type UpdateCollectionErrors = {
@@ -5084,7 +4533,7 @@ export type UpdateCollectionErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -5105,24 +4554,15 @@ export type UpdateCollectionResponses = {
 export type UpdateCollectionResponse = UpdateCollectionResponses[keyof UpdateCollectionResponses];
 
 export type AddSegmentToCollectionData = {
-    body: {
-        /**
-         * Public ID or UUID of the segment to add
-         */
-        segmentId: string;
-        /**
-         * Optional annotation
-         */
-        note?: string;
-    };
+    body: AddSegmentToCollectionRequest;
     path: {
         /**
          * Collection public ID
          */
-        id: string;
+        collectionPublicId: string;
     };
     query?: never;
-    url: '/v1/collections/{id}/segments';
+    url: '/v1/collections/{collectionPublicId}/segments';
 };
 
 export type AddSegmentToCollectionErrors = {
@@ -5143,7 +4583,7 @@ export type AddSegmentToCollectionErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -5163,142 +4603,16 @@ export type AddSegmentToCollectionResponses = {
 
 export type AddSegmentToCollectionResponse = AddSegmentToCollectionResponses[keyof AddSegmentToCollectionResponses];
 
-export type RemoveSegmentFromCollectionData = {
-    body?: never;
-    path: {
-        /**
-         * Collection public ID
-         */
-        id: string;
-        /**
-         * Segment ID
-         */
-        segmentId: number;
-    };
-    query?: never;
-    url: '/v1/collections/{id}/segments/{segmentId}';
-};
-
-export type RemoveSegmentFromCollectionErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type RemoveSegmentFromCollectionError = RemoveSegmentFromCollectionErrors[keyof RemoveSegmentFromCollectionErrors];
-
-export type RemoveSegmentFromCollectionResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type RemoveSegmentFromCollectionResponse = RemoveSegmentFromCollectionResponses[keyof RemoveSegmentFromCollectionResponses];
-
-export type UpdateCollectionSegmentData = {
-    body: {
-        /**
-         * New position in the collection
-         */
-        position?: number;
-        /**
-         * Updated annotation
-         */
-        note?: string;
-    };
-    path: {
-        /**
-         * Collection public ID
-         */
-        id: string;
-        /**
-         * Segment ID
-         */
-        segmentId: number;
-    };
-    query?: never;
-    url: '/v1/collections/{id}/segments/{segmentId}';
-};
-
-export type UpdateCollectionSegmentErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type UpdateCollectionSegmentError = UpdateCollectionSegmentErrors[keyof UpdateCollectionSegmentErrors];
-
-export type UpdateCollectionSegmentResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type UpdateCollectionSegmentResponse = UpdateCollectionSegmentResponses[keyof UpdateCollectionSegmentResponses];
-
 export type SearchCollectionSegmentsData = {
-    body?: never;
+    body: SearchRequest;
     path: {
         /**
          * Collection public ID
          */
-        id: string;
+        collectionPublicId: string;
     };
-    query?: {
-        /**
-         * Opaque cursor token for pagination
-         */
-        cursor?: string;
-        /**
-         * Items per page
-         */
-        take?: number;
-    };
-    url: '/v1/collections/{id}/search';
+    query?: never;
+    url: '/v1/collections/{collectionPublicId}/search';
 };
 
 export type SearchCollectionSegmentsErrors = {
@@ -5319,7 +4633,7 @@ export type SearchCollectionSegmentsErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -5339,16 +4653,124 @@ export type SearchCollectionSegmentsResponses = {
 
 export type SearchCollectionSegmentsResponse = SearchCollectionSegmentsResponses[keyof SearchCollectionSegmentsResponses];
 
+export type RemoveSegmentFromCollectionData = {
+    body?: never;
+    path: {
+        /**
+         * Collection public ID
+         */
+        collectionPublicId: string;
+        /**
+         * Segment public ID
+         */
+        segmentPublicId: string;
+    };
+    query?: never;
+    url: '/v1/collections/{collectionPublicId}/segments/{segmentPublicId}';
+};
+
+export type RemoveSegmentFromCollectionErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type RemoveSegmentFromCollectionError = RemoveSegmentFromCollectionErrors[keyof RemoveSegmentFromCollectionErrors];
+
+export type RemoveSegmentFromCollectionResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type RemoveSegmentFromCollectionResponse = RemoveSegmentFromCollectionResponses[keyof RemoveSegmentFromCollectionResponses];
+
+export type UpdateCollectionSegmentData = {
+    body: UpdateCollectionSegmentRequest;
+    path: {
+        /**
+         * Collection public ID
+         */
+        collectionPublicId: string;
+        /**
+         * Segment public ID
+         */
+        segmentPublicId: string;
+    };
+    query?: never;
+    url: '/v1/collections/{collectionPublicId}/segments/{segmentPublicId}';
+};
+
+export type UpdateCollectionSegmentErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UpdateCollectionSegmentError = UpdateCollectionSegmentErrors[keyof UpdateCollectionSegmentErrors];
+
+export type UpdateCollectionSegmentResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type UpdateCollectionSegmentResponse = UpdateCollectionSegmentResponses[keyof UpdateCollectionSegmentResponses];
+
 export type GetCollectionStatsData = {
     body?: never;
     path: {
         /**
          * Collection public ID
          */
-        id: string;
+        collectionPublicId: string;
     };
     query?: never;
-    url: '/v1/collections/{id}/stats';
+    url: '/v1/collections/{collectionPublicId}/stats';
 };
 
 export type GetCollectionStatsErrors = {
@@ -5369,7 +4791,7 @@ export type GetCollectionStatsErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -5388,544 +4810,6 @@ export type GetCollectionStatsResponses = {
 };
 
 export type GetCollectionStatsResponse = GetCollectionStatsResponses[keyof GetCollectionStatsResponses];
-
-export type GetAdminDashboardData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/dashboard';
-};
-
-export type GetAdminDashboardErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardError = GetAdminDashboardErrors[keyof GetAdminDashboardErrors];
-
-export type GetAdminDashboardResponses = {
-    /**
-     * OK
-     */
-    200: {
-        media: {
-            totalMedia: number;
-            totalEpisodes: number;
-            totalSegments: number;
-            totalCharacters: number;
-            totalSeiyuu: number;
-        };
-        users: {
-            totalUsers: number;
-            /**
-             * Users registered in the last 30 days
-             */
-            recentlyRegisteredCount: number;
-            /**
-             * Users active in the last 30 days
-             */
-            recentlyActiveCount: number;
-        };
-        activity: {
-            totalSearches: number;
-            totalExports: number;
-            totalPlays: number;
-            totalCollectionAdds: number;
-            /**
-             * Unique users who searched in the last 7 days
-             */
-            activeSearchers7d: number;
-            topQueries7d: Array<{
-                query: string;
-                count: number;
-            }>;
-            dailyActivity30d: Array<{
-                date: string;
-                count: number;
-            }>;
-        };
-        system: {
-            status: 'healthy' | 'degraded';
-            app: {
-                version: string;
-            };
-            elasticsearch: {
-                status: 'connected' | 'disconnected';
-                version?: string;
-                clusterName?: string;
-                clusterStatus?: string;
-                indexName?: string;
-                documentCount?: number;
-            };
-            database: {
-                status: 'connected' | 'disconnected';
-                version?: string;
-            };
-            queues: Array<{
-                queue: string;
-                stuckCount: number;
-                failedCount: number;
-            }>;
-        };
-    };
-};
-
-export type GetAdminDashboardResponse = GetAdminDashboardResponses[keyof GetAdminDashboardResponses];
-
-export type GetAdminDashboardOverviewData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Number of days for daily activity range (7, 30, or 90)
-         */
-        days?: string;
-    };
-    url: '/v1/admin/dashboard/overview';
-};
-
-export type GetAdminDashboardOverviewErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardOverviewError = GetAdminDashboardOverviewErrors[keyof GetAdminDashboardOverviewErrors];
-
-export type GetAdminDashboardOverviewResponses = {
-    /**
-     * OK
-     */
-    200: {
-        media: {
-            totalMedia: number;
-            totalEpisodes: number;
-            totalSegments: number;
-            totalCharacters: number;
-            totalSeiyuu: number;
-        };
-        users: {
-            totalUsers: number;
-            /**
-             * Users registered in the last 30 days
-             */
-            recentlyRegisteredCount: number;
-            /**
-             * Users active in the last 30 days
-             */
-            recentlyActiveCount: number;
-        };
-        activity: {
-            totalSearches: number;
-            totalExports: number;
-            totalPlays: number;
-            totalShares: number;
-            /**
-             * Unique users who searched in the last 7 days
-             */
-            activeSearchers7d: number;
-            dailyActivity: Array<{
-                date: string;
-                count: number;
-            }>;
-        };
-    };
-};
-
-export type GetAdminDashboardOverviewResponse = GetAdminDashboardOverviewResponses[keyof GetAdminDashboardOverviewResponses];
-
-export type GetAdminDashboardMediaData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/dashboard/media';
-};
-
-export type GetAdminDashboardMediaErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardMediaError = GetAdminDashboardMediaErrors[keyof GetAdminDashboardMediaErrors];
-
-export type GetAdminDashboardMediaResponses = {
-    /**
-     * OK
-     */
-    200: {
-        byCategory: Array<{
-            label: string;
-            count: number;
-        }>;
-        byFormat: Array<{
-            label: string;
-            count: number;
-        }>;
-        byStatus: Array<{
-            label: string;
-            count: number;
-        }>;
-        byGenre: Array<{
-            label: string;
-            count: number;
-        }>;
-        byStudio: Array<{
-            label: string;
-            count: number;
-        }>;
-        segmentsByContentRating: Array<{
-            label: string;
-            count: number;
-        }>;
-        segmentsByStatus: Array<{
-            label: string;
-            count: number;
-        }>;
-        topMediaByPlays: Array<{
-            mediaId: number;
-            mediaName: string;
-            count: number;
-        }>;
-        topMediaBySearches: Array<{
-            mediaId: number;
-            mediaName: string;
-            count: number;
-        }>;
-        topMediaByExports: Array<{
-            mediaId: number;
-            mediaName: string;
-            count: number;
-        }>;
-    };
-};
-
-export type GetAdminDashboardMediaResponse = GetAdminDashboardMediaResponses[keyof GetAdminDashboardMediaResponses];
-
-export type GetAdminDashboardActivityData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Number of days for activity range (7, 30, or 90)
-         */
-        days?: string;
-    };
-    url: '/v1/admin/dashboard/activity';
-};
-
-export type GetAdminDashboardActivityErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardActivityError = GetAdminDashboardActivityErrors[keyof GetAdminDashboardActivityErrors];
-
-export type GetAdminDashboardActivityResponses = {
-    /**
-     * OK
-     */
-    200: {
-        dailyActivityByType: Array<{
-            date: string;
-            search: number;
-            ankiExport: number;
-            segmentPlay: number;
-            share: number;
-        }>;
-        topSearches: Array<{
-            query: string;
-            count: number;
-        }>;
-        dailyExports: Array<{
-            date: string;
-            count: number;
-        }>;
-        topExportedMedia: Array<{
-            mediaId: number;
-            mediaName: string;
-            count: number;
-        }>;
-    };
-};
-
-export type GetAdminDashboardActivityResponse = GetAdminDashboardActivityResponses[keyof GetAdminDashboardActivityResponses];
-
-export type GetAdminDashboardCollectionsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/dashboard/collections';
-};
-
-export type GetAdminDashboardCollectionsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardCollectionsError = GetAdminDashboardCollectionsErrors[keyof GetAdminDashboardCollectionsErrors];
-
-export type GetAdminDashboardCollectionsResponses = {
-    /**
-     * OK
-     */
-    200: {
-        totalCollections: number;
-        byTypeAndVisibility: Array<{
-            type: string;
-            visibility: string;
-            count: number;
-        }>;
-        averageSize: number;
-        topCollections: Array<{
-            id: number;
-            name: string;
-            type: string;
-            visibility: string;
-            segmentCount: number;
-        }>;
-    };
-};
-
-export type GetAdminDashboardCollectionsResponse = GetAdminDashboardCollectionsResponses[keyof GetAdminDashboardCollectionsResponses];
-
-export type GetAdminDashboardApiKeysData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/dashboard/api-keys';
-};
-
-export type GetAdminDashboardApiKeysErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardApiKeysError = GetAdminDashboardApiKeysErrors[keyof GetAdminDashboardApiKeysErrors];
-
-export type GetAdminDashboardApiKeysResponses = {
-    /**
-     * OK
-     */
-    200: {
-        keys: Array<{
-            id: number;
-            name?: string;
-            hint?: string;
-            isActive: boolean;
-            username?: string;
-            email?: string;
-            requestCount: number;
-        }>;
-    };
-};
-
-export type GetAdminDashboardApiKeysResponse = GetAdminDashboardApiKeysResponses[keyof GetAdminDashboardApiKeysResponses];
-
-export type GetAdminDashboardSystemData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/dashboard/system';
-};
-
-export type GetAdminDashboardSystemErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminDashboardSystemError = GetAdminDashboardSystemErrors[keyof GetAdminDashboardSystemErrors];
-
-export type GetAdminDashboardSystemResponses = {
-    /**
-     * OK
-     */
-    200: {
-        status: 'healthy' | 'degraded';
-        app: {
-            version: string;
-        };
-        elasticsearch: {
-            status: 'connected' | 'disconnected';
-            version?: string;
-            clusterName?: string;
-            clusterStatus?: string;
-            indexName?: string;
-            documentCount?: number;
-            indexSizeBytes?: number;
-        };
-        database: {
-            status: 'connected' | 'disconnected';
-            version?: string;
-        };
-        queues: Array<{
-            queue: string;
-            stuckCount: number;
-            failedCount: number;
-        }>;
-    };
-};
-
-export type GetAdminDashboardSystemResponse = GetAdminDashboardSystemResponses[keyof GetAdminDashboardSystemResponses];
-
-export type GetAdminHealthData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/health';
-};
-
-export type GetAdminHealthErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminHealthError = GetAdminHealthErrors[keyof GetAdminHealthErrors];
-
-export type GetAdminHealthResponses = {
-    /**
-     * OK
-     */
-    200: {
-        /**
-         * Overall system status
-         */
-        status: 'healthy' | 'degraded';
-        app: {
-            /**
-             * API version from OpenAPI spec
-             */
-            version: string;
-        };
-        elasticsearch: {
-            status: 'connected' | 'disconnected';
-            version?: string;
-            clusterName?: string;
-            /**
-             * ES cluster health (green, yellow, red)
-             */
-            clusterStatus?: string;
-            indexName?: string;
-            documentCount?: number;
-        };
-        database: {
-            status: 'connected' | 'disconnected';
-            version?: string;
-        };
-    };
-};
-
-export type GetAdminHealthResponse = GetAdminHealthResponses[keyof GetAdminHealthResponses];
 
 export type TriggerReindexData = {
     body?: ReindexRequest;
@@ -5948,7 +4832,7 @@ export type TriggerReindexErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -5968,316 +4852,6 @@ export type TriggerReindexResponses = {
 
 export type TriggerReindexResponse = TriggerReindexResponses[keyof TriggerReindexResponses];
 
-export type ListAdminQueueStatsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/queues/stats';
-};
-
-export type ListAdminQueueStatsErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListAdminQueueStatsError = ListAdminQueueStatsErrors[keyof ListAdminQueueStatsErrors];
-
-export type ListAdminQueueStatsResponses = {
-    /**
-     * OK
-     */
-    200: Array<{
-        queue: string;
-        /**
-         * Number of jobs currently pending/active
-         */
-        stuckCount: number;
-        /**
-         * Number of failed jobs
-         */
-        failedCount: number;
-    }>;
-};
-
-export type ListAdminQueueStatsResponse = ListAdminQueueStatsResponses[keyof ListAdminQueueStatsResponses];
-
-export type GetAdminQueueData = {
-    body?: never;
-    path: {
-        /**
-         * The name of the queue
-         */
-        queueName: 'es-sync-create' | 'es-sync-update' | 'es-sync-delete';
-    };
-    query?: never;
-    url: '/v1/admin/queues/{queueName}';
-};
-
-export type GetAdminQueueErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminQueueError = GetAdminQueueErrors[keyof GetAdminQueueErrors];
-
-export type GetAdminQueueResponses = {
-    /**
-     * OK
-     */
-    200: {
-        queue: string;
-        stats: {
-            /**
-             * Jobs scheduled for future execution (`start_after > now()`)
-             */
-            deferred: number;
-            /**
-             * Jobs currently queued and waiting to be processed
-             */
-            queued: number;
-            /**
-             * Jobs currently being processed
-             */
-            active: number;
-            /**
-             * Total jobs currently stored in the queue table
-             */
-            total: number;
-        };
-        metadata: {
-            policy: string;
-            partition: boolean;
-            deadLetter?: string;
-            warningQueueSize?: number;
-            retryLimit?: number;
-            /**
-             * Initial retry delay in seconds
-             */
-            retryDelay?: number;
-            retryBackoff?: boolean;
-            retryDelayMax?: number;
-            expireInSeconds?: number;
-            retentionSeconds?: number;
-            deleteAfterSeconds?: number;
-            createdOn: string;
-            updatedOn: string;
-            singletonsActive: Array<string>;
-            table: string;
-        };
-    };
-};
-
-export type GetAdminQueueResponse = GetAdminQueueResponses[keyof GetAdminQueueResponses];
-
-export type ListAdminQueueFailedData = {
-    body?: never;
-    path: {
-        /**
-         * The name of the queue
-         */
-        queueName: 'es-sync-create' | 'es-sync-update' | 'es-sync-delete';
-    };
-    query?: never;
-    url: '/v1/admin/queues/{queueName}/failed';
-};
-
-export type ListAdminQueueFailedErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListAdminQueueFailedError = ListAdminQueueFailedErrors[keyof ListAdminQueueFailedErrors];
-
-export type ListAdminQueueFailedResponses = {
-    /**
-     * OK
-     */
-    200: Array<{
-        /**
-         * Job ID
-         */
-        id: string;
-        /**
-         * The segment ID that failed to sync
-         */
-        segmentId: number;
-        /**
-         * Error message from the last attempt
-         */
-        error: string;
-        /**
-         * When the job was created
-         */
-        createdOn: string;
-    }>;
-};
-
-export type ListAdminQueueFailedResponse = ListAdminQueueFailedResponses[keyof ListAdminQueueFailedResponses];
-
-export type RetryAdminQueueFailedData = {
-    body?: never;
-    path: {
-        /**
-         * The name of the queue
-         */
-        queueName: 'es-sync-create' | 'es-sync-update' | 'es-sync-delete';
-    };
-    query?: never;
-    url: '/v1/admin/queues/{queueName}/retry';
-};
-
-export type RetryAdminQueueFailedErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type RetryAdminQueueFailedError = RetryAdminQueueFailedErrors[keyof RetryAdminQueueFailedErrors];
-
-export type RetryAdminQueueFailedResponses = {
-    /**
-     * OK
-     */
-    200: {
-        success: boolean;
-        /**
-         * Number of jobs queued for retry
-         */
-        retriedCount: number;
-        message: string;
-    };
-};
-
-export type RetryAdminQueueFailedResponse = RetryAdminQueueFailedResponses[keyof RetryAdminQueueFailedResponses];
-
-export type PurgeAdminQueueFailedData = {
-    body?: never;
-    path: {
-        /**
-         * The name of the queue
-         */
-        queueName: 'es-sync-create' | 'es-sync-update' | 'es-sync-delete';
-    };
-    query?: never;
-    url: '/v1/admin/queues/{queueName}/purge';
-};
-
-export type PurgeAdminQueueFailedErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type PurgeAdminQueueFailedError = PurgeAdminQueueFailedErrors[keyof PurgeAdminQueueFailedErrors];
-
-export type PurgeAdminQueueFailedResponses = {
-    /**
-     * OK
-     */
-    200: {
-        success: boolean;
-        /**
-         * Number of failed jobs deleted
-         */
-        purgedCount: number;
-        message: string;
-    };
-};
-
-export type PurgeAdminQueueFailedResponse = PurgeAdminQueueFailedResponses[keyof PurgeAdminQueueFailedResponses];
-
 export type ListAdminReportsData = {
     body?: never;
     path?: never;
@@ -6291,18 +4865,18 @@ export type ListAdminReportsData = {
          */
         take?: number;
         /**
-         * Filter by report status. Accepts a single value or comma-separated list (e.g. "PENDING,ACCEPTED"). Valid values: PENDING, CONCERN, ACCEPTED, REJECTED, RESOLVED, IGNORED.
+         * Filter by report status. Accepts a single value or comma-separated list (e.g. "OPEN,PROCESSING"). Valid values: OPEN, PROCESSING, FIXED, DISMISSED.
          *
          */
         status?: string;
         /**
          * Filter by report source
          */
-        source?: 'USER' | 'AUTO';
+        source?: ReportSource;
         /**
          * Filter by target type
          */
-        'target.type'?: 'SEGMENT' | 'EPISODE' | 'MEDIA';
+        'target.type'?: ReportTargetType;
         /**
          * Filter by target media ID
          */
@@ -6319,6 +4893,10 @@ export type ListAdminReportsData = {
          * Filter by audit run ID
          */
         auditRunId?: number;
+        /**
+         * When true, only return reports whose target media has been deleted
+         */
+        orphaned?: boolean;
     };
     url: '/v1/admin/reports';
 };
@@ -6333,7 +4911,7 @@ export type ListAdminReportsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6374,7 +4952,7 @@ export type BatchUpdateAdminReportsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6389,15 +4967,138 @@ export type BatchUpdateAdminReportsResponses = {
     /**
      * OK
      */
-    200: {
-        /**
-         * Number of reports updated
-         */
-        updated: number;
-    };
+    200: AffectedCountResponse;
 };
 
 export type BatchUpdateAdminReportsResponse = BatchUpdateAdminReportsResponses[keyof BatchUpdateAdminReportsResponses];
+
+export type BulkDeleteAdminReportsData = {
+    body: BulkDeleteReportsRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/reports/bulk';
+};
+
+export type BulkDeleteAdminReportsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type BulkDeleteAdminReportsError = BulkDeleteAdminReportsErrors[keyof BulkDeleteAdminReportsErrors];
+
+export type BulkDeleteAdminReportsResponses = {
+    /**
+     * OK
+     */
+    200: AffectedCountResponse;
+};
+
+export type BulkDeleteAdminReportsResponse = BulkDeleteAdminReportsResponses[keyof BulkDeleteAdminReportsResponses];
+
+export type BulkUpdateAdminReportsData = {
+    body: BulkUpdateReportsRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/reports/bulk';
+};
+
+export type BulkUpdateAdminReportsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type BulkUpdateAdminReportsError = BulkUpdateAdminReportsErrors[keyof BulkUpdateAdminReportsErrors];
+
+export type BulkUpdateAdminReportsResponses = {
+    /**
+     * OK
+     */
+    200: AffectedCountResponse;
+};
+
+export type BulkUpdateAdminReportsResponse = BulkUpdateAdminReportsResponses[keyof BulkUpdateAdminReportsResponses];
+
+export type DeleteAdminReportData = {
+    body?: never;
+    path: {
+        /**
+         * Report ID
+         */
+        reportId: number;
+    };
+    query?: never;
+    url: '/v1/admin/reports/{reportId}';
+};
+
+export type DeleteAdminReportErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type DeleteAdminReportError = DeleteAdminReportErrors[keyof DeleteAdminReportErrors];
+
+export type DeleteAdminReportResponses = {
+    /**
+     * OK
+     */
+    200: AffectedCountResponse;
+};
+
+export type DeleteAdminReportResponse = DeleteAdminReportResponses[keyof DeleteAdminReportResponses];
 
 export type UpdateAdminReportData = {
     body: UpdateReportRequest;
@@ -6405,10 +5106,10 @@ export type UpdateAdminReportData = {
         /**
          * Report ID
          */
-        id: number;
+        reportId: number;
     };
     query?: never;
-    url: '/v1/admin/reports/{id}';
+    url: '/v1/admin/reports/{reportId}';
 };
 
 export type UpdateAdminReportErrors = {
@@ -6429,7 +5130,7 @@ export type UpdateAdminReportErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6466,7 +5167,7 @@ export type ListAdminMediaAuditsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6527,7 +5228,7 @@ export type UpdateAdminMediaAuditErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6578,7 +5279,7 @@ export type RunAdminMediaAuditErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6628,7 +5329,7 @@ export type ListAdminMediaAuditRunsErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6645,7 +5346,7 @@ export type ListAdminMediaAuditRunsResponses = {
      */
     200: {
         runs: Array<MediaAuditRun>;
-        pagination: OpaqueCursorPagination;
+        pagination: CursorPagination;
     };
 };
 
@@ -6657,10 +5358,10 @@ export type GetAdminMediaAuditRunData = {
         /**
          * Run ID
          */
-        id: number;
+        auditRunId: number;
     };
     query?: never;
-    url: '/v1/admin/media/audits/runs/{id}';
+    url: '/v1/admin/media/audits/runs/{auditRunId}';
 };
 
 export type GetAdminMediaAuditRunErrors = {
@@ -6677,7 +5378,7 @@ export type GetAdminMediaAuditRunErrors = {
      */
     404: Error404;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6709,7 +5410,7 @@ export type GetAnnouncementData = {
 
 export type GetAnnouncementErrors = {
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6724,11 +5425,7 @@ export type GetAnnouncementResponses = {
     /**
      * OK
      */
-    200: {
-        message: string;
-        type: 'info' | 'warning' | 'maintenance';
-        active: boolean;
-    };
+    200: Announcement;
     /**
      * No announcement set
      */
@@ -6738,11 +5435,7 @@ export type GetAnnouncementResponses = {
 export type GetAnnouncementResponse = GetAnnouncementResponses[keyof GetAnnouncementResponses];
 
 export type UpdateAnnouncementData = {
-    body: {
-        message: string;
-        type: 'info' | 'warning' | 'maintenance';
-        active: boolean;
-    };
+    body: Announcement;
     path?: never;
     query?: never;
     url: '/v1/admin/announcement';
@@ -6762,7 +5455,7 @@ export type UpdateAnnouncementErrors = {
      */
     403: Error403;
     /**
-     * Too Many Requests
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
     /**
@@ -6777,11 +5470,7 @@ export type UpdateAnnouncementResponses = {
     /**
      * OK
      */
-    200: {
-        message: string;
-        type: 'info' | 'warning' | 'maintenance';
-        active: boolean;
-    };
+    200: Announcement;
 };
 
 export type UpdateAnnouncementResponse = UpdateAnnouncementResponses[keyof UpdateAnnouncementResponses];

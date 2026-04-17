@@ -56,3 +56,39 @@ function patchCursor(options: Record<string, any>, cursor: string): Record<strin
   }
   return { ...options, body: { cursor } };
 }
+
+/**
+ * Async generator for paginating with flattened parameters.
+ * Unlike `paginate()`, this merges the cursor directly into the flat params
+ * object, then passes the result to `fn` which repacks into the SDK call format.
+ *
+ * Used by the `client.search.paginate()` built-in pagination.
+ */
+export async function* flatPaginate<TData, TItem>(
+  params: Record<string, any>,
+  fn: (flatParams: Record<string, any>) => Promise<{ data: TData } | { error: unknown }>,
+  extract: (data: TData) => { items: TItem[]; pagination: PaginationMeta },
+): AsyncGenerator<TItem, void, unknown> {
+  let cursor: string | null = null;
+  let first = true;
+
+  while (true) {
+    const flat = first ? params : { ...params, cursor: cursor! };
+    first = false;
+
+    const result = await fn(flat);
+
+    if ('error' in result && result.error !== undefined) {
+      throw result.error;
+    }
+
+    const { items, pagination } = extract((result as { data: TData }).data);
+
+    for (const item of items) {
+      yield item;
+    }
+
+    if (!pagination.hasMore || pagination.cursor === null) break;
+    cursor = pagination.cursor;
+  }
+}

@@ -3,90 +3,147 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, getStatsOverview, getCoveredWords, listMedia, getSegmentByUuid, getSegmentContext, listSeries, getSeries, getMedia, listEpisodes, getEpisode, getSegment, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
+import { flatPaginate } from './paginate';
 
-type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);
+
 
 export interface NadeshikoConfig {
-  /**
-   * API key for Bearer token authentication.
-   * Public SDK only supports API key authentication.
-   */
-  apiKey?: ApiKeyProvider;
+  /** API key for Nadeshiko API authentication. */
+  apiKey: string;
   /** Base URL of the Nadeshiko API. Accepts `'LOCAL'`, `'DEVELOPMENT'`, `'PRODUCTION'`, or a custom URL string. */
   baseURL?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
   /** @deprecated Use `baseURL` instead */
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
   /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
   retryOptions?: RetryOptions;
+  /** Default headers sent with every request (e.g. User-Agent, tracing headers). */
+  headers?: Record<string, string>;
 }
 
 const environments = {
   LOCAL: 'http://localhost:5000/api',
   DEVELOPMENT: 'https://api-dev.nadeshiko.co',
   PRODUCTION: 'https://api.nadeshiko.co',
-  PROXY: '',
 } as const;
 
 export type NadeshikoClient = {
     client: Client;
     search: {
-      (options: Options<Types.SearchData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchResponse; response: Response; request: Request } | { error: Types.SearchErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchData, boolean>): Promise<{ data: Types.SearchResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchResponse; response: Response; request: Request } | { error: Types.SearchErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.SearchData['body']>): Promise<Types.SearchResponse>;
+      paginate: (params?: NonNullable<Types.SearchData['body']>) => AsyncGenerator<Types.SearchResponse['segments'][number], void, unknown>;
     };
     getSearchStats: {
-      (options: Options<Types.GetSearchStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSearchStatsResponse; response: Response; request: Request } | { error: Types.GetSearchStatsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSearchStatsData, boolean>): Promise<{ data: Types.GetSearchStatsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.GetSearchStatsData['body']> & { throwOnError: false }): Promise<{ data: Types.GetSearchStatsResponse; response: Response; request: Request } | { error: Types.GetSearchStatsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetSearchStatsData['body']>): Promise<Types.GetSearchStatsResponse>;
     };
     searchWords: {
-      (options: Options<Types.SearchWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request } | { error: Types.SearchWordsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchWordsData, boolean>): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchWordsData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request } | { error: Types.SearchWordsErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchWordsData['body']>): Promise<Types.SearchWordsResponse>;
+    };
+    searchMedia: {
+      (params: NonNullable<Types.SearchMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchMediaResponse; response: Response; request: Request } | { error: Types.SearchMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchMediaData['body']>): Promise<Types.SearchMediaResponse>;
     };
     getStatsOverview: {
-      (options: Options<Types.GetStatsOverviewData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request } | { error: Types.GetStatsOverviewErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetStatsOverviewData, boolean>): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request }>;
-    };
-    getCoveredWords: {
-      (options: Options<Types.GetCoveredWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCoveredWordsData, boolean>): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request } | { error: Types.GetStatsOverviewErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetStatsOverviewResponse>;
     };
     listMedia: {
-      (options: Options<Types.ListMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request } | { error: Types.ListMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListMediaData, boolean>): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request }>;
-    };
-    getSegmentByUuid: {
-      (options: Options<Types.GetSegmentByUuidData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentByUuidResponse; response: Response; request: Request } | { error: Types.GetSegmentByUuidErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentByUuidData, boolean>): Promise<{ data: Types.GetSegmentByUuidResponse; response: Response; request: Request }>;
-    };
-    getSegmentContext: {
-      (options: Options<Types.GetSegmentContextData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request } | { error: Types.GetSegmentContextErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentContextData, boolean>): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request }>;
-    };
-    listSeries: {
-      (options: Options<Types.ListSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListSeriesResponse; response: Response; request: Request } | { error: Types.ListSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListSeriesData, boolean>): Promise<{ data: Types.ListSeriesResponse; response: Response; request: Request }>;
-    };
-    getSeries: {
-      (options: Options<Types.GetSeriesData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request } | { error: Types.GetSeriesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSeriesData, boolean>): Promise<{ data: Types.GetSeriesResponse; response: Response; request: Request }>;
-    };
-    getMedia: {
-      (options: Options<Types.GetMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetMediaData, boolean>): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request }>;
-    };
-    listEpisodes: {
-      (options: Options<Types.ListEpisodesData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListEpisodesResponse; response: Response; request: Request } | { error: Types.ListEpisodesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListEpisodesData, boolean>): Promise<{ data: Types.ListEpisodesResponse; response: Response; request: Request }>;
-    };
-    getEpisode: {
-      (options: Options<Types.GetEpisodeData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request } | { error: Types.GetEpisodeErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetEpisodeData, boolean>): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.ListMediaData['query']> & { throwOnError: false }): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request } | { error: Types.ListMediaErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListMediaData['query']>): Promise<Types.ListMediaResponse>;
+      paginate: (params?: NonNullable<Types.ListMediaData['query']>) => AsyncGenerator<Types.ListMediaResponse['media'][number], void, unknown>;
     };
     getSegment: {
-      (options: Options<Types.GetSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request } | { error: Types.GetSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentData, boolean>): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.GetSegmentResponse>;
+      (params: Types.GetSegmentData['path'] & { throwOnError: false }): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request } | { error: Types.GetSegmentErrors; response: Response; request: Request }>;
+      (params: Types.GetSegmentData['path']): Promise<Types.GetSegmentResponse>;
+    };
+    getSegmentContext: {
+      (id: string): Promise<Types.GetSegmentContextResponse>;
+      (params: Types.GetSegmentContextData['path'] & NonNullable<Types.GetSegmentContextData['query']> & { throwOnError: false }): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request } | { error: Types.GetSegmentContextErrors; response: Response; request: Request }>;
+      (params: Types.GetSegmentContextData['path'] & NonNullable<Types.GetSegmentContextData['query']>): Promise<Types.GetSegmentContextResponse>;
+    };
+    getMedia: {
+      (id: string): Promise<Types.GetMediaResponse>;
+      (params: Types.GetMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
+      (params: Types.GetMediaData['path']): Promise<Types.GetMediaResponse>;
+    };
+    listEpisodes: {
+      (id: string): Promise<Types.ListEpisodesResponse>;
+      (params: Types.ListEpisodesData['path'] & NonNullable<Types.ListEpisodesData['query']> & { throwOnError: false }): Promise<{ data: Types.ListEpisodesResponse; response: Response; request: Request } | { error: Types.ListEpisodesErrors; response: Response; request: Request }>;
+      (params: Types.ListEpisodesData['path'] & NonNullable<Types.ListEpisodesData['query']>): Promise<Types.ListEpisodesResponse>;
+      paginate: (params?: Types.ListEpisodesData['path'] & NonNullable<Types.ListEpisodesData['query']>) => AsyncGenerator<Types.ListEpisodesResponse['episodes'][number], void, unknown>;
+    };
+    getEpisode: {
+      (params: Types.GetEpisodeData['path'] & { throwOnError: false }): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request } | { error: Types.GetEpisodeErrors; response: Response; request: Request }>;
+      (params: Types.GetEpisodeData['path']): Promise<Types.GetEpisodeResponse>;
+    };
+    getMe: {
+      (params: { throwOnError: false }): Promise<{ data: Types.GetMeResponse; response: Response; request: Request } | { error: Types.GetMeErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetMeResponse>;
+    };
+    listExcludedMedia: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request } | { error: Types.ListExcludedMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListExcludedMediaResponse>;
+    };
+    addExcludedMedia: {
+      (params: NonNullable<Types.AddExcludedMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.AddExcludedMediaResponse; response: Response; request: Request } | { error: Types.AddExcludedMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.AddExcludedMediaData['body']>): Promise<Types.AddExcludedMediaResponse>;
+    };
+    removeExcludedMedia: {
+      (id: string): Promise<Types.RemoveExcludedMediaResponse>;
+      (params: Types.RemoveExcludedMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request } | { error: Types.RemoveExcludedMediaErrors; response: Response; request: Request }>;
+      (params: Types.RemoveExcludedMediaData['path']): Promise<Types.RemoveExcludedMediaResponse>;
+    };
+    listUserActivity: {
+      (params: NonNullable<Types.ListUserActivityData['query']> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListUserActivityData['query']>): Promise<Types.ListUserActivityResponse>;
+      paginate: (params?: NonNullable<Types.ListUserActivityData['query']>) => AsyncGenerator<Types.ListUserActivityResponse['activities'][number], void, unknown>;
+    };
+    getUserActivityHeatmap: {
+      (params: NonNullable<Types.GetUserActivityHeatmapData['query']> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request } | { error: Types.GetUserActivityHeatmapErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetUserActivityHeatmapData['query']>): Promise<Types.GetUserActivityHeatmapResponse>;
+    };
+    getUserActivityStats: {
+      (params: NonNullable<Types.GetUserActivityStatsData['query']> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request } | { error: Types.GetUserActivityStatsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetUserActivityStatsData['query']>): Promise<Types.GetUserActivityStatsResponse>;
+    };
+    listCollections: {
+      (params: NonNullable<Types.ListCollectionsData['query']> & { throwOnError: false }): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request } | { error: Types.ListCollectionsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListCollectionsData['query']>): Promise<Types.ListCollectionsResponse>;
+      paginate: (params?: NonNullable<Types.ListCollectionsData['query']>) => AsyncGenerator<Types.ListCollectionsResponse['collections'][number], void, unknown>;
+    };
+    createCollection: {
+      (params: NonNullable<Types.CreateCollectionData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request } | { error: Types.CreateCollectionErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateCollectionData['body']>): Promise<Types.CreateCollectionResponse>;
+    };
+    getCollection: {
+      (id: string): Promise<Types.GetCollectionResponse>;
+      (params: Types.GetCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request } | { error: Types.GetCollectionErrors; response: Response; request: Request }>;
+      (params: Types.GetCollectionData['path']): Promise<Types.GetCollectionResponse>;
+    };
+    deleteCollection: {
+      (id: string): Promise<Types.DeleteCollectionResponse>;
+      (params: Types.DeleteCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request } | { error: Types.DeleteCollectionErrors; response: Response; request: Request }>;
+      (params: Types.DeleteCollectionData['path']): Promise<Types.DeleteCollectionResponse>;
+    };
+    addSegmentToCollection: {
+      (params: Types.AddSegmentToCollectionData['path'] & NonNullable<Types.AddSegmentToCollectionData['body']> & { throwOnError: false }): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request } | { error: Types.AddSegmentToCollectionErrors; response: Response; request: Request }>;
+      (params: Types.AddSegmentToCollectionData['path'] & NonNullable<Types.AddSegmentToCollectionData['body']>): Promise<Types.AddSegmentToCollectionResponse>;
+    };
+    searchCollectionSegments: {
+      (id: string): Promise<Types.SearchCollectionSegmentsResponse>;
+      (params: Types.SearchCollectionSegmentsData['path'] & NonNullable<Types.SearchCollectionSegmentsData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request } | { error: Types.SearchCollectionSegmentsErrors; response: Response; request: Request }>;
+      (params: Types.SearchCollectionSegmentsData['path'] & NonNullable<Types.SearchCollectionSegmentsData['body']>): Promise<Types.SearchCollectionSegmentsResponse>;
+      paginate: (params?: Types.SearchCollectionSegmentsData['path'] & NonNullable<Types.SearchCollectionSegmentsData['body']>) => AsyncGenerator<Types.SearchCollectionSegmentsResponse['segments'][number], void, unknown>;
+    };
+    removeSegmentFromCollection: {
+      (params: Types.RemoveSegmentFromCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request } | { error: Types.RemoveSegmentFromCollectionErrors; response: Response; request: Request }>;
+      (params: Types.RemoveSegmentFromCollectionData['path']): Promise<Types.RemoveSegmentFromCollectionResponse>;
     };
   };
 
@@ -100,43 +157,283 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
         ? environments[rawBaseUrl as keyof typeof environments]
         : rawBaseUrl);
 
-  const getApiKey = async (): Promise<string | undefined> => {
-    if (typeof config.apiKey === 'function') {
-      return await config.apiKey();
-    }
-    return config.apiKey;
-  };
 
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
+    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.1.0', ...config.headers },
     fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
-    auth: () => getApiKey(),
+    auth: () => config.apiKey,
   }));
 
   clientInstance.interceptors.error.use((error) => {
     if (error && typeof error === 'object' && 'code' in error && typeof (error as any).code === 'string') {
       return new NadeshikoError(error as NadeshikoProblemDetails);
     }
+    if (error && typeof error === 'object' && 'status' in error && typeof (error as any).status === 'number') {
+      return new NadeshikoError({
+        code: 'UNKNOWN_ERROR' as any,
+        title: 'Unexpected error',
+        detail: (error as any).message ?? (error as any).statusText ?? `HTTP ${(error as any).status}`,
+        status: (error as any).status,
+      });
+    }
     return error;
   });
 
+  const _search = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = search({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _search.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return search({ body: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.segments, pagination: data.pagination }),
+  );
+
+  const _getSearchStats = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = getSearchStats({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _searchWords = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = searchWords({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _searchMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = searchMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getStatsOverview = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getStatsOverview({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listMedia = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listMedia({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listMedia.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listMedia({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.media, pagination: data.pagination }),
+  );
+
+  const _getSegment = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getSegment({ throwOnError: true, path: { segmentPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, segmentPublicId } = params ?? {};
+    const p = getSegment({ path: { segmentPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getSegmentContext = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getSegmentContext({ throwOnError: true, path: { segmentPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, segmentPublicId, ...query } = params ?? {};
+    const p = getSegmentContext({ path: { segmentPublicId }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = getMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listEpisodes = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return listEpisodes({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId, ...query } = params ?? {};
+    const p = listEpisodes({ path: { mediaPublicId }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listEpisodes.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      const { mediaPublicId, ...q } = flat;
+      return listEpisodes({ path: { mediaPublicId }, query: q, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.episodes, pagination: data.pagination }),
+  );
+
+  const _getEpisode = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber } = params ?? {};
+    const p = getEpisode({ path: { mediaPublicId, episodeNumber }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getMe = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getMe({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listExcludedMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listExcludedMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _addExcludedMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = addExcludedMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _removeExcludedMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return removeExcludedMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = removeExcludedMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listUserActivity = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listUserActivity({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listUserActivity.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listUserActivity({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.activities, pagination: data.pagination }),
+  );
+
+  const _getUserActivityHeatmap = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = getUserActivityHeatmap({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getUserActivityStats = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = getUserActivityStats({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listCollections = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listCollections({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listCollections.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listCollections({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.collections, pagination: data.pagination }),
+  );
+
+  const _createCollection = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createCollection({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getCollection = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getCollection({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId } = params ?? {};
+    const p = getCollection({ path: { collectionPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteCollection = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return deleteCollection({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId } = params ?? {};
+    const p = deleteCollection({ path: { collectionPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _addSegmentToCollection = (params?: any) => {
+    const { throwOnError: tOE, collectionPublicId, ...body } = params ?? {};
+    const p = addSegmentToCollection({ path: { collectionPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _searchCollectionSegments = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return searchCollectionSegments({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId, ...body } = params ?? {};
+    const p = searchCollectionSegments({ path: { collectionPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _searchCollectionSegments.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      const { collectionPublicId, ...body } = flat;
+      return searchCollectionSegments({ path: { collectionPublicId }, body, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.segments, pagination: data.pagination }),
+  );
+
+  const _removeSegmentFromCollection = (params?: any) => {
+    const { throwOnError: tOE, collectionPublicId, segmentPublicId } = params ?? {};
+    const p = removeSegmentFromCollection({ path: { collectionPublicId, segmentPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   return {
     client: clientInstance,
-    search: (options?: any) => search({ throwOnError: true, ...options, client: clientInstance }),
-    getSearchStats: (options?: any) => getSearchStats({ throwOnError: true, ...options, client: clientInstance }),
-    searchWords: (options?: any) => searchWords({ throwOnError: true, ...options, client: clientInstance }),
-    getStatsOverview: (options?: any) => getStatsOverview({ throwOnError: true, ...options, client: clientInstance }),
-    getCoveredWords: (options?: any) => getCoveredWords({ throwOnError: true, ...options, client: clientInstance }),
-    listMedia: (options?: any) => listMedia({ throwOnError: true, ...options, client: clientInstance }),
-    getSegmentByUuid: (options?: any) => getSegmentByUuid({ throwOnError: true, ...options, client: clientInstance }),
-    getSegmentContext: (options?: any) => getSegmentContext({ throwOnError: true, ...options, client: clientInstance }),
-    listSeries: (options?: any) => listSeries({ throwOnError: true, ...options, client: clientInstance }),
-    getSeries: (options?: any) => getSeries({ throwOnError: true, ...options, client: clientInstance }),
-    getMedia: (options?: any) => getMedia({ throwOnError: true, ...options, client: clientInstance }),
-    listEpisodes: (options?: any) => listEpisodes({ throwOnError: true, ...options, client: clientInstance }),
-    getEpisode: (options?: any) => getEpisode({ throwOnError: true, ...options, client: clientInstance }),
-    getSegment: (options?: any) => getSegment({ throwOnError: true, ...options, client: clientInstance }),
+    search: _search,
+    getSearchStats: _getSearchStats,
+    searchWords: _searchWords,
+    searchMedia: _searchMedia,
+    getStatsOverview: _getStatsOverview,
+    listMedia: _listMedia,
+    getSegment: _getSegment,
+    getSegmentContext: _getSegmentContext,
+    getMedia: _getMedia,
+    listEpisodes: _listEpisodes,
+    getEpisode: _getEpisode,
+    getMe: _getMe,
+    listExcludedMedia: _listExcludedMedia,
+    addExcludedMedia: _addExcludedMedia,
+    removeExcludedMedia: _removeExcludedMedia,
+    listUserActivity: _listUserActivity,
+    getUserActivityHeatmap: _getUserActivityHeatmap,
+    getUserActivityStats: _getUserActivityStats,
+    listCollections: _listCollections,
+    createCollection: _createCollection,
+    getCollection: _getCollection,
+    deleteCollection: _deleteCollection,
+    addSegmentToCollection: _addSegmentToCollection,
+    searchCollectionSegments: _searchCollectionSegments,
+    removeSegmentFromCollection: _removeSegmentFromCollection,
   } as NadeshikoClient;
 }
 

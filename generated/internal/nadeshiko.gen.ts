@@ -7,6 +7,7 @@ import type * as Types from './types.gen';
 import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, updateCollection, updateCollectionSegment, getCollectionStats, triggerReindex, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
+import { flatPaginate } from './paginate';
 
 type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);
 
@@ -28,6 +29,8 @@ export interface NadeshikoConfig {
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
   /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
   retryOptions?: RetryOptions;
+  /** Default headers sent with every request (e.g. User-Agent, tracing headers). */
+  headers?: Record<string, string>;
 }
 
 const environments = {
@@ -40,268 +43,301 @@ const environments = {
 export type NadeshikoClient = {
     client: Client;
     search: {
-      (options: Options<Types.SearchData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchResponse; response: Response; request: Request } | { error: Types.SearchErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchData, boolean>): Promise<{ data: Types.SearchResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchResponse; response: Response; request: Request } | { error: Types.SearchErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.SearchData['body']>): Promise<Types.SearchResponse>;
+      paginate: (params?: NonNullable<Types.SearchData['body']>) => AsyncGenerator<Types.SearchResponse['segments'][number], void, unknown>;
     };
     getSearchStats: {
-      (options: Options<Types.GetSearchStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSearchStatsResponse; response: Response; request: Request } | { error: Types.GetSearchStatsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSearchStatsData, boolean>): Promise<{ data: Types.GetSearchStatsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.GetSearchStatsData['body']> & { throwOnError: false }): Promise<{ data: Types.GetSearchStatsResponse; response: Response; request: Request } | { error: Types.GetSearchStatsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetSearchStatsData['body']>): Promise<Types.GetSearchStatsResponse>;
     };
     searchWords: {
-      (options: Options<Types.SearchWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request } | { error: Types.SearchWordsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchWordsData, boolean>): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchWordsData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchWordsResponse; response: Response; request: Request } | { error: Types.SearchWordsErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchWordsData['body']>): Promise<Types.SearchWordsResponse>;
     };
     searchMedia: {
-      (options: Options<Types.SearchMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchMediaResponse; response: Response; request: Request } | { error: Types.SearchMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchMediaData, boolean>): Promise<{ data: Types.SearchMediaResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchMediaResponse; response: Response; request: Request } | { error: Types.SearchMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.SearchMediaData['body']>): Promise<Types.SearchMediaResponse>;
     };
     getStatsOverview: {
-      (options: Options<Types.GetStatsOverviewData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request } | { error: Types.GetStatsOverviewErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetStatsOverviewData, boolean>): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.GetStatsOverviewResponse; response: Response; request: Request } | { error: Types.GetStatsOverviewErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetStatsOverviewResponse>;
     };
     listMedia: {
-      (options: Options<Types.ListMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request } | { error: Types.ListMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListMediaData, boolean>): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.ListMediaData['query']> & { throwOnError: false }): Promise<{ data: Types.ListMediaResponse; response: Response; request: Request } | { error: Types.ListMediaErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListMediaData['query']>): Promise<Types.ListMediaResponse>;
+      paginate: (params?: NonNullable<Types.ListMediaData['query']>) => AsyncGenerator<Types.ListMediaResponse['media'][number], void, unknown>;
     };
     getSegment: {
-      (options: Options<Types.GetSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request } | { error: Types.GetSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentData, boolean>): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.GetSegmentResponse>;
+      (params: Types.GetSegmentData['path'] & { throwOnError: false }): Promise<{ data: Types.GetSegmentResponse; response: Response; request: Request } | { error: Types.GetSegmentErrors; response: Response; request: Request }>;
+      (params: Types.GetSegmentData['path']): Promise<Types.GetSegmentResponse>;
     };
     getSegmentContext: {
-      (options: Options<Types.GetSegmentContextData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request } | { error: Types.GetSegmentContextErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetSegmentContextData, boolean>): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.GetSegmentContextResponse>;
+      (params: Types.GetSegmentContextData['path'] & NonNullable<Types.GetSegmentContextData['query']> & { throwOnError: false }): Promise<{ data: Types.GetSegmentContextResponse; response: Response; request: Request } | { error: Types.GetSegmentContextErrors; response: Response; request: Request }>;
+      (params: Types.GetSegmentContextData['path'] & NonNullable<Types.GetSegmentContextData['query']>): Promise<Types.GetSegmentContextResponse>;
     };
     getMedia: {
-      (options: Options<Types.GetMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetMediaData, boolean>): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.GetMediaResponse>;
+      (params: Types.GetMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.GetMediaResponse; response: Response; request: Request } | { error: Types.GetMediaErrors; response: Response; request: Request }>;
+      (params: Types.GetMediaData['path']): Promise<Types.GetMediaResponse>;
     };
     listEpisodes: {
-      (options: Options<Types.ListEpisodesData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListEpisodesResponse; response: Response; request: Request } | { error: Types.ListEpisodesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListEpisodesData, boolean>): Promise<{ data: Types.ListEpisodesResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.ListEpisodesResponse>;
+      (params: Types.ListEpisodesData['path'] & NonNullable<Types.ListEpisodesData['query']> & { throwOnError: false }): Promise<{ data: Types.ListEpisodesResponse; response: Response; request: Request } | { error: Types.ListEpisodesErrors; response: Response; request: Request }>;
+      (params: Types.ListEpisodesData['path'] & NonNullable<Types.ListEpisodesData['query']>): Promise<Types.ListEpisodesResponse>;
+      paginate: (params?: Types.ListEpisodesData['path'] & NonNullable<Types.ListEpisodesData['query']>) => AsyncGenerator<Types.ListEpisodesResponse['episodes'][number], void, unknown>;
     };
     getEpisode: {
-      (options: Options<Types.GetEpisodeData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request } | { error: Types.GetEpisodeErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetEpisodeData, boolean>): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request }>;
+      (params: Types.GetEpisodeData['path'] & { throwOnError: false }): Promise<{ data: Types.GetEpisodeResponse; response: Response; request: Request } | { error: Types.GetEpisodeErrors; response: Response; request: Request }>;
+      (params: Types.GetEpisodeData['path']): Promise<Types.GetEpisodeResponse>;
     };
     getMe: {
-      (options: Options<Types.GetMeData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetMeResponse; response: Response; request: Request } | { error: Types.GetMeErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetMeData, boolean>): Promise<{ data: Types.GetMeResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.GetMeResponse; response: Response; request: Request } | { error: Types.GetMeErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetMeResponse>;
     };
     listExcludedMedia: {
-      (options: Options<Types.ListExcludedMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request } | { error: Types.ListExcludedMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListExcludedMediaData, boolean>): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request } | { error: Types.ListExcludedMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListExcludedMediaResponse>;
     };
     addExcludedMedia: {
-      (options: Options<Types.AddExcludedMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.AddExcludedMediaResponse; response: Response; request: Request } | { error: Types.AddExcludedMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.AddExcludedMediaData, boolean>): Promise<{ data: Types.AddExcludedMediaResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.AddExcludedMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.AddExcludedMediaResponse; response: Response; request: Request } | { error: Types.AddExcludedMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.AddExcludedMediaData['body']>): Promise<Types.AddExcludedMediaResponse>;
     };
     removeExcludedMedia: {
-      (options: Options<Types.RemoveExcludedMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request } | { error: Types.RemoveExcludedMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.RemoveExcludedMediaData, boolean>): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.RemoveExcludedMediaResponse>;
+      (params: Types.RemoveExcludedMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request } | { error: Types.RemoveExcludedMediaErrors; response: Response; request: Request }>;
+      (params: Types.RemoveExcludedMediaData['path']): Promise<Types.RemoveExcludedMediaResponse>;
     };
     listUserActivity: {
-      (options: Options<Types.ListUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListUserActivityData, boolean>): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.ListUserActivityData['query']> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListUserActivityData['query']>): Promise<Types.ListUserActivityResponse>;
+      paginate: (params?: NonNullable<Types.ListUserActivityData['query']>) => AsyncGenerator<Types.ListUserActivityResponse['activities'][number], void, unknown>;
     };
     getUserActivityHeatmap: {
-      (options: Options<Types.GetUserActivityHeatmapData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request } | { error: Types.GetUserActivityHeatmapErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetUserActivityHeatmapData, boolean>): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.GetUserActivityHeatmapData['query']> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityHeatmapResponse; response: Response; request: Request } | { error: Types.GetUserActivityHeatmapErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetUserActivityHeatmapData['query']>): Promise<Types.GetUserActivityHeatmapResponse>;
     };
     getUserActivityStats: {
-      (options: Options<Types.GetUserActivityStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request } | { error: Types.GetUserActivityStatsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetUserActivityStatsData, boolean>): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.GetUserActivityStatsData['query']> & { throwOnError: false }): Promise<{ data: Types.GetUserActivityStatsResponse; response: Response; request: Request } | { error: Types.GetUserActivityStatsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetUserActivityStatsData['query']>): Promise<Types.GetUserActivityStatsResponse>;
     };
     listCollections: {
-      (options: Options<Types.ListCollectionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request } | { error: Types.ListCollectionsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListCollectionsData, boolean>): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.ListCollectionsData['query']> & { throwOnError: false }): Promise<{ data: Types.ListCollectionsResponse; response: Response; request: Request } | { error: Types.ListCollectionsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListCollectionsData['query']>): Promise<Types.ListCollectionsResponse>;
+      paginate: (params?: NonNullable<Types.ListCollectionsData['query']>) => AsyncGenerator<Types.ListCollectionsResponse['collections'][number], void, unknown>;
     };
     createCollection: {
-      (options: Options<Types.CreateCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request } | { error: Types.CreateCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateCollectionData, boolean>): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateCollectionData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateCollectionResponse; response: Response; request: Request } | { error: Types.CreateCollectionErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateCollectionData['body']>): Promise<Types.CreateCollectionResponse>;
     };
     getCollection: {
-      (options: Options<Types.GetCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request } | { error: Types.GetCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCollectionData, boolean>): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.GetCollectionResponse>;
+      (params: Types.GetCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.GetCollectionResponse; response: Response; request: Request } | { error: Types.GetCollectionErrors; response: Response; request: Request }>;
+      (params: Types.GetCollectionData['path']): Promise<Types.GetCollectionResponse>;
     };
     deleteCollection: {
-      (options: Options<Types.DeleteCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request } | { error: Types.DeleteCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteCollectionData, boolean>): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.DeleteCollectionResponse>;
+      (params: Types.DeleteCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteCollectionResponse; response: Response; request: Request } | { error: Types.DeleteCollectionErrors; response: Response; request: Request }>;
+      (params: Types.DeleteCollectionData['path']): Promise<Types.DeleteCollectionResponse>;
     };
     addSegmentToCollection: {
-      (options: Options<Types.AddSegmentToCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request } | { error: Types.AddSegmentToCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.AddSegmentToCollectionData, boolean>): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request }>;
+      (params: Types.AddSegmentToCollectionData['path'] & NonNullable<Types.AddSegmentToCollectionData['body']> & { throwOnError: false }): Promise<{ data: Types.AddSegmentToCollectionResponse; response: Response; request: Request } | { error: Types.AddSegmentToCollectionErrors; response: Response; request: Request }>;
+      (params: Types.AddSegmentToCollectionData['path'] & NonNullable<Types.AddSegmentToCollectionData['body']>): Promise<Types.AddSegmentToCollectionResponse>;
     };
     searchCollectionSegments: {
-      (options: Options<Types.SearchCollectionSegmentsData, boolean> & { throwOnError: false }): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request } | { error: Types.SearchCollectionSegmentsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.SearchCollectionSegmentsData, boolean>): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.SearchCollectionSegmentsResponse>;
+      (params: Types.SearchCollectionSegmentsData['path'] & NonNullable<Types.SearchCollectionSegmentsData['body']> & { throwOnError: false }): Promise<{ data: Types.SearchCollectionSegmentsResponse; response: Response; request: Request } | { error: Types.SearchCollectionSegmentsErrors; response: Response; request: Request }>;
+      (params: Types.SearchCollectionSegmentsData['path'] & NonNullable<Types.SearchCollectionSegmentsData['body']>): Promise<Types.SearchCollectionSegmentsResponse>;
+      paginate: (params?: Types.SearchCollectionSegmentsData['path'] & NonNullable<Types.SearchCollectionSegmentsData['body']>) => AsyncGenerator<Types.SearchCollectionSegmentsResponse['segments'][number], void, unknown>;
     };
     removeSegmentFromCollection: {
-      (options: Options<Types.RemoveSegmentFromCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request } | { error: Types.RemoveSegmentFromCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.RemoveSegmentFromCollectionData, boolean>): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request }>;
+      (params: Types.RemoveSegmentFromCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request } | { error: Types.RemoveSegmentFromCollectionErrors; response: Response; request: Request }>;
+      (params: Types.RemoveSegmentFromCollectionData['path']): Promise<Types.RemoveSegmentFromCollectionResponse>;
     };
     getCoveredWords: {
-      (options: Options<Types.GetCoveredWordsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCoveredWordsData, boolean>): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.GetCoveredWordsData['query']> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.GetCoveredWordsData['query']>): Promise<Types.GetCoveredWordsResponse>;
+      paginate: (params?: NonNullable<Types.GetCoveredWordsData['query']>) => AsyncGenerator<Types.GetCoveredWordsResponse['words'][number], void, unknown>;
     };
     triggerCoveredWordsUpdate: {
-      (options: Options<Types.TriggerCoveredWordsUpdateData, boolean> & { throwOnError: false }): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request } | { error: Types.TriggerCoveredWordsUpdateErrors; response: Response; request: Request }>;
-      (options?: Options<Types.TriggerCoveredWordsUpdateData, boolean>): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.TriggerCoveredWordsUpdateData['body']> & { throwOnError: false }): Promise<{ data: Types.TriggerCoveredWordsUpdateResponse; response: Response; request: Request } | { error: Types.TriggerCoveredWordsUpdateErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.TriggerCoveredWordsUpdateData['body']>): Promise<Types.TriggerCoveredWordsUpdateResponse>;
     };
     createMedia: {
-      (options: Options<Types.CreateMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateMediaResponse; response: Response; request: Request } | { error: Types.CreateMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateMediaData, boolean>): Promise<{ data: Types.CreateMediaResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateMediaResponse; response: Response; request: Request } | { error: Types.CreateMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateMediaData['body']>): Promise<Types.CreateMediaResponse>;
     };
     updateSegment: {
-      (options: Options<Types.UpdateSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request } | { error: Types.UpdateSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateSegmentData, boolean>): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.UpdateSegmentResponse>;
+      (params: Types.UpdateSegmentData['path'] & NonNullable<Types.UpdateSegmentData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateSegmentResponse; response: Response; request: Request } | { error: Types.UpdateSegmentErrors; response: Response; request: Request }>;
+      (params: Types.UpdateSegmentData['path'] & NonNullable<Types.UpdateSegmentData['body']>): Promise<Types.UpdateSegmentResponse>;
     };
     listSegmentRevisions: {
-      (options: Options<Types.ListSegmentRevisionsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListSegmentRevisionsResponse; response: Response; request: Request } | { error: Types.ListSegmentRevisionsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListSegmentRevisionsData, boolean>): Promise<{ data: Types.ListSegmentRevisionsResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.ListSegmentRevisionsResponse>;
+      (params: Types.ListSegmentRevisionsData['path'] & { throwOnError: false }): Promise<{ data: Types.ListSegmentRevisionsResponse; response: Response; request: Request } | { error: Types.ListSegmentRevisionsErrors; response: Response; request: Request }>;
+      (params: Types.ListSegmentRevisionsData['path']): Promise<Types.ListSegmentRevisionsResponse>;
     };
     updateMedia: {
-      (options: Options<Types.UpdateMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateMediaResponse; response: Response; request: Request } | { error: Types.UpdateMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateMediaData, boolean>): Promise<{ data: Types.UpdateMediaResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.UpdateMediaResponse>;
+      (params: Types.UpdateMediaData['path'] & NonNullable<Types.UpdateMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateMediaResponse; response: Response; request: Request } | { error: Types.UpdateMediaErrors; response: Response; request: Request }>;
+      (params: Types.UpdateMediaData['path'] & NonNullable<Types.UpdateMediaData['body']>): Promise<Types.UpdateMediaResponse>;
     };
     deleteMedia: {
-      (options: Options<Types.DeleteMediaData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteMediaResponse; response: Response; request: Request } | { error: Types.DeleteMediaErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteMediaData, boolean>): Promise<{ data: Types.DeleteMediaResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.DeleteMediaResponse>;
+      (params: Types.DeleteMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteMediaResponse; response: Response; request: Request } | { error: Types.DeleteMediaErrors; response: Response; request: Request }>;
+      (params: Types.DeleteMediaData['path']): Promise<Types.DeleteMediaResponse>;
     };
     createEpisode: {
-      (options: Options<Types.CreateEpisodeData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateEpisodeResponse; response: Response; request: Request } | { error: Types.CreateEpisodeErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateEpisodeData, boolean>): Promise<{ data: Types.CreateEpisodeResponse; response: Response; request: Request }>;
+      (params: Types.CreateEpisodeData['path'] & NonNullable<Types.CreateEpisodeData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateEpisodeResponse; response: Response; request: Request } | { error: Types.CreateEpisodeErrors; response: Response; request: Request }>;
+      (params: Types.CreateEpisodeData['path'] & NonNullable<Types.CreateEpisodeData['body']>): Promise<Types.CreateEpisodeResponse>;
     };
     updateEpisode: {
-      (options: Options<Types.UpdateEpisodeData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateEpisodeResponse; response: Response; request: Request } | { error: Types.UpdateEpisodeErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateEpisodeData, boolean>): Promise<{ data: Types.UpdateEpisodeResponse; response: Response; request: Request }>;
+      (params: Types.UpdateEpisodeData['path'] & NonNullable<Types.UpdateEpisodeData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateEpisodeResponse; response: Response; request: Request } | { error: Types.UpdateEpisodeErrors; response: Response; request: Request }>;
+      (params: Types.UpdateEpisodeData['path'] & NonNullable<Types.UpdateEpisodeData['body']>): Promise<Types.UpdateEpisodeResponse>;
     };
     deleteEpisode: {
-      (options: Options<Types.DeleteEpisodeData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteEpisodeResponse; response: Response; request: Request } | { error: Types.DeleteEpisodeErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteEpisodeData, boolean>): Promise<{ data: Types.DeleteEpisodeResponse; response: Response; request: Request }>;
+      (params: Types.DeleteEpisodeData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteEpisodeResponse; response: Response; request: Request } | { error: Types.DeleteEpisodeErrors; response: Response; request: Request }>;
+      (params: Types.DeleteEpisodeData['path']): Promise<Types.DeleteEpisodeResponse>;
     };
     listSegments: {
-      (options: Options<Types.ListSegmentsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListSegmentsResponse; response: Response; request: Request } | { error: Types.ListSegmentsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListSegmentsData, boolean>): Promise<{ data: Types.ListSegmentsResponse; response: Response; request: Request }>;
+      (params: Types.ListSegmentsData['path'] & NonNullable<Types.ListSegmentsData['query']> & { throwOnError: false }): Promise<{ data: Types.ListSegmentsResponse; response: Response; request: Request } | { error: Types.ListSegmentsErrors; response: Response; request: Request }>;
+      (params: Types.ListSegmentsData['path'] & NonNullable<Types.ListSegmentsData['query']>): Promise<Types.ListSegmentsResponse>;
+      paginate: (params?: Types.ListSegmentsData['path'] & NonNullable<Types.ListSegmentsData['query']>) => AsyncGenerator<Types.ListSegmentsResponse['segments'][number], void, unknown>;
     };
     createSegment: {
-      (options: Options<Types.CreateSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateSegmentResponse; response: Response; request: Request } | { error: Types.CreateSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateSegmentData, boolean>): Promise<{ data: Types.CreateSegmentResponse; response: Response; request: Request }>;
+      (params: Types.CreateSegmentData['path'] & NonNullable<Types.CreateSegmentData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateSegmentResponse; response: Response; request: Request } | { error: Types.CreateSegmentErrors; response: Response; request: Request }>;
+      (params: Types.CreateSegmentData['path'] & NonNullable<Types.CreateSegmentData['body']>): Promise<Types.CreateSegmentResponse>;
     };
     createSegmentsBatch: {
-      (options: Options<Types.CreateSegmentsBatchData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateSegmentsBatchResponse; response: Response; request: Request } | { error: Types.CreateSegmentsBatchErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateSegmentsBatchData, boolean>): Promise<{ data: Types.CreateSegmentsBatchResponse; response: Response; request: Request }>;
+      (params: Types.CreateSegmentsBatchData['path'] & NonNullable<Types.CreateSegmentsBatchData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateSegmentsBatchResponse; response: Response; request: Request } | { error: Types.CreateSegmentsBatchErrors; response: Response; request: Request }>;
+      (params: Types.CreateSegmentsBatchData['path'] & NonNullable<Types.CreateSegmentsBatchData['body']>): Promise<Types.CreateSegmentsBatchResponse>;
     };
     createUserReport: {
-      (options: Options<Types.CreateUserReportData, boolean> & { throwOnError: false }): Promise<{ data: Types.CreateUserReportResponse; response: Response; request: Request } | { error: Types.CreateUserReportErrors; response: Response; request: Request }>;
-      (options?: Options<Types.CreateUserReportData, boolean>): Promise<{ data: Types.CreateUserReportResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateUserReportData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateUserReportResponse; response: Response; request: Request } | { error: Types.CreateUserReportErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateUserReportData['body']>): Promise<Types.CreateUserReportResponse>;
     };
     getUserPreferences: {
-      (options: Options<Types.GetUserPreferencesData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetUserPreferencesResponse; response: Response; request: Request } | { error: Types.GetUserPreferencesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetUserPreferencesData, boolean>): Promise<{ data: Types.GetUserPreferencesResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.GetUserPreferencesResponse; response: Response; request: Request } | { error: Types.GetUserPreferencesErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetUserPreferencesResponse>;
     };
     updateUserPreferences: {
-      (options: Options<Types.UpdateUserPreferencesData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateUserPreferencesResponse; response: Response; request: Request } | { error: Types.UpdateUserPreferencesErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateUserPreferencesData, boolean>): Promise<{ data: Types.UpdateUserPreferencesResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.UpdateUserPreferencesData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateUserPreferencesResponse; response: Response; request: Request } | { error: Types.UpdateUserPreferencesErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.UpdateUserPreferencesData['body']>): Promise<Types.UpdateUserPreferencesResponse>;
     };
     trackUserActivity: {
-      (options: Options<Types.TrackUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.TrackUserActivityResponse; response: Response; request: Request } | { error: Types.TrackUserActivityErrors; response: Response; request: Request }>;
-      (options?: Options<Types.TrackUserActivityData, boolean>): Promise<{ data: Types.TrackUserActivityResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.TrackUserActivityData['body']> & { throwOnError: false }): Promise<{ data: Types.TrackUserActivityResponse; response: Response; request: Request } | { error: Types.TrackUserActivityErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.TrackUserActivityData['body']>): Promise<Types.TrackUserActivityResponse>;
     };
     deleteUserActivity: {
-      (options: Options<Types.DeleteUserActivityData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteUserActivityData, boolean>): Promise<{ data: Types.DeleteUserActivityResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.DeleteUserActivityData['query']> & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.DeleteUserActivityData['query']>): Promise<Types.DeleteUserActivityResponse>;
     };
     deleteUserActivityByDate: {
-      (options: Options<Types.DeleteUserActivityByDateData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityByDateResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityByDateErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteUserActivityByDateData, boolean>): Promise<{ data: Types.DeleteUserActivityByDateResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.DeleteUserActivityByDateResponse>;
+      (params: Types.DeleteUserActivityByDateData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityByDateResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityByDateErrors; response: Response; request: Request }>;
+      (params: Types.DeleteUserActivityByDateData['path']): Promise<Types.DeleteUserActivityByDateResponse>;
     };
     deleteUserActivityById: {
-      (options: Options<Types.DeleteUserActivityByIdData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityByIdResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityByIdErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteUserActivityByIdData, boolean>): Promise<{ data: Types.DeleteUserActivityByIdResponse; response: Response; request: Request }>;
+      (id: number): Promise<Types.DeleteUserActivityByIdResponse>;
+      (params: Types.DeleteUserActivityByIdData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteUserActivityByIdResponse; response: Response; request: Request } | { error: Types.DeleteUserActivityByIdErrors; response: Response; request: Request }>;
+      (params: Types.DeleteUserActivityByIdData['path']): Promise<Types.DeleteUserActivityByIdResponse>;
     };
     exportUserData: {
-      (options: Options<Types.ExportUserDataData, boolean> & { throwOnError: false }): Promise<{ data: Types.ExportUserDataResponse; response: Response; request: Request } | { error: Types.ExportUserDataErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ExportUserDataData, boolean>): Promise<{ data: Types.ExportUserDataResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.ExportUserDataResponse; response: Response; request: Request } | { error: Types.ExportUserDataErrors; response: Response; request: Request }>;
+      (): Promise<Types.ExportUserDataResponse>;
     };
     listUserLabs: {
-      (options: Options<Types.ListUserLabsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListUserLabsResponse; response: Response; request: Request } | { error: Types.ListUserLabsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListUserLabsData, boolean>): Promise<{ data: Types.ListUserLabsResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.ListUserLabsResponse; response: Response; request: Request } | { error: Types.ListUserLabsErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListUserLabsResponse>;
     };
     enrollUserLab: {
-      (options: Options<Types.EnrollUserLabData, boolean> & { throwOnError: false }): Promise<{ data: Types.EnrollUserLabResponse; response: Response; request: Request } | { error: Types.EnrollUserLabErrors; response: Response; request: Request }>;
-      (options?: Options<Types.EnrollUserLabData, boolean>): Promise<{ data: Types.EnrollUserLabResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.EnrollUserLabResponse>;
+      (params: Types.EnrollUserLabData['path'] & { throwOnError: false }): Promise<{ data: Types.EnrollUserLabResponse; response: Response; request: Request } | { error: Types.EnrollUserLabErrors; response: Response; request: Request }>;
+      (params: Types.EnrollUserLabData['path']): Promise<Types.EnrollUserLabResponse>;
     };
     unenrollUserLab: {
-      (options: Options<Types.UnenrollUserLabData, boolean> & { throwOnError: false }): Promise<{ data: Types.UnenrollUserLabResponse; response: Response; request: Request } | { error: Types.UnenrollUserLabErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UnenrollUserLabData, boolean>): Promise<{ data: Types.UnenrollUserLabResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.UnenrollUserLabResponse>;
+      (params: Types.UnenrollUserLabData['path'] & { throwOnError: false }): Promise<{ data: Types.UnenrollUserLabResponse; response: Response; request: Request } | { error: Types.UnenrollUserLabErrors; response: Response; request: Request }>;
+      (params: Types.UnenrollUserLabData['path']): Promise<Types.UnenrollUserLabResponse>;
     };
     updateCollection: {
-      (options: Options<Types.UpdateCollectionData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateCollectionResponse; response: Response; request: Request } | { error: Types.UpdateCollectionErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateCollectionData, boolean>): Promise<{ data: Types.UpdateCollectionResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.UpdateCollectionResponse>;
+      (params: Types.UpdateCollectionData['path'] & NonNullable<Types.UpdateCollectionData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateCollectionResponse; response: Response; request: Request } | { error: Types.UpdateCollectionErrors; response: Response; request: Request }>;
+      (params: Types.UpdateCollectionData['path'] & NonNullable<Types.UpdateCollectionData['body']>): Promise<Types.UpdateCollectionResponse>;
     };
     updateCollectionSegment: {
-      (options: Options<Types.UpdateCollectionSegmentData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateCollectionSegmentResponse; response: Response; request: Request } | { error: Types.UpdateCollectionSegmentErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateCollectionSegmentData, boolean>): Promise<{ data: Types.UpdateCollectionSegmentResponse; response: Response; request: Request }>;
+      (params: Types.UpdateCollectionSegmentData['path'] & NonNullable<Types.UpdateCollectionSegmentData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateCollectionSegmentResponse; response: Response; request: Request } | { error: Types.UpdateCollectionSegmentErrors; response: Response; request: Request }>;
+      (params: Types.UpdateCollectionSegmentData['path'] & NonNullable<Types.UpdateCollectionSegmentData['body']>): Promise<Types.UpdateCollectionSegmentResponse>;
     };
     getCollectionStats: {
-      (options: Options<Types.GetCollectionStatsData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetCollectionStatsResponse; response: Response; request: Request } | { error: Types.GetCollectionStatsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetCollectionStatsData, boolean>): Promise<{ data: Types.GetCollectionStatsResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.GetCollectionStatsResponse>;
+      (params: Types.GetCollectionStatsData['path'] & { throwOnError: false }): Promise<{ data: Types.GetCollectionStatsResponse; response: Response; request: Request } | { error: Types.GetCollectionStatsErrors; response: Response; request: Request }>;
+      (params: Types.GetCollectionStatsData['path']): Promise<Types.GetCollectionStatsResponse>;
     };
     triggerReindex: {
-      (options: Options<Types.TriggerReindexData, boolean> & { throwOnError: false }): Promise<{ data: Types.TriggerReindexResponse; response: Response; request: Request } | { error: Types.TriggerReindexErrors; response: Response; request: Request }>;
-      (options?: Options<Types.TriggerReindexData, boolean>): Promise<{ data: Types.TriggerReindexResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.TriggerReindexData['body']> & { throwOnError: false }): Promise<{ data: Types.TriggerReindexResponse; response: Response; request: Request } | { error: Types.TriggerReindexErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.TriggerReindexData['body']>): Promise<Types.TriggerReindexResponse>;
     };
     listAdminReports: {
-      (options: Options<Types.ListAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request } | { error: Types.ListAdminReportsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListAdminReportsData, boolean>): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.ListAdminReportsData['query']> & { throwOnError: false }): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request } | { error: Types.ListAdminReportsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListAdminReportsData['query']>): Promise<Types.ListAdminReportsResponse>;
+      paginate: (params?: NonNullable<Types.ListAdminReportsData['query']>) => AsyncGenerator<Types.ListAdminReportsResponse['groups'][number], void, unknown>;
     };
     batchUpdateAdminReports: {
-      (options: Options<Types.BatchUpdateAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.BatchUpdateAdminReportsResponse; response: Response; request: Request } | { error: Types.BatchUpdateAdminReportsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.BatchUpdateAdminReportsData, boolean>): Promise<{ data: Types.BatchUpdateAdminReportsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.BatchUpdateAdminReportsData['body']> & { throwOnError: false }): Promise<{ data: Types.BatchUpdateAdminReportsResponse; response: Response; request: Request } | { error: Types.BatchUpdateAdminReportsErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.BatchUpdateAdminReportsData['body']>): Promise<Types.BatchUpdateAdminReportsResponse>;
     };
     bulkUpdateAdminReports: {
-      (options: Options<Types.BulkUpdateAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.BulkUpdateAdminReportsResponse; response: Response; request: Request } | { error: Types.BulkUpdateAdminReportsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.BulkUpdateAdminReportsData, boolean>): Promise<{ data: Types.BulkUpdateAdminReportsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.BulkUpdateAdminReportsData['body']> & { throwOnError: false }): Promise<{ data: Types.BulkUpdateAdminReportsResponse; response: Response; request: Request } | { error: Types.BulkUpdateAdminReportsErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.BulkUpdateAdminReportsData['body']>): Promise<Types.BulkUpdateAdminReportsResponse>;
     };
     bulkDeleteAdminReports: {
-      (options: Options<Types.BulkDeleteAdminReportsData, boolean> & { throwOnError: false }): Promise<{ data: Types.BulkDeleteAdminReportsResponse; response: Response; request: Request } | { error: Types.BulkDeleteAdminReportsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.BulkDeleteAdminReportsData, boolean>): Promise<{ data: Types.BulkDeleteAdminReportsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.BulkDeleteAdminReportsData['body']> & { throwOnError: false }): Promise<{ data: Types.BulkDeleteAdminReportsResponse; response: Response; request: Request } | { error: Types.BulkDeleteAdminReportsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.BulkDeleteAdminReportsData['body']>): Promise<Types.BulkDeleteAdminReportsResponse>;
     };
     updateAdminReport: {
-      (options: Options<Types.UpdateAdminReportData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminReportResponse; response: Response; request: Request } | { error: Types.UpdateAdminReportErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateAdminReportData, boolean>): Promise<{ data: Types.UpdateAdminReportResponse; response: Response; request: Request }>;
+      (id: number): Promise<Types.UpdateAdminReportResponse>;
+      (params: Types.UpdateAdminReportData['path'] & NonNullable<Types.UpdateAdminReportData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminReportResponse; response: Response; request: Request } | { error: Types.UpdateAdminReportErrors; response: Response; request: Request }>;
+      (params: Types.UpdateAdminReportData['path'] & NonNullable<Types.UpdateAdminReportData['body']>): Promise<Types.UpdateAdminReportResponse>;
     };
     deleteAdminReport: {
-      (options: Options<Types.DeleteAdminReportData, boolean> & { throwOnError: false }): Promise<{ data: Types.DeleteAdminReportResponse; response: Response; request: Request } | { error: Types.DeleteAdminReportErrors; response: Response; request: Request }>;
-      (options?: Options<Types.DeleteAdminReportData, boolean>): Promise<{ data: Types.DeleteAdminReportResponse; response: Response; request: Request }>;
+      (id: number): Promise<Types.DeleteAdminReportResponse>;
+      (params: Types.DeleteAdminReportData['path'] & { throwOnError: false }): Promise<{ data: Types.DeleteAdminReportResponse; response: Response; request: Request } | { error: Types.DeleteAdminReportErrors; response: Response; request: Request }>;
+      (params: Types.DeleteAdminReportData['path']): Promise<Types.DeleteAdminReportResponse>;
     };
     listAdminMediaAudits: {
-      (options: Options<Types.ListAdminMediaAuditsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminMediaAuditsResponse; response: Response; request: Request } | { error: Types.ListAdminMediaAuditsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListAdminMediaAuditsData, boolean>): Promise<{ data: Types.ListAdminMediaAuditsResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.ListAdminMediaAuditsResponse; response: Response; request: Request } | { error: Types.ListAdminMediaAuditsErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListAdminMediaAuditsResponse>;
     };
     updateAdminMediaAudit: {
-      (options: Options<Types.UpdateAdminMediaAuditData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminMediaAuditResponse; response: Response; request: Request } | { error: Types.UpdateAdminMediaAuditErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateAdminMediaAuditData, boolean>): Promise<{ data: Types.UpdateAdminMediaAuditResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.UpdateAdminMediaAuditResponse>;
+      (params: Types.UpdateAdminMediaAuditData['path'] & NonNullable<Types.UpdateAdminMediaAuditData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminMediaAuditResponse; response: Response; request: Request } | { error: Types.UpdateAdminMediaAuditErrors; response: Response; request: Request }>;
+      (params: Types.UpdateAdminMediaAuditData['path'] & NonNullable<Types.UpdateAdminMediaAuditData['body']>): Promise<Types.UpdateAdminMediaAuditResponse>;
     };
     runAdminMediaAudit: {
-      (options: Options<Types.RunAdminMediaAuditData, boolean> & { throwOnError: false }): Promise<{ data: Types.RunAdminMediaAuditResponse; response: Response; request: Request } | { error: Types.RunAdminMediaAuditErrors; response: Response; request: Request }>;
-      (options?: Options<Types.RunAdminMediaAuditData, boolean>): Promise<{ data: Types.RunAdminMediaAuditResponse; response: Response; request: Request }>;
+      (id: string): Promise<Types.RunAdminMediaAuditResponse>;
+      (params: Types.RunAdminMediaAuditData['path'] & NonNullable<Types.RunAdminMediaAuditData['query']> & { throwOnError: false }): Promise<{ data: Types.RunAdminMediaAuditResponse; response: Response; request: Request } | { error: Types.RunAdminMediaAuditErrors; response: Response; request: Request }>;
+      (params: Types.RunAdminMediaAuditData['path'] & NonNullable<Types.RunAdminMediaAuditData['query']>): Promise<Types.RunAdminMediaAuditResponse>;
     };
     listAdminMediaAuditRuns: {
-      (options: Options<Types.ListAdminMediaAuditRunsData, boolean> & { throwOnError: false }): Promise<{ data: Types.ListAdminMediaAuditRunsResponse; response: Response; request: Request } | { error: Types.ListAdminMediaAuditRunsErrors; response: Response; request: Request }>;
-      (options?: Options<Types.ListAdminMediaAuditRunsData, boolean>): Promise<{ data: Types.ListAdminMediaAuditRunsResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.ListAdminMediaAuditRunsData['query']> & { throwOnError: false }): Promise<{ data: Types.ListAdminMediaAuditRunsResponse; response: Response; request: Request } | { error: Types.ListAdminMediaAuditRunsErrors; response: Response; request: Request }>;
+      (params?: NonNullable<Types.ListAdminMediaAuditRunsData['query']>): Promise<Types.ListAdminMediaAuditRunsResponse>;
+      paginate: (params?: NonNullable<Types.ListAdminMediaAuditRunsData['query']>) => AsyncGenerator<Types.ListAdminMediaAuditRunsResponse['runs'][number], void, unknown>;
     };
     getAdminMediaAuditRun: {
-      (options: Options<Types.GetAdminMediaAuditRunData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAdminMediaAuditRunResponse; response: Response; request: Request } | { error: Types.GetAdminMediaAuditRunErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAdminMediaAuditRunData, boolean>): Promise<{ data: Types.GetAdminMediaAuditRunResponse; response: Response; request: Request }>;
+      (id: number): Promise<Types.GetAdminMediaAuditRunResponse>;
+      (params: Types.GetAdminMediaAuditRunData['path'] & { throwOnError: false }): Promise<{ data: Types.GetAdminMediaAuditRunResponse; response: Response; request: Request } | { error: Types.GetAdminMediaAuditRunErrors; response: Response; request: Request }>;
+      (params: Types.GetAdminMediaAuditRunData['path']): Promise<Types.GetAdminMediaAuditRunResponse>;
     };
     getAnnouncement: {
-      (options: Options<Types.GetAnnouncementData, boolean> & { throwOnError: false }): Promise<{ data: Types.GetAnnouncementResponse; response: Response; request: Request } | { error: Types.GetAnnouncementErrors; response: Response; request: Request }>;
-      (options?: Options<Types.GetAnnouncementData, boolean>): Promise<{ data: Types.GetAnnouncementResponse; response: Response; request: Request }>;
+      (params: { throwOnError: false }): Promise<{ data: Types.GetAnnouncementResponse; response: Response; request: Request } | { error: Types.GetAnnouncementErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetAnnouncementResponse>;
     };
     updateAnnouncement: {
-      (options: Options<Types.UpdateAnnouncementData, boolean> & { throwOnError: false }): Promise<{ data: Types.UpdateAnnouncementResponse; response: Response; request: Request } | { error: Types.UpdateAnnouncementErrors; response: Response; request: Request }>;
-      (options?: Options<Types.UpdateAnnouncementData, boolean>): Promise<{ data: Types.UpdateAnnouncementResponse; response: Response; request: Request }>;
+      (params: NonNullable<Types.UpdateAnnouncementData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateAnnouncementResponse; response: Response; request: Request } | { error: Types.UpdateAnnouncementErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.UpdateAnnouncementData['body']>): Promise<Types.UpdateAnnouncementResponse>;
     };
   };
 
@@ -331,6 +367,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
+    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.1.0', ...config.headers },
     fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
     auth: (auth: Auth) => {
       if (auth.in === 'cookie') {
@@ -344,77 +381,646 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     if (error && typeof error === 'object' && 'code' in error && typeof (error as any).code === 'string') {
       return new NadeshikoError(error as NadeshikoProblemDetails);
     }
+    if (error && typeof error === 'object' && 'status' in error && typeof (error as any).status === 'number') {
+      return new NadeshikoError({
+        code: 'UNKNOWN_ERROR' as any,
+        title: 'Unexpected error',
+        detail: (error as any).message ?? (error as any).statusText ?? `HTTP ${(error as any).status}`,
+        status: (error as any).status,
+      });
+    }
     return error;
   });
 
+  const _search = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = search({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _search.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return search({ body: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.segments, pagination: data.pagination }),
+  );
+
+  const _getSearchStats = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = getSearchStats({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _searchWords = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = searchWords({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _searchMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = searchMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getStatsOverview = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getStatsOverview({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listMedia = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listMedia({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listMedia.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listMedia({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.media, pagination: data.pagination }),
+  );
+
+  const _getSegment = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getSegment({ throwOnError: true, path: { segmentPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, segmentPublicId } = params ?? {};
+    const p = getSegment({ path: { segmentPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getSegmentContext = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getSegmentContext({ throwOnError: true, path: { segmentPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, segmentPublicId, ...query } = params ?? {};
+    const p = getSegmentContext({ path: { segmentPublicId }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = getMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listEpisodes = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return listEpisodes({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId, ...query } = params ?? {};
+    const p = listEpisodes({ path: { mediaPublicId }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listEpisodes.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      const { mediaPublicId, ...q } = flat;
+      return listEpisodes({ path: { mediaPublicId }, query: q, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.episodes, pagination: data.pagination }),
+  );
+
+  const _getEpisode = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber } = params ?? {};
+    const p = getEpisode({ path: { mediaPublicId, episodeNumber }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getMe = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getMe({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listExcludedMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listExcludedMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _addExcludedMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = addExcludedMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _removeExcludedMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return removeExcludedMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = removeExcludedMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listUserActivity = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listUserActivity({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listUserActivity.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listUserActivity({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.activities, pagination: data.pagination }),
+  );
+
+  const _getUserActivityHeatmap = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = getUserActivityHeatmap({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getUserActivityStats = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = getUserActivityStats({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listCollections = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listCollections({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listCollections.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listCollections({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.collections, pagination: data.pagination }),
+  );
+
+  const _createCollection = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createCollection({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getCollection = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getCollection({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId } = params ?? {};
+    const p = getCollection({ path: { collectionPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteCollection = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return deleteCollection({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId } = params ?? {};
+    const p = deleteCollection({ path: { collectionPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _addSegmentToCollection = (params?: any) => {
+    const { throwOnError: tOE, collectionPublicId, ...body } = params ?? {};
+    const p = addSegmentToCollection({ path: { collectionPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _searchCollectionSegments = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return searchCollectionSegments({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId, ...body } = params ?? {};
+    const p = searchCollectionSegments({ path: { collectionPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _searchCollectionSegments.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      const { collectionPublicId, ...body } = flat;
+      return searchCollectionSegments({ path: { collectionPublicId }, body, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.segments, pagination: data.pagination }),
+  );
+
+  const _removeSegmentFromCollection = (params?: any) => {
+    const { throwOnError: tOE, collectionPublicId, segmentPublicId } = params ?? {};
+    const p = removeSegmentFromCollection({ path: { collectionPublicId, segmentPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getCoveredWords = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = getCoveredWords({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _getCoveredWords.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return getCoveredWords({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.words, pagination: data.pagination }),
+  );
+
+  const _triggerCoveredWordsUpdate = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = triggerCoveredWordsUpdate({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateSegment = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return updateSegment({ throwOnError: true, path: { segmentPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, segmentPublicId, ...body } = params ?? {};
+    const p = updateSegment({ path: { segmentPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listSegmentRevisions = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return listSegmentRevisions({ throwOnError: true, path: { segmentPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, segmentPublicId } = params ?? {};
+    const p = listSegmentRevisions({ path: { segmentPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return updateMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId, ...body } = params ?? {};
+    const p = updateMedia({ path: { mediaPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return deleteMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = deleteMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createEpisode = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, ...body } = params ?? {};
+    const p = createEpisode({ path: { mediaPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateEpisode = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber, ...body } = params ?? {};
+    const p = updateEpisode({ path: { mediaPublicId, episodeNumber }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteEpisode = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber } = params ?? {};
+    const p = deleteEpisode({ path: { mediaPublicId, episodeNumber }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listSegments = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber, ...query } = params ?? {};
+    const p = listSegments({ path: { mediaPublicId, episodeNumber }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listSegments.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      const { mediaPublicId, episodeNumber, ...q } = flat;
+      return listSegments({ path: { mediaPublicId, episodeNumber }, query: q, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.segments, pagination: data.pagination }),
+  );
+
+  const _createSegment = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber, ...body } = params ?? {};
+    const p = createSegment({ path: { mediaPublicId, episodeNumber }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createSegmentsBatch = (params?: any) => {
+    const { throwOnError: tOE, mediaPublicId, episodeNumber, ...body } = params ?? {};
+    const p = createSegmentsBatch({ path: { mediaPublicId, episodeNumber }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createUserReport = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createUserReport({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getUserPreferences = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getUserPreferences({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateUserPreferences = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = updateUserPreferences({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _trackUserActivity = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = trackUserActivity({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteUserActivity = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = deleteUserActivity({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteUserActivityByDate = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return deleteUserActivityByDate({ throwOnError: true, path: { date: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, date } = params ?? {};
+    const p = deleteUserActivityByDate({ path: { date }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteUserActivityById = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'number') {
+      return deleteUserActivityById({ throwOnError: true, path: { activityId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, activityId } = params ?? {};
+    const p = deleteUserActivityById({ path: { activityId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _exportUserData = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = exportUserData({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listUserLabs = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listUserLabs({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _enrollUserLab = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return enrollUserLab({ throwOnError: true, path: { key: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, key } = params ?? {};
+    const p = enrollUserLab({ path: { key }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _unenrollUserLab = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return unenrollUserLab({ throwOnError: true, path: { key: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, key } = params ?? {};
+    const p = unenrollUserLab({ path: { key }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateCollection = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return updateCollection({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId, ...body } = params ?? {};
+    const p = updateCollection({ path: { collectionPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateCollectionSegment = (params?: any) => {
+    const { throwOnError: tOE, collectionPublicId, segmentPublicId, ...body } = params ?? {};
+    const p = updateCollectionSegment({ path: { collectionPublicId, segmentPublicId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getCollectionStats = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return getCollectionStats({ throwOnError: true, path: { collectionPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, collectionPublicId } = params ?? {};
+    const p = getCollectionStats({ path: { collectionPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _triggerReindex = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = triggerReindex({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listAdminReports = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listAdminReports({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listAdminReports.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listAdminReports({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.groups, pagination: data.pagination }),
+  );
+
+  const _batchUpdateAdminReports = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = batchUpdateAdminReports({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _bulkUpdateAdminReports = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = bulkUpdateAdminReports({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _bulkDeleteAdminReports = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = bulkDeleteAdminReports({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateAdminReport = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'number') {
+      return updateAdminReport({ throwOnError: true, path: { reportId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, reportId, ...body } = params ?? {};
+    const p = updateAdminReport({ path: { reportId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _deleteAdminReport = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'number') {
+      return deleteAdminReport({ throwOnError: true, path: { reportId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, reportId } = params ?? {};
+    const p = deleteAdminReport({ path: { reportId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listAdminMediaAudits = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listAdminMediaAudits({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateAdminMediaAudit = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return updateAdminMediaAudit({ throwOnError: true, path: { name: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, name, ...body } = params ?? {};
+    const p = updateAdminMediaAudit({ path: { name }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _runAdminMediaAudit = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return runAdminMediaAudit({ throwOnError: true, path: { name: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, name, ...query } = params ?? {};
+    const p = runAdminMediaAudit({ path: { name }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listAdminMediaAuditRuns = (params?: any) => {
+    const { throwOnError: tOE, ...query } = params ?? {};
+    const p = listAdminMediaAuditRuns({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+  _listAdminMediaAuditRuns.paginate = (params?: any) => flatPaginate(
+    params ?? {},
+    (flat: any) => {
+      return listAdminMediaAuditRuns({ query: flat, client: clientInstance } as any);
+    },
+    (data: any) => ({ items: data.runs, pagination: data.pagination }),
+  );
+
+  const _getAdminMediaAuditRun = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'number') {
+      return getAdminMediaAuditRun({ throwOnError: true, path: { auditRunId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, auditRunId } = params ?? {};
+    const p = getAdminMediaAuditRun({ path: { auditRunId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getAnnouncement = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getAnnouncement({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateAnnouncement = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = updateAnnouncement({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   return {
     client: clientInstance,
-    search: (options?: any) => search({ throwOnError: true, ...options, client: clientInstance }),
-    getSearchStats: (options?: any) => getSearchStats({ throwOnError: true, ...options, client: clientInstance }),
-    searchWords: (options?: any) => searchWords({ throwOnError: true, ...options, client: clientInstance }),
-    searchMedia: (options?: any) => searchMedia({ throwOnError: true, ...options, client: clientInstance }),
-    getStatsOverview: (options?: any) => getStatsOverview({ throwOnError: true, ...options, client: clientInstance }),
-    listMedia: (options?: any) => listMedia({ throwOnError: true, ...options, client: clientInstance }),
-    getSegment: (options?: any) => getSegment({ throwOnError: true, ...options, client: clientInstance }),
-    getSegmentContext: (options?: any) => getSegmentContext({ throwOnError: true, ...options, client: clientInstance }),
-    getMedia: (options?: any) => getMedia({ throwOnError: true, ...options, client: clientInstance }),
-    listEpisodes: (options?: any) => listEpisodes({ throwOnError: true, ...options, client: clientInstance }),
-    getEpisode: (options?: any) => getEpisode({ throwOnError: true, ...options, client: clientInstance }),
-    getMe: (options?: any) => getMe({ throwOnError: true, ...options, client: clientInstance }),
-    listExcludedMedia: (options?: any) => listExcludedMedia({ throwOnError: true, ...options, client: clientInstance }),
-    addExcludedMedia: (options?: any) => addExcludedMedia({ throwOnError: true, ...options, client: clientInstance }),
-    removeExcludedMedia: (options?: any) => removeExcludedMedia({ throwOnError: true, ...options, client: clientInstance }),
-    listUserActivity: (options?: any) => listUserActivity({ throwOnError: true, ...options, client: clientInstance }),
-    getUserActivityHeatmap: (options?: any) => getUserActivityHeatmap({ throwOnError: true, ...options, client: clientInstance }),
-    getUserActivityStats: (options?: any) => getUserActivityStats({ throwOnError: true, ...options, client: clientInstance }),
-    listCollections: (options?: any) => listCollections({ throwOnError: true, ...options, client: clientInstance }),
-    createCollection: (options?: any) => createCollection({ throwOnError: true, ...options, client: clientInstance }),
-    getCollection: (options?: any) => getCollection({ throwOnError: true, ...options, client: clientInstance }),
-    deleteCollection: (options?: any) => deleteCollection({ throwOnError: true, ...options, client: clientInstance }),
-    addSegmentToCollection: (options?: any) => addSegmentToCollection({ throwOnError: true, ...options, client: clientInstance }),
-    searchCollectionSegments: (options?: any) => searchCollectionSegments({ throwOnError: true, ...options, client: clientInstance }),
-    removeSegmentFromCollection: (options?: any) => removeSegmentFromCollection({ throwOnError: true, ...options, client: clientInstance }),
-    getCoveredWords: (options?: any) => getCoveredWords({ throwOnError: true, ...options, client: clientInstance }),
-    triggerCoveredWordsUpdate: (options?: any) => triggerCoveredWordsUpdate({ throwOnError: true, ...options, client: clientInstance }),
-    createMedia: (options?: any) => createMedia({ throwOnError: true, ...options, client: clientInstance }),
-    updateSegment: (options?: any) => updateSegment({ throwOnError: true, ...options, client: clientInstance }),
-    listSegmentRevisions: (options?: any) => listSegmentRevisions({ throwOnError: true, ...options, client: clientInstance }),
-    updateMedia: (options?: any) => updateMedia({ throwOnError: true, ...options, client: clientInstance }),
-    deleteMedia: (options?: any) => deleteMedia({ throwOnError: true, ...options, client: clientInstance }),
-    createEpisode: (options?: any) => createEpisode({ throwOnError: true, ...options, client: clientInstance }),
-    updateEpisode: (options?: any) => updateEpisode({ throwOnError: true, ...options, client: clientInstance }),
-    deleteEpisode: (options?: any) => deleteEpisode({ throwOnError: true, ...options, client: clientInstance }),
-    listSegments: (options?: any) => listSegments({ throwOnError: true, ...options, client: clientInstance }),
-    createSegment: (options?: any) => createSegment({ throwOnError: true, ...options, client: clientInstance }),
-    createSegmentsBatch: (options?: any) => createSegmentsBatch({ throwOnError: true, ...options, client: clientInstance }),
-    createUserReport: (options?: any) => createUserReport({ throwOnError: true, ...options, client: clientInstance }),
-    getUserPreferences: (options?: any) => getUserPreferences({ throwOnError: true, ...options, client: clientInstance }),
-    updateUserPreferences: (options?: any) => updateUserPreferences({ throwOnError: true, ...options, client: clientInstance }),
-    trackUserActivity: (options?: any) => trackUserActivity({ throwOnError: true, ...options, client: clientInstance }),
-    deleteUserActivity: (options?: any) => deleteUserActivity({ throwOnError: true, ...options, client: clientInstance }),
-    deleteUserActivityByDate: (options?: any) => deleteUserActivityByDate({ throwOnError: true, ...options, client: clientInstance }),
-    deleteUserActivityById: (options?: any) => deleteUserActivityById({ throwOnError: true, ...options, client: clientInstance }),
-    exportUserData: (options?: any) => exportUserData({ throwOnError: true, ...options, client: clientInstance }),
-    listUserLabs: (options?: any) => listUserLabs({ throwOnError: true, ...options, client: clientInstance }),
-    enrollUserLab: (options?: any) => enrollUserLab({ throwOnError: true, ...options, client: clientInstance }),
-    unenrollUserLab: (options?: any) => unenrollUserLab({ throwOnError: true, ...options, client: clientInstance }),
-    updateCollection: (options?: any) => updateCollection({ throwOnError: true, ...options, client: clientInstance }),
-    updateCollectionSegment: (options?: any) => updateCollectionSegment({ throwOnError: true, ...options, client: clientInstance }),
-    getCollectionStats: (options?: any) => getCollectionStats({ throwOnError: true, ...options, client: clientInstance }),
-    triggerReindex: (options?: any) => triggerReindex({ throwOnError: true, ...options, client: clientInstance }),
-    listAdminReports: (options?: any) => listAdminReports({ throwOnError: true, ...options, client: clientInstance }),
-    batchUpdateAdminReports: (options?: any) => batchUpdateAdminReports({ throwOnError: true, ...options, client: clientInstance }),
-    bulkUpdateAdminReports: (options?: any) => bulkUpdateAdminReports({ throwOnError: true, ...options, client: clientInstance }),
-    bulkDeleteAdminReports: (options?: any) => bulkDeleteAdminReports({ throwOnError: true, ...options, client: clientInstance }),
-    updateAdminReport: (options?: any) => updateAdminReport({ throwOnError: true, ...options, client: clientInstance }),
-    deleteAdminReport: (options?: any) => deleteAdminReport({ throwOnError: true, ...options, client: clientInstance }),
-    listAdminMediaAudits: (options?: any) => listAdminMediaAudits({ throwOnError: true, ...options, client: clientInstance }),
-    updateAdminMediaAudit: (options?: any) => updateAdminMediaAudit({ throwOnError: true, ...options, client: clientInstance }),
-    runAdminMediaAudit: (options?: any) => runAdminMediaAudit({ throwOnError: true, ...options, client: clientInstance }),
-    listAdminMediaAuditRuns: (options?: any) => listAdminMediaAuditRuns({ throwOnError: true, ...options, client: clientInstance }),
-    getAdminMediaAuditRun: (options?: any) => getAdminMediaAuditRun({ throwOnError: true, ...options, client: clientInstance }),
-    getAnnouncement: (options?: any) => getAnnouncement({ throwOnError: true, ...options, client: clientInstance }),
-    updateAnnouncement: (options?: any) => updateAnnouncement({ throwOnError: true, ...options, client: clientInstance }),
+    search: _search,
+    getSearchStats: _getSearchStats,
+    searchWords: _searchWords,
+    searchMedia: _searchMedia,
+    getStatsOverview: _getStatsOverview,
+    listMedia: _listMedia,
+    getSegment: _getSegment,
+    getSegmentContext: _getSegmentContext,
+    getMedia: _getMedia,
+    listEpisodes: _listEpisodes,
+    getEpisode: _getEpisode,
+    getMe: _getMe,
+    listExcludedMedia: _listExcludedMedia,
+    addExcludedMedia: _addExcludedMedia,
+    removeExcludedMedia: _removeExcludedMedia,
+    listUserActivity: _listUserActivity,
+    getUserActivityHeatmap: _getUserActivityHeatmap,
+    getUserActivityStats: _getUserActivityStats,
+    listCollections: _listCollections,
+    createCollection: _createCollection,
+    getCollection: _getCollection,
+    deleteCollection: _deleteCollection,
+    addSegmentToCollection: _addSegmentToCollection,
+    searchCollectionSegments: _searchCollectionSegments,
+    removeSegmentFromCollection: _removeSegmentFromCollection,
+    getCoveredWords: _getCoveredWords,
+    triggerCoveredWordsUpdate: _triggerCoveredWordsUpdate,
+    createMedia: _createMedia,
+    updateSegment: _updateSegment,
+    listSegmentRevisions: _listSegmentRevisions,
+    updateMedia: _updateMedia,
+    deleteMedia: _deleteMedia,
+    createEpisode: _createEpisode,
+    updateEpisode: _updateEpisode,
+    deleteEpisode: _deleteEpisode,
+    listSegments: _listSegments,
+    createSegment: _createSegment,
+    createSegmentsBatch: _createSegmentsBatch,
+    createUserReport: _createUserReport,
+    getUserPreferences: _getUserPreferences,
+    updateUserPreferences: _updateUserPreferences,
+    trackUserActivity: _trackUserActivity,
+    deleteUserActivity: _deleteUserActivity,
+    deleteUserActivityByDate: _deleteUserActivityByDate,
+    deleteUserActivityById: _deleteUserActivityById,
+    exportUserData: _exportUserData,
+    listUserLabs: _listUserLabs,
+    enrollUserLab: _enrollUserLab,
+    unenrollUserLab: _unenrollUserLab,
+    updateCollection: _updateCollection,
+    updateCollectionSegment: _updateCollectionSegment,
+    getCollectionStats: _getCollectionStats,
+    triggerReindex: _triggerReindex,
+    listAdminReports: _listAdminReports,
+    batchUpdateAdminReports: _batchUpdateAdminReports,
+    bulkUpdateAdminReports: _bulkUpdateAdminReports,
+    bulkDeleteAdminReports: _bulkDeleteAdminReports,
+    updateAdminReport: _updateAdminReport,
+    deleteAdminReport: _deleteAdminReport,
+    listAdminMediaAudits: _listAdminMediaAudits,
+    updateAdminMediaAudit: _updateAdminMediaAudit,
+    runAdminMediaAudit: _runAdminMediaAudit,
+    listAdminMediaAuditRuns: _listAdminMediaAuditRuns,
+    getAdminMediaAuditRun: _getAdminMediaAuditRun,
+    getAnnouncement: _getAnnouncement,
+    updateAnnouncement: _updateAnnouncement,
   } as NadeshikoClient;
 }
 

@@ -46,51 +46,31 @@ export function withRetry(
     let attempt = 0;
 
     while (true) {
-      let timedInit = init;
+      // Set up per-attempt timeout if configured and caller didn't provide a signal
+      let fetchInit = init;
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
       if (timeout !== undefined && !init?.signal) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(
+        timeoutId = setTimeout(
           () => controller.abort(new Error(`Request timed out after ${timeout}ms`)),
           timeout,
         );
-        timedInit = { ...init, signal: controller.signal };
-
-        let response: Response;
-        try {
-          response = await fetchImpl(input, timedInit);
-          clearTimeout(timeoutId);
-        } catch (networkError) {
-          clearTimeout(timeoutId);
-          if (attempt >= maxRetries) throw networkError;
-          await sleep(backoffDelay(attempt, initialDelayMs, maxDelayMs));
-          attempt++;
-          continue;
-        }
-
-        if (!RETRYABLE_STATUS.has(response.status) || attempt >= maxRetries) {
-          return response;
-        }
-
-        const retryAfter = response.headers.get('Retry-After');
-        const waitMs = retryAfter
-          ? parseRetryAfter(retryAfter)
-          : backoffDelay(attempt, initialDelayMs, maxDelayMs);
-
-        await sleep(waitMs);
-        attempt++;
-        continue;
+        fetchInit = { ...init, signal: controller.signal };
       }
 
       let response: Response;
       try {
-        response = await fetchImpl(input, timedInit);
+        response = await fetchImpl(input, fetchInit);
       } catch (networkError) {
+        if (timeoutId !== undefined) clearTimeout(timeoutId);
         if (attempt >= maxRetries) throw networkError;
         await sleep(backoffDelay(attempt, initialDelayMs, maxDelayMs));
         attempt++;
         continue;
       }
+
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
 
       if (!RETRYABLE_STATUS.has(response.status) || attempt >= maxRetries) {
         return response;

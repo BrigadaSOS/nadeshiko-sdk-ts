@@ -20,11 +20,26 @@ const SDK_TYPE = process.env.SDK_TYPE || 'public';
 const ROOT_DIR = join(__dirname, '..');
 const GENERATED_DIR = join(ROOT_DIR, 'generated', SDK_TYPE);
 
+const ROOT_PACKAGE_JSON = JSON.parse(readFileSync(join(ROOT_DIR, 'package.json'), 'utf-8'));
+const SDK_VERSION = process.env.SDK_VERSION?.trim() || ROOT_PACKAGE_JSON.version || '0.0.0';
+
 const OPENAPI_SPEC_SOURCE = process.env.OPENAPI_SPEC_PATH;
 if (!OPENAPI_SPEC_SOURCE) {
   console.error('OPENAPI_SPEC_PATH is required. Set it in .env or pass as env var.');
   process.exit(1);
 }
+
+type PaginationDetection = {
+  /** The response property that holds the array of items (e.g. "segments", "media") */
+  itemsField: string;
+};
+
+type PathParamInfo = {
+  name: string;
+  schemaType: 'string' | 'number';
+};
+
+type ParamLayout = 'body-only' | 'query-only' | 'path-only' | 'path-and-query' | 'body-and-path' | 'none';
 
 type EndpointInfo = {
   operationId: string;
@@ -33,6 +48,13 @@ type EndpointInfo = {
   method: string;
   isInternal: boolean;
   auth: EndpointAuthInfo;
+  pagination: PaginationDetection | null;
+  pathParams: PathParamInfo[];
+  hasRequiredBody: boolean;
+  hasRequiredQuery: boolean;
+  hasBody: boolean;
+  hasQuery: boolean;
+  paramLayout: ParamLayout;
 };
 
 type OpenApiSecurityScheme = {
@@ -169,6 +191,116 @@ function resolveEndpointAuthInfo(
 }
 
 /**
+ * Chase a JSON `$ref` pointer through a parsed OpenAPI document.
+ */
+function resolveRef(spec: any, ref: string): any {
+  const parts = ref.replace(/^#\//, '').split('/');
+  let current = spec;
+  for (const part of parts) {
+    current = current?.[part];
+  }
+  return current;
+}
+
+/**
+ * Resolve a value that may be a `$ref` to the actual schema object.
+ */
+function maybeResolve(spec: any, value: any): any {
+  if (value && typeof value === 'object' && '$ref' in value) {
+    return resolveRef(spec, value.$ref);
+  }
+  return value;
+}
+
+/**
+ * Detect pagination info from a 200 response schema.
+ * Returns the items field name if the schema has a `pagination` property
+ * referencing PaginationInfo or OpaqueCursorPagination, and a sibling array property.
+ */
+function detectPagination(spec: any, operation: any): PaginationDetection | null {
+  // Support x-paginated-items extension as explicit override
+  if (operation['x-paginated-items']) {
+    return { itemsField: operation['x-paginated-items'] };
+  }
+
+  const response200 = operation.responses?.['200'];
+  if (!response200) return null;
+
+  const resolved200 = maybeResolve(spec, response200);
+  const schemaRef = resolved200?.content?.['application/json']?.schema;
+  if (!schemaRef) return null;
+
+  const schema = maybeResolve(spec, schemaRef);
+  if (!schema?.properties) return null;
+
+  return detectPaginationInSchema(spec, schema);
+}
+
+function detectPaginationInSchema(spec: any, schema: any): PaginationDetection | null {
+  const props = schema.properties;
+  if (!props) return null;
+
+  // Check if there's a `pagination` property
+  const paginationProp = props.pagination;
+  if (!paginationProp) return null;
+
+  // Verify it references PaginationInfo or OpaqueCursorPagination
+  const paginationRef = paginationProp.$ref ?? '';
+  const resolvedPag = maybeResolve(spec, paginationProp);
+  const isPagination = paginationRef.includes('PaginationInfo')
+    || paginationRef.includes('OpaqueCursorPagination')
+    || (resolvedPag?.properties?.hasMore && resolvedPag?.properties?.cursor);
+
+  if (!isPagination) return null;
+
+  // Find the sibling array property — that's the items field
+  for (const [key, value] of Object.entries(props)) {
+    if (key === 'pagination') continue;
+    const resolved = maybeResolve(spec, value as any);
+    if (resolved?.type === 'array') {
+      return { itemsField: key };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extract path parameters from an operation and its path item.
+ */
+function extractPathParams(pathItemParams: any[] | undefined, operationParams: any[] | undefined, spec: any): PathParamInfo[] {
+  const allParams = [...(pathItemParams ?? []), ...(operationParams ?? [])];
+  const result: PathParamInfo[] = [];
+  const seen = new Set<string>();
+
+  // Operation params override path-level params (iterate in reverse priority)
+  for (const param of allParams) {
+    const resolved = maybeResolve(spec, param);
+    if (resolved?.in !== 'path') continue;
+    if (seen.has(resolved.name)) continue;
+    seen.add(resolved.name);
+
+    const schemaType = resolved.schema?.type === 'integer' || resolved.schema?.type === 'number'
+      ? 'number' as const
+      : 'string' as const;
+    result.push({ name: resolved.name, schemaType });
+  }
+
+  return result;
+}
+
+/**
+ * Check if an operation has any required query parameters.
+ */
+function hasRequiredQueryParams(pathItemParams: any[] | undefined, operationParams: any[] | undefined, spec: any): boolean {
+  const allParams = [...(pathItemParams ?? []), ...(operationParams ?? [])];
+  return allParams.some(p => {
+    const resolved = maybeResolve(spec, p);
+    return resolved?.in === 'query' && resolved?.required === true;
+  });
+}
+
+/**
  * Get absolute path for the OpenAPI spec
  */
 function getOpenApiSpecPath(): string {
@@ -234,6 +366,32 @@ async function parseOpenApiSpec(): Promise<{
         ?? globalSecurity;
       const groupName = getGroupName(tag);
 
+      const pathItemParams = Array.isArray(pathItemObj.parameters) ? pathItemObj.parameters : undefined;
+      const operationParams = Array.isArray(operationObj.parameters) ? operationObj.parameters : undefined;
+
+      const epPathParams = extractPathParams(pathItemParams, operationParams, spec);
+      const hasBody = !!operationObj.requestBody;
+      const allParams = [...(pathItemParams ?? []), ...(operationParams ?? [])];
+      const hasQuery = allParams.some(p => maybeResolve(spec, p)?.in === 'query');
+      const hasPath = epPathParams.length > 0;
+
+      let paramLayout: ParamLayout;
+      if (hasBody && !hasPath && !hasQuery) paramLayout = 'body-only';
+      else if (hasQuery && !hasPath && !hasBody) paramLayout = 'query-only';
+      else if (hasPath && !hasBody && !hasQuery) paramLayout = 'path-only';
+      else if (hasPath && !hasBody) paramLayout = 'path-and-query';
+      else if (hasBody && hasPath && !hasQuery) paramLayout = 'body-and-path';
+      else if (!hasBody && !hasPath && !hasQuery) paramLayout = 'none';
+      else paramLayout = 'body-only'; // fallback
+
+      // hasRequiredBody: true only when body is required AND the schema has at least
+      // one required property. Bodies where all fields are optional (e.g. SearchRequest)
+      // are treated as optional so callers can omit params entirely.
+      const bodySchema = operationObj.requestBody?.content?.['application/json']?.schema;
+      const resolvedBodySchema = bodySchema ? maybeResolve(spec, bodySchema) : null;
+      const bodyHasRequiredProps = Array.isArray(resolvedBodySchema?.required) && resolvedBodySchema.required.length > 0;
+      const hasRequiredBody = operationObj.requestBody?.required === true && bodyHasRequiredProps;
+
       const endpointInfo: EndpointInfo = {
         operationId: operationObj.operationId,
         tag,
@@ -241,6 +399,13 @@ async function parseOpenApiSpec(): Promise<{
         method,
         isInternal,
         auth: resolveEndpointAuthInfo(security, securitySchemes),
+        pagination: detectPagination(spec, operationObj),
+        pathParams: epPathParams,
+        hasRequiredBody,
+        hasRequiredQuery: hasRequiredQueryParams(pathItemParams, operationParams, spec),
+        hasBody,
+        hasQuery,
+        paramLayout,
       };
 
       if (isInternal) {
@@ -259,27 +424,182 @@ async function parseOpenApiSpec(): Promise<{
 }
 
 /**
+ * Check if an endpoint qualifies for a string/number shorthand overload.
+ * Must have exactly 1 path param and no required body or query params.
+ */
+function getShorthandParam(ep: EndpointInfo): PathParamInfo | null {
+  if (ep.pathParams.length !== 1) return null;
+  if (ep.hasRequiredBody) return null;
+  if (ep.hasRequiredQuery) return null;
+  return ep.pathParams[0];
+}
+
+/**
+ * Generate the runtime repacking code that converts flat params → { body, path, query } for the raw SDK call.
+ * Returns lines to insert inside the wrapper function body (after `const params = ...`).
+ */
+function buildRepackExpression(fn: string, ep: EndpointInfo): string {
+  switch (ep.paramLayout) {
+    case 'body-only':
+      return [
+        `    const { throwOnError: tOE, ...body } = params ?? {};`,
+        `    const p = ${fn}({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);`,
+      ].join('\n');
+
+    case 'query-only':
+      return [
+        `    const { throwOnError: tOE, ...query } = params ?? {};`,
+        `    const p = ${fn}({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);`,
+      ].join('\n');
+
+    case 'path-only': {
+      const destructure = ep.pathParams.map(p => p.name).join(', ');
+      const pathObj = ep.pathParams.map(p => p.name).join(', ');
+      return [
+        `    const { throwOnError: tOE, ${destructure} } = params ?? {};`,
+        `    const p = ${fn}({ path: { ${pathObj} }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);`,
+      ].join('\n');
+    }
+
+    case 'path-and-query': {
+      const destructure = ep.pathParams.map(p => p.name).join(', ');
+      const pathObj = ep.pathParams.map(p => p.name).join(', ');
+      return [
+        `    const { throwOnError: tOE, ${destructure}, ...query } = params ?? {};`,
+        `    const p = ${fn}({ path: { ${pathObj} }, ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);`,
+      ].join('\n');
+    }
+
+    case 'body-and-path': {
+      const destructure = ep.pathParams.map(p => p.name).join(', ');
+      const pathObj = ep.pathParams.map(p => p.name).join(', ');
+      return [
+        `    const { throwOnError: tOE, ${destructure}, ...body } = params ?? {};`,
+        `    const p = ${fn}({ path: { ${pathObj} }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);`,
+      ].join('\n');
+    }
+
+    case 'none':
+      return [
+        `    const tOE = params?.throwOnError;`,
+        `    const p = ${fn}({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);`,
+      ].join('\n');
+  }
+}
+
+/**
+ * Generate the repacking expression for the .paginate callback.
+ * Inside the flatPaginate callback, `flat` contains the flat params with cursor merged in.
+ */
+function buildPaginateRepackExpression(fn: string, ep: EndpointInfo): string {
+  switch (ep.paramLayout) {
+    case 'body-only':
+      return `      return ${fn}({ body: flat, client: clientInstance } as any);`;
+
+    case 'query-only':
+      return `      return ${fn}({ query: flat, client: clientInstance } as any);`;
+
+    case 'path-only': {
+      const pathObj = ep.pathParams.map(p => `${p.name}: flat.${p.name}`).join(', ');
+      return `      return ${fn}({ path: { ${pathObj} }, client: clientInstance } as any);`;
+    }
+
+    case 'path-and-query': {
+      const destructure = ep.pathParams.map(p => p.name).join(', ');
+      const pathObj = ep.pathParams.map(p => p.name).join(', ');
+      return [
+        `      const { ${destructure}, ...q } = flat;`,
+        `      return ${fn}({ path: { ${pathObj} }, query: q, client: clientInstance } as any);`,
+      ].join('\n');
+    }
+
+    case 'body-and-path': {
+      const destructure = ep.pathParams.map(p => p.name).join(', ');
+      const pathObj = ep.pathParams.map(p => p.name).join(', ');
+      return [
+        `      const { ${destructure}, ...body } = flat;`,
+        `      return ${fn}({ path: { ${pathObj} }, body, client: clientInstance } as any);`,
+      ].join('\n');
+    }
+
+    case 'none':
+      return `      return ${fn}({ client: clientInstance } as any);`;
+  }
+}
+
+/**
+ * Build the TypeScript type expression for flattened parameters of an endpoint.
+ * Instead of `{ body: SearchRequest }` the user passes `SearchRequest` fields directly.
+ */
+function flatParamType(prefix: string, ep: EndpointInfo): string {
+  switch (ep.paramLayout) {
+    case 'body-only':
+      return `NonNullable<Types.${prefix}Data['body']>`;
+    case 'query-only':
+      return `NonNullable<Types.${prefix}Data['query']>`;
+    case 'path-only':
+      return `Types.${prefix}Data['path']`;
+    case 'path-and-query':
+      return `Types.${prefix}Data['path'] & NonNullable<Types.${prefix}Data['query']>`;
+    case 'body-and-path':
+      return `Types.${prefix}Data['path'] & NonNullable<Types.${prefix}Data['body']>`;
+    case 'none':
+      return '{}';
+  }
+}
+
+/**
  * Generate the client factory file
  */
 function generateClientFactory(endpoints: EndpointInfo[], authMode: 'apiKeyOnly' | 'hybrid', availableTypeNames: Set<string>): string {
   const operationIds = endpoints.map(e => e.operationId);
   const sdkImports = operationIds.join(', ');
 
-  // Build the return type with overloaded call signatures per method:
-  //   • throwOnError: false  → union return (caller must check data vs error)
-  //   • default / true       → clean Promise<{ data }> (throws on error)
-  const returnTypeParts = operationIds.map(fn => {
+  // Build the return type with flat parameter overloads per method:
+  //   • shorthand (string)   → direct return (single path param endpoints only)
+  //   • throwOnError: false  → union return with envelope (caller must check data vs error)
+  //   • default / true       → unwrapped Promise<Response> (throws on error)
+  //   • .paginate            → async generator (paginated endpoints only)
+  const returnTypeParts = endpoints.map(ep => {
+    const fn = ep.operationId;
     const prefix = operationTypePrefix(fn);
     const hasData = availableTypeNames.has(`${prefix}Data`);
     const hasResponse = availableTypeNames.has(`${prefix}Response`);
+
     if (hasData && hasResponse) {
       const errorType = availableTypeNames.has(`${prefix}Errors`)
         ? `Types.${prefix}Errors`
         : 'unknown';
-      const success = `{ data: Types.${prefix}Response; response: Response; request: Request }`;
+      const envelope = `{ data: Types.${prefix}Response; response: Response; request: Request }`;
+      const shorthand = getShorthandParam(ep);
+      const paramType = flatParamType(prefix, ep);
+
+      const overloads: string[] = [];
+
+      // Shorthand overload: client.getMedia('some-id')
+      if (shorthand) {
+        overloads.push(`      (id: ${shorthand.schemaType}): Promise<Types.${prefix}Response>;`);
+      }
+
+      // throwOnError: false overload — keeps the full envelope
+      const throwOnErrorParamType = ep.paramLayout === 'none' ? '{ throwOnError: false }' : `${paramType} & { throwOnError: false }`;
+      overloads.push(`      (params: ${throwOnErrorParamType}): Promise<${envelope} | { error: ${errorType}; response: Response; request: Request }>;`);
+
+      // Default overload — unwrapped data
+      if (ep.paramLayout === 'none') {
+        overloads.push(`      (): Promise<Types.${prefix}Response>;`);
+      } else {
+        overloads.push(`      (params${ep.hasRequiredBody || (ep.pathParams.length > 0) ? '' : '?'}: ${paramType}): Promise<Types.${prefix}Response>;`);
+      }
+
+      // .paginate property for paginated endpoints
+      let paginateProp = '';
+      if (ep.pagination) {
+        paginateProp = `\n      paginate: (params?: ${paramType}) => AsyncGenerator<Types.${prefix}Response['${ep.pagination.itemsField}'][number], void, unknown>;`;
+      }
+
       return `    ${fn}: {
-      (options: Options<Types.${prefix}Data, boolean> & { throwOnError: false }): Promise<${success} | { error: ${errorType}; response: Response; request: Request }>;
-      (options?: Options<Types.${prefix}Data, boolean>): Promise<${success}>;
+${overloads.join('\n')}${paginateProp}
     };`;
     }
     return `    ${fn}: typeof ${fn};`;
@@ -290,15 +610,60 @@ function generateClientFactory(endpoints: EndpointInfo[], authMode: 'apiKeyOnly'
 ${returnTypeParts.join('\n')}
   };`;
 
-  // Build the bound functions return
-  const boundFunctions = operationIds.map(fn => {
-    return `    ${fn}: (options?: any) => ${fn}({ throwOnError: true, ...options, client: clientInstance }),`;
-  }).join('\n');
+  // Build the bound function definitions and return object entries.
+  // Each method: repacks flat params into { body, path, query } for the raw SDK function,
+  // unwraps data by default, keeps envelope for throwOnError: false,
+  // supports string shorthand, and has .paginate for paginated endpoints.
+  const functionDefs: string[] = [];
+  const returnObjEntries: string[] = [];
+
+  for (const ep of endpoints) {
+    const fn = ep.operationId;
+    const shorthand = getShorthandParam(ep);
+    const isPaginated = ep.pagination !== null;
+
+    // Generate the repacking logic based on param layout
+    const repackExpr = buildRepackExpression(fn, ep);
+
+    // All methods get a named function (needed for consistent .paginate attachment)
+    const lines: string[] = [];
+
+    if (shorthand) {
+      lines.push(`  const _${fn} = (paramsOrId?: any) => {`);
+      lines.push(`    if (typeof paramsOrId === '${shorthand.schemaType}') {`);
+      lines.push(`      return ${fn}({ throwOnError: true, path: { ${shorthand.name}: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);`);
+      lines.push(`    }`);
+      lines.push(`    const params = paramsOrId;`);
+    } else {
+      lines.push(`  const _${fn} = (params?: any) => {`);
+    }
+
+    lines.push(repackExpr);
+    lines.push(`    return tOE === false ? p : p.then((r: any) => r.data);`);
+    lines.push(`  };`);
+
+    if (isPaginated) {
+      lines.push(`  _${fn}.paginate = (params?: any) => flatPaginate(`);
+      lines.push(`    params ?? {},`);
+      lines.push(`    (flat: any) => {`);
+      lines.push(buildPaginateRepackExpression(fn, ep));
+      lines.push(`    },`);
+      lines.push(`    (data: any) => ({ items: data.${ep.pagination!.itemsField}, pagination: data.pagination }),`);
+      lines.push(`  );`);
+    }
+
+    functionDefs.push(lines.join('\n'));
+    returnObjEntries.push(`    ${fn}: _${fn},`);
+  }
+
+  const functionDefsBlock = functionDefs.length > 0 ? '\n' + functionDefs.join('\n\n') + '\n' : '';
 
   const authImports = authMode === 'hybrid'
     ? `import type { Auth } from './core/auth.gen';\n`
     : '';
-  const authTypeHelpers = `type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);`;
+  const authTypeHelpers = authMode === 'hybrid'
+    ? `type ApiKeyProvider = string | (() => string | undefined | Promise<string | undefined>);`
+    : '';
   const authConfig = authMode === 'hybrid'
     ? `export interface NadeshikoConfig {
   /**
@@ -318,19 +683,20 @@ ${returnTypeParts.join('\n')}
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
   /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
   retryOptions?: RetryOptions;
+  /** Default headers sent with every request (e.g. User-Agent, tracing headers). */
+  headers?: Record<string, string>;
 }`
     : `export interface NadeshikoConfig {
-  /**
-   * API key for Bearer token authentication.
-   * Public SDK only supports API key authentication.
-   */
-  apiKey?: ApiKeyProvider;
+  /** API key for Nadeshiko API authentication. */
+  apiKey: string;
   /** Base URL of the Nadeshiko API. Accepts \`'LOCAL'\`, \`'DEVELOPMENT'\`, \`'PRODUCTION'\`, or a custom URL string. */
   baseURL?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
   /** @deprecated Use \`baseURL\` instead */
   baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
   /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
   retryOptions?: RetryOptions;
+  /** Default headers sent with every request (e.g. User-Agent, tracing headers). */
+  headers?: Record<string, string>;
 }`;
   const sessionTokenHelper = authMode === 'hybrid'
     ? `const defaultSessionTokenGetter = (): string | undefined => {
@@ -351,7 +717,12 @@ ${returnTypeParts.join('\n')}
       }
       return getApiKey();
     },`
-    : `    auth: () => getApiKey(),`;
+    : `    auth: () => config.apiKey,`;
+
+  const hasPaginatedEndpoints = endpoints.some(ep => ep.pagination !== null);
+  const paginateImport = hasPaginatedEndpoints
+    ? `import { flatPaginate } from './paginate';\n`
+    : '';
 
   return `// This file is auto-generated by scripts/generate.ts
 
@@ -361,7 +732,7 @@ import type * as Types from './types.gen';
 import { ${sdkImports}, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
-
+${paginateImport}
 ${authTypeHelpers}
 
 ${authConfig}
@@ -369,8 +740,7 @@ ${authConfig}
 const environments = {
   LOCAL: 'http://localhost:5000/api',
   DEVELOPMENT: 'https://api-dev.nadeshiko.co',
-  PRODUCTION: 'https://api.nadeshiko.co',
-  PROXY: '',
+  PRODUCTION: 'https://api.nadeshiko.co',${authMode === 'hybrid' ? "\n  PROXY: ''," : ''}
 } as const;
 
 ${returnType}
@@ -385,16 +755,17 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
         ? environments[rawBaseUrl as keyof typeof environments]
         : rawBaseUrl);
 
-  const getApiKey = async (): Promise<string | undefined> => {
+${authMode === 'hybrid' ? `  const getApiKey = async (): Promise<string | undefined> => {
     if (typeof config.apiKey === 'function') {
       return await config.apiKey();
     }
     return config.apiKey;
   };
-
+` : ''}
 ${authResolverConfig}
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
+    headers: { 'User-Agent': 'nadeshiko-sdk-ts/${SDK_VERSION}', ...config.headers },
     fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
 ${authResolverFn}
   }));
@@ -403,12 +774,20 @@ ${authResolverFn}
     if (error && typeof error === 'object' && 'code' in error && typeof (error as any).code === 'string') {
       return new NadeshikoError(error as NadeshikoProblemDetails);
     }
+    if (error && typeof error === 'object' && 'status' in error && typeof (error as any).status === 'number') {
+      return new NadeshikoError({
+        code: 'UNKNOWN_ERROR' as any,
+        title: 'Unexpected error',
+        detail: (error as any).message ?? (error as any).statusText ?? \`HTTP \${(error as any).status}\`,
+        status: (error as any).status,
+      });
+    }
     return error;
   });
-
+${functionDefsBlock}
   return {
     client: clientInstance,
-${boundFunctions}
+${returnObjEntries.join('\n')}
   } as NadeshikoClient;
 }
 
@@ -425,7 +804,7 @@ function generateErrorsFile(availableTypeNames: Set<string>): string {
     ? `import type { ${present.join(', ')} } from './types.gen';\n\n`
     : '';
   const codeUnion = present.length > 0
-    ? present.map(t => `${t}['code']`).join(' | ')
+    ? present.map(t => `${t}['code']`).join(' | ') + " | 'UNKNOWN_ERROR'"
     : 'string';
 
   return `// This file is auto-generated by scripts/generate.ts
@@ -540,6 +919,8 @@ function generatePublicIndex(publicEndpoints: EndpointInfo[], availableTypeNames
   // Common entity types useful to consumers (filter to what exists in this build)
   const entityTypes = [
     'Segment', 'Media', 'Episode', 'Series', 'Character', 'Seiyuu',
+    'Collection', 'MediaSummary', 'UserMe', 'UserActivity',
+    'MediaFilterItem', 'SearchFilters', 'Category', 'ContentRating',
     'PaginationInfo', 'OpaqueCursorPagination',
   ].filter(t => availableTypeNames.has(t));
   const entityExports = entityTypes.map(t => `  ${t}`).join(',\n');
@@ -566,7 +947,7 @@ export { client } from './client.gen';
 export type { Client, Config } from './client';
 
 // Re-export helpers
-export { paginate, type PaginationMeta } from './paginate';
+export { paginate, flatPaginate, type PaginationMeta } from './paginate';
 export { withRetry, type RetryOptions } from './retry';
 export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails } from './errors';
 `;
@@ -602,10 +983,53 @@ export * from './types.gen';
 export type { Client, Config } from './client';
 
 // Re-export helpers
-export { paginate, type PaginationMeta } from './paginate';
+export { paginate, flatPaginate, type PaginationMeta } from './paginate';
 export { withRetry, type RetryOptions } from './retry';
 export { NadeshikoError, type NadeshikoErrorCode, type NadeshikoProblemDetails } from './errors';
 `;
+}
+
+/**
+ * Strip unused exported functions from sdk.gen.ts for the public build.
+ * This removes internal-only operations from the bundle to reduce size.
+ */
+function stripUnusedOperations(sdkGenPath: string, keepOperationIds: Set<string>): { removed: number } {
+  const source = readFileSync(sdkGenPath, 'utf-8');
+
+  // sdk.gen.ts has top-level `export const operationId = ...` declarations.
+  // Each one starts with JSDoc (or directly with `export const`) and ends
+  // before the next `export const` or end of file.
+  // We split into blocks and keep only the ones we need + the import header.
+
+  // Find where the first export const starts
+  const firstExportIdx = source.indexOf('\nexport const ');
+  if (firstExportIdx === -1) return { removed: 0 };
+
+  const header = source.slice(0, firstExportIdx + 1); // imports + Options type
+  const body = source.slice(firstExportIdx + 1);
+
+  // Split into blocks: each block starts with optional JSDoc + `export const`
+  const blockPattern = /(?=\/\*\*[\s\S]*?\*\/\s*export\sconst\s|export\sconst\s)/g;
+  const blocks = body.split(blockPattern).filter(b => b.trim().length > 0);
+
+  const kept: string[] = [];
+  let removed = 0;
+
+  for (const block of blocks) {
+    const match = block.match(/export\s+const\s+(\w+)/);
+    if (!match) {
+      kept.push(block); // keep non-function blocks (shouldn't happen but safe)
+      continue;
+    }
+    if (keepOperationIds.has(match[1])) {
+      kept.push(block);
+    } else {
+      removed++;
+    }
+  }
+
+  writeFileSync(sdkGenPath, header + kept.join(''));
+  return { removed };
 }
 
 // Main execution
@@ -685,6 +1109,11 @@ async function main() {
       console.log(
         `Skipping ${publicEndpoints.length - apiKeyPublicEndpoints.length} public endpoints without API key auth`,
       );
+
+      // Strip unused operations from sdk.gen.ts to reduce bundle size
+      const publicOpIds = new Set(apiKeyPublicEndpoints.map(e => e.operationId));
+      const { removed } = stripUnusedOperations(join(GENERATED_DIR, 'sdk.gen.ts'), publicOpIds);
+      console.log(`✓ Stripped ${removed} unused operations from sdk.gen.ts`);
 
       const clientFactoryContent = generateClientFactory(apiKeyPublicEndpoints, 'apiKeyOnly', availableTypeNames);
       writeFileSync(join(GENERATED_DIR, 'nadeshiko.gen.ts'), clientFactoryContent);

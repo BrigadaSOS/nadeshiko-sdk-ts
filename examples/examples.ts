@@ -8,7 +8,6 @@
 import {
   createNadeshikoClient,
   NadeshikoError,
-  paginate,
 } from '@brigadasos/nadeshiko-sdk';
 
 // Client setup
@@ -18,20 +17,21 @@ const client = createNadeshikoClient({
   baseURL: 'PRODUCTION', // 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | custom URL
 });
 
-// With retry + timeout configured
+// With retry + timeout + custom headers
 const clientWithRetry = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
+  headers: { 'User-Agent': 'MyApp/1.0' },
   retryOptions: {
     maxRetries: 3,
     timeout: 10_000,
   },
 });
 
-// Basic search
+// Basic search — body fields passed directly
 
 async function basicSearch() {
-  const { data } = await client.search({
-    body: { query: { search: '食べる' } },
+  const data = await client.search({
+    query: { search: '食べる' },
   });
 
   for (const segment of data.segments) {
@@ -44,16 +44,14 @@ async function basicSearch() {
 // Search with filters
 
 async function filteredSearch() {
-  const { data } = await client.search({
-    body: {
-      query: { search: 'おはよう', exactMatch: true },
-      take: 5,
-      sort: { mode: 'ASC' },
-      filters: {
-        category: ['ANIME'],
-        contentRating: ['SAFE'],
-        segmentLengthChars: { min: 3, max: 30 },
-      },
+  const data = await client.search({
+    query: { search: 'おはよう', exactMatch: true },
+    take: 5,
+    sort: { mode: 'ASC' },
+    filters: {
+      category: ['ANIME'],
+      contentRating: ['SAFE'],
+      segmentLengthChars: { min: 3, max: 30 },
     },
   });
 
@@ -70,16 +68,14 @@ async function filteredSearch() {
 // Search filtered to specific media + episodes
 
 async function mediaFilteredSearch() {
-  const { data } = await client.search({
-    body: {
-      query: { search: 'ありがとう' },
-      filters: {
-        media: {
-          include: [
-            { mediaId: 'abc', episodes: [1, 2, 3] },
-            { mediaId: 'xyz', episodes: [5] },
-          ],
-        },
+  const data = await client.search({
+    query: { search: 'ありがとう' },
+    filters: {
+      media: {
+        include: [
+          { mediaPublicId: 'abc', episodes: [1, 2, 3] },
+          { mediaPublicId: 'xyz', episodes: [5] },
+        ],
       },
     },
   });
@@ -90,25 +86,66 @@ async function mediaFilteredSearch() {
 // Search multiple words at once
 
 async function multiWordSearch() {
-  const { data } = await client.searchWords({
-    body: {
-      words: ['猫', '犬', '鳥'],
-    },
+  const data = await client.searchWords({
+    query: { words: ['猫', '犬', '鳥'] },
   });
 
-  for (const entry of data.words) {
-    console.log(`${entry.word}: ${entry.totalCount} total, in ${entry.mediaCount} media`);
+  for (const entry of data.results) {
+    console.log(`${entry.word}: ${entry.matchCount} occurrences across ${entry.media.length} media`);
   }
 }
 
-// Get search filter stats (for building UI filters)
+// Find media by name (autocomplete-style search)
+
+async function findMedia() {
+  const data = await client.searchMedia({
+    query: 'steins',
+    take: 5,
+  });
+
+  for (const media of data.media) {
+    console.log(`[${media.mediaPublicId}] ${media.nameEn}`);
+  }
+}
+
+// Get corpus statistics overview (powers the /stats page)
+
+async function statsOverview() {
+  const data = await client.getStatsOverview();
+
+  console.log(`Total segments: ${data.totalSegments}`);
+  console.log(`Total media: ${data.totalMedia}`);
+}
+
+// Get current user profile and quota
+
+async function currentUser() {
+  const data = await client.getMe();
+
+  console.log(`User: ${data.user.username} (${data.user.role})`);
+  console.log(`Quota used: ${data.quota.used} / ${data.quota.limit}`);
+}
+
+// Excluded media — hide media from search results
+
+async function excludedMedia() {
+  // List currently excluded media
+  const list = await client.listExcludedMedia();
+  console.log(`Excluding ${list.excludedMedia.length} media`);
+
+  // Exclude a media entry
+  await client.addExcludedMedia({ mediaPublicId: 'some-public-id' });
+
+  // Re-include it
+  await client.removeExcludedMedia('some-public-id');
+}
+
+// Get search filter stats
 
 async function searchStats() {
-  const { data } = await client.getSearchStats({
-    body: {
-      query: { search: '学校' },
-      filters: { category: ['ANIME'] },
-    },
+  const data = await client.getSearchStats({
+    query: { search: '学校' },
+    filters: { category: ['ANIME'] },
   });
 
   for (const cat of data.categories) {
@@ -116,53 +153,61 @@ async function searchStats() {
   }
 }
 
-// Get surrounding context for a segment
+// Get a single media — string shorthand or flat params
+
+async function getMediaDetails() {
+  // Shorthand: pass the ID directly
+  const data = await client.getMedia('some-public-id');
+
+  // Equivalent flat form:
+  // const data = await client.getMedia({ mediaPublicId: 'some-public-id' });
+
+  console.log(data.nameEn, data.nameJa);
+  console.log(`Episodes: ${data.episodeCount}, Segments: ${data.segmentCount}`);
+}
+
+// Get segment context — string shorthand
 
 async function segmentContext() {
-  const { data } = await client.getSegmentContext({
-    query: {
-      mediaPublicId: 'some-media-id',
-      episode: 1,
-      position: 42,
-      limit: 3,
-    },
-  });
+  const data = await client.getSegmentContext('some-segment-uuid');
 
   for (const segment of data.segments) {
     console.log(`[${segment.startTimeMs}ms] ${segment.textJa.content}`);
   }
 }
 
-// Browse media catalog
+// Browse media catalog — query params at top level
 
 async function browseMediaCatalog() {
-  const { data } = await client.listMedia({
-    query: { search: 'naruto', category: 'ANIME', take: 20 },
+  const data = await client.listMedia({
+    search: 'naruto',
+    category: 'ANIME',
+    take: 20,
   });
 
   for (const media of data.media) {
-    console.log(`[${media.publicId}] ${media.nameEn} (${media.airingStatus})`);
+    console.log(`[${media.mediaPublicId}] ${media.nameEn} (${media.airingStatus})`);
     console.log(`  Genres: ${media.genres.join(', ')}`);
     console.log(`  Episodes: ${media.episodeCount}`);
   }
 }
 
-// Get a single media's details
+// Get episode — path params at top level
 
-async function getMediaDetails() {
-  const { data } = await client.getMedia({
-    path: { mediaId: 'some-public-id' },
+async function getEpisodeDetails() {
+  const data = await client.getEpisode({
+    mediaPublicId: 'some-media-id',
+    episodeNumber: 5,
   });
 
-  console.log(data.nameEn, data.nameJa);
-  console.log(`Episodes: ${data.episodeCount}, Segments: ${data.segmentCount}`);
+  console.log(data.titleEn);
 }
 
-// Access media URLs (images, audio, video)
+// Access media URLs
 
 async function mediaUrls() {
-  const { data } = await client.search({
-    body: { query: { search: '桜' } },
+  const data = await client.search({
+    query: { search: '桜' },
   });
 
   for (const segment of data.segments) {
@@ -172,32 +217,29 @@ async function mediaUrls() {
   }
 }
 
-// Morpheme / pitch accent analysis
+// Morpheme / token analysis
 
 async function morphemeAnalysis() {
-  const { data } = await client.search({
-    body: { query: { search: '彼女は毎日学校に行く' } },
+  const data = await client.search({
+    query: { search: '彼女は毎日学校に行く' },
   });
 
   const segment = data.segments[0];
-  if (!segment?.morphemes) return;
+  const tokens = segment?.textJa?.tokens;
+  if (!tokens) return;
 
-  for (const m of segment.morphemes) {
-    console.log(`${m.surface} [${m.reading}] — ${m.posShort} (base: ${m.baseform})`);
-    if (m.pitchAccentType.length > 0) {
-      console.log(`  Pitch: ${m.pitchAccentType.join(', ')}`);
-    }
+  for (const m of tokens) {
+    console.log(`${m.s} [${m.r}] — ${m.p} (dict: ${m.d})`);
   }
 }
 
-// Paginated search — iterate all results across pages
+// Paginated search — built-in auto-pagination
 
 async function paginatedSearch() {
-  for await (const segment of paginate(
-    (opts) => client.search(opts),
-    { body: { query: { search: '猫' }, take: 20 } },
-    (data) => ({ items: data.segments, pagination: data.pagination }),
-  )) {
+  for await (const segment of client.search.paginate({
+    query: { search: '猫' },
+    take: 20,
+  })) {
     console.log(segment.textJa.content);
   }
 }
@@ -205,23 +247,23 @@ async function paginatedSearch() {
 // Browse all media with pagination
 
 async function paginatedMediaBrowse() {
-  for await (const media of paginate(
-    (opts) => client.listMedia(opts),
-    { query: { category: 'ANIME' } },
-    (data) => ({ items: data.media, pagination: data.pagination }),
-  )) {
+  for await (const media of client.listMedia.paginate({
+    category: 'ANIME',
+  })) {
     console.log(media.nameEn);
   }
 }
 
-// Manual cursor pagination (when you need page-by-page control)
+// Manual cursor pagination
 
 async function manualPagination() {
   let cursor: string | undefined;
 
   do {
-    const { data } = await client.search({
-      body: { query: { search: '犬' }, take: 10, cursor },
+    const data = await client.search({
+      query: { search: '犬' },
+      take: 10,
+      cursor,
     });
 
     for (const segment of data.segments) {
@@ -232,12 +274,12 @@ async function manualPagination() {
   } while (cursor);
 }
 
-// Error handling — NadeshikoError
+// Error handling
 
 async function errorHandling() {
   try {
-    const { data } = await client.search({
-      body: { query: { search: 'test' } },
+    const data = await client.search({
+      query: { search: 'test' },
     });
     console.log(data.segments.length, 'results');
   } catch (err) {
@@ -260,14 +302,12 @@ async function errorHandling() {
           console.error('Monthly quota exhausted');
           break;
         case 'INTERNAL_SERVER_EXCEPTION':
-          // Include err.traceId when reporting issues
           console.error('Server error, trace ID:', err.traceId);
           break;
         default:
           console.error(`[${err.status}] ${err.code}: ${err.detail}`);
       }
     } else {
-      // Network error, timeout, etc.
       throw err;
     }
   }
@@ -278,10 +318,10 @@ async function errorHandling() {
 async function optOutOfThrowing() {
   const result = await client.search({
     throwOnError: false,
-    body: { query: { search: '猫' } },
+    query: { search: '猫' },
   });
 
-  if (result.error) {
+  if ('error' in result) {
     console.error('Search failed:', result.error);
   } else {
     console.log(result.data.segments.length, 'results');
