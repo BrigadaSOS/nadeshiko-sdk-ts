@@ -1415,7 +1415,7 @@ export type EpisodeCreateRequest = {
      */
     thumbnailUrl?: string;
     /**
-     * Episode number within the media (must be unique for this media)
+     * Episode number within the media (must be unique for this media; 0 for movies/specials)
      */
     episodeNumber: number;
 };
@@ -1577,7 +1577,7 @@ export type ReportTargetMedia = {
     /**
      * publicId of the media this report targets
      */
-    mediaId: string;
+    mediaPublicId: string;
 };
 
 export type ReportTargetSegmentInput = {
@@ -1588,7 +1588,7 @@ export type ReportTargetSegmentInput = {
     /**
      * publicId of the media this report targets
      */
-    mediaId: string;
+    mediaPublicId: string;
     /**
      * Episode number containing the segment
      */
@@ -1596,7 +1596,7 @@ export type ReportTargetSegmentInput = {
     /**
      * Segment publicId
      */
-    segmentId: string;
+    segmentPublicId: string;
 };
 
 export type UserReportTarget = ({
@@ -1630,7 +1630,7 @@ export type ReportTargetEpisode = {
     /**
      * publicId of the media this report targets
      */
-    mediaId: string;
+    mediaPublicId: string;
     /**
      * Episode number this report targets
      */
@@ -1645,7 +1645,7 @@ export type ReportTargetSegment = {
     /**
      * publicId of the media this report targets
      */
-    mediaId: string;
+    mediaPublicId: string;
     /**
      * Episode number containing the segment
      */
@@ -1653,7 +1653,7 @@ export type ReportTargetSegment = {
     /**
      * Segment publicId
      */
-    segmentId: string;
+    segmentPublicId: string;
 };
 
 export type ReportTarget = ({
@@ -1949,76 +1949,6 @@ export type UpdateCollectionSegmentRequest = {
      * Updated annotation
      */
     note?: string;
-};
-
-/**
- * Request to reindex segments from the database into Elasticsearch
- */
-export type ReindexRequest = {
-    /**
-     * Array of media to reindex. If not provided, all media will be reindexed.
-     * Each media can optionally specify which episodes to reindex.
-     * If episodes are not specified for a media, all episodes will be reindexed.
-     */
-    media?: Array<{
-        /**
-         * The ID of the media
-         */
-        mediaId: number;
-        /**
-         * Optional array of episode numbers to reindex.
-         * If not provided, all episodes for this media will be reindexed.
-         */
-        episodes?: Array<number>;
-    }>;
-};
-
-/**
- * Response from the reindex operation
- */
-export type ReindexResponse = {
-    /**
-     * Whether the reindex operation completed successfully
-     */
-    success: boolean;
-    /**
-     * Human-readable message about the reindex operation
-     */
-    message: string;
-    /**
-     * Statistics about the reindex operation
-     */
-    stats: {
-        /**
-         * Total number of segments processed
-         */
-        totalSegments: number;
-        /**
-         * Number of segments successfully indexed
-         */
-        successfulIndexes: number;
-        /**
-         * Number of segments that failed to index
-         */
-        failedIndexes: number;
-        /**
-         * Number of media items processed
-         */
-        mediaProcessed: number;
-    };
-    /**
-     * Array of errors that occurred during reindexing (if any)
-     */
-    errors: Array<{
-        /**
-         * ID of the segment that failed
-         */
-        segmentId: number;
-        /**
-         * Error message
-         */
-        error: string;
-    }>;
 };
 
 /**
@@ -3194,7 +3124,7 @@ export type DeleteEpisodeData = {
          */
         mediaPublicId: string;
         /**
-         * Episode number
+         * Episode number (0 for movies/specials)
          */
         episodeNumber: number;
     };
@@ -3248,7 +3178,7 @@ export type GetEpisodeData = {
          */
         mediaPublicId: string;
         /**
-         * Episode number
+         * Episode number (0 for movies/specials)
          */
         episodeNumber: number;
     };
@@ -3302,7 +3232,7 @@ export type UpdateEpisodeData = {
          */
         mediaPublicId: string;
         /**
-         * Episode number
+         * Episode number (0 for movies/specials)
          */
         episodeNumber: number;
     };
@@ -3356,7 +3286,7 @@ export type ListSegmentsData = {
          */
         mediaPublicId: string;
         /**
-         * Episode number
+         * Episode number (0 for movies/specials)
          */
         episodeNumber: number;
     };
@@ -3477,7 +3407,7 @@ export type CreateSegmentsBatchData = {
          */
         mediaPublicId: string;
         /**
-         * Episode number
+         * Episode number (0 for movies/specials)
          */
         episodeNumber: number;
     };
@@ -4810,47 +4740,6 @@ export type GetCollectionStatsResponses = {
 };
 
 export type GetCollectionStatsResponse = GetCollectionStatsResponses[keyof GetCollectionStatsResponses];
-
-export type TriggerReindexData = {
-    body?: ReindexRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/admin/reindex';
-};
-
-export type TriggerReindexErrors = {
-    /**
-     * Bad Request
-     */
-    400: Error400;
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type TriggerReindexError = TriggerReindexErrors[keyof TriggerReindexErrors];
-
-export type TriggerReindexResponses = {
-    /**
-     * OK
-     */
-    200: ReindexResponse;
-};
-
-export type TriggerReindexResponse = TriggerReindexResponses[keyof TriggerReindexResponses];
 
 export type ListAdminReportsData = {
     body?: never;

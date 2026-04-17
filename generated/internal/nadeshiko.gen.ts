@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, updateCollection, updateCollectionSegment, getCollectionStats, triggerReindex, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, listUserLabs, enrollUserLab, unenrollUserLab, updateCollection, updateCollectionSegment, getCollectionStats, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAdminMediaAudits, updateAdminMediaAudit, runAdminMediaAudit, listAdminMediaAuditRuns, getAdminMediaAuditRun, getAnnouncement, updateAnnouncement, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 import { flatPaginate } from './paginate';
@@ -275,10 +275,6 @@ export type NadeshikoClient = {
       (id: string): Promise<Types.GetCollectionStatsResponse>;
       (params: Types.GetCollectionStatsData['path'] & { throwOnError: false }): Promise<{ data: Types.GetCollectionStatsResponse; response: Response; request: Request } | { error: Types.GetCollectionStatsErrors; response: Response; request: Request }>;
       (params: Types.GetCollectionStatsData['path']): Promise<Types.GetCollectionStatsResponse>;
-    };
-    triggerReindex: {
-      (params: NonNullable<Types.TriggerReindexData['body']> & { throwOnError: false }): Promise<{ data: Types.TriggerReindexResponse; response: Response; request: Request } | { error: Types.TriggerReindexErrors; response: Response; request: Request }>;
-      (params?: NonNullable<Types.TriggerReindexData['body']>): Promise<Types.TriggerReindexResponse>;
     };
     listAdminReports: {
       (params: NonNullable<Types.ListAdminReportsData['query']> & { throwOnError: false }): Promise<{ data: Types.ListAdminReportsResponse; response: Response; request: Request } | { error: Types.ListAdminReportsErrors; response: Response; request: Request }>;
@@ -835,12 +831,6 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
-  const _triggerReindex = (params?: any) => {
-    const { throwOnError: tOE, ...body } = params ?? {};
-    const p = triggerReindex({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
-    return tOE === false ? p : p.then((r: any) => r.data);
-  };
-
   const _listAdminReports = (params?: any) => {
     const { throwOnError: tOE, ...query } = params ?? {};
     const p = listAdminReports({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
@@ -1007,7 +997,6 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     updateCollection: _updateCollection,
     updateCollectionSegment: _updateCollectionSegment,
     getCollectionStats: _getCollectionStats,
-    triggerReindex: _triggerReindex,
     listAdminReports: _listAdminReports,
     batchUpdateAdminReports: _batchUpdateAdminReports,
     bulkUpdateAdminReports: _bulkUpdateAdminReports,
