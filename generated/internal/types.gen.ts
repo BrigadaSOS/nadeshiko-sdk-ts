@@ -1729,8 +1729,7 @@ export type UserPreferences = {
      * Per-category content rating display preferences
      */
     contentRatingPreferences?: {
-        suggestive?: 'SHOW' | 'BLUR' | 'HIDE';
-        explicit?: 'SHOW' | 'BLUR' | 'HIDE';
+        nsfw?: 'SHOW' | 'BLUR' | 'HIDE';
     };
     searchHistory?: {
         /**
