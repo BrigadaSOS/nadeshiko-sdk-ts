@@ -1731,6 +1731,13 @@ export type UserPreferences = {
     contentRatingPreferences?: {
         nsfw?: 'SHOW' | 'BLUR' | 'HIDE';
     };
+    /**
+     * Per-language visibility mode for translations in search results, keyed by ISO 639-1 code (uppercase)
+     */
+    translationVisibilityPreferences?: {
+        EN?: 'show' | 'spoiler' | 'hidden';
+        ES?: 'show' | 'spoiler' | 'hidden';
+    };
     searchHistory?: {
         /**
          * Whether activity tracking is enabled (default true)
