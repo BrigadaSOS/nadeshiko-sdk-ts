@@ -431,7 +431,7 @@ export type SearchResponse = {
      */
     includes?: {
         /**
-         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
+         * Media objects keyed by publicId. Present only when `include[]=media` is requested.
          */
         media?: {
             [key: string]: Media;
@@ -679,7 +679,7 @@ export type SearchStatsResponse = {
      */
     includes?: {
         /**
-         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
+         * Media objects keyed by publicId. Present only when `include[]=media` is requested.
          */
         media?: {
             [key: string]: Media;
@@ -753,7 +753,7 @@ export type SearchMultipleResponse = {
      */
     includes?: {
         /**
-         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
+         * Media objects keyed by publicId. Present only when `include[]=media` is requested.
          */
         media?: {
             [key: string]: Media;
@@ -1234,7 +1234,7 @@ export type SegmentContextResponse = {
      */
     includes?: {
         /**
-         * Media objects keyed by mediaPublicId. Present only when `include[]=media` is requested.
+         * Media objects keyed by publicId. Present only when `include[]=media` is requested.
          */
         media?: {
             [key: string]: Media;
