@@ -127,8 +127,13 @@ export type SearchFilters = {
      * - `[]`: match against Japanese only
      * - `["EN"]` / `["ES"]` / `["EN", "ES"]`: match against Japanese plus the listed translation languages
      *
+     * Also accepts the legacy object form `{ exclude: ["en", "es"] }` for backward compatibility.
+     * The legacy form is translated on receipt: listed codes are excluded from the default language set.
+     *
      */
-    languages?: Array<'EN' | 'ES'>;
+    languages?: Array<'EN' | 'ES'> | {
+        exclude?: Array<'en' | 'es' | 'EN' | 'ES'>;
+    };
 };
 
 /**
@@ -212,7 +217,7 @@ export type Segment = {
     /**
      * Public ID for the segment (nanoid)
      */
-    segmentPublicId: string;
+    publicId: string;
     /**
      * Position of the segment within the episode
      */
@@ -325,7 +330,7 @@ export type Media = {
     /**
      * Public ID for the media (use this in public URLs)
      */
-    mediaPublicId: string;
+    publicId: string;
     /**
      * URL-friendly slug for the media
      */
@@ -785,7 +790,7 @@ export type MediaSummary = {
     /**
      * Public ID for the media
      */
-    mediaPublicId: string;
+    publicId: string;
     /**
      * URL-friendly slug for the media
      */
@@ -1839,7 +1844,7 @@ export type Collection = {
     /**
      * Public ID for the collection
      */
-    collectionPublicId: string;
+    publicId: string;
     /**
      * Name of the collection
      */
