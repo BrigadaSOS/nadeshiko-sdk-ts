@@ -737,9 +737,13 @@ export type WordMatch = {
      */
     isMatch: boolean;
     /**
-     * Total number of times this word appears across all media
+     * Number of times this word appears across media matching the current request filters (including any hidden-media exclusion).
      */
     matchCount: number;
+    /**
+     * Total occurrences across all media, ignoring the hidden-media exclusion filter. Equal to `matchCount` when no media exclusion is in effect.
+     */
+    realMatchCount: number;
     /**
      * List of media containing this word
      */
