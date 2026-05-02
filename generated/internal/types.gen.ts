@@ -666,9 +666,13 @@ export type MediaSearchStats = {
 export type CategoryCount = {
     category: Category;
     /**
-     * Number of entries in this category
+     * Number of entries in this category under the current request filters (including any hidden-media exclusion).
      */
     count: number;
+    /**
+     * Number of entries in this category when the hidden-media exclusion filter is ignored. Equal to `count` when no hidden-media exclusion is in effect.
+     */
+    realCount: number;
 };
 
 export type SearchStatsResponse = {
