@@ -1752,10 +1752,6 @@ export type UserPreferences = {
          */
         enabled?: boolean;
     };
-    /**
-     * ISO timestamp of when the user last visited the blog page
-     */
-    blogLastVisited?: string;
     ankiProfiles?: Array<{
         id: string;
         name: string;
