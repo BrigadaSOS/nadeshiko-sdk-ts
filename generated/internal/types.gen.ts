@@ -54,7 +54,7 @@ export type MediaFilterItem = {
 /**
  * Media category type
  */
-export type Category = 'ANIME' | 'JDRAMA';
+export type Category = 'ANIME' | 'JDRAMA' | 'YOUTUBE';
 
 /**
  * Content rating level for the segment
@@ -237,6 +237,10 @@ export type Segment = {
      */
     episode: number;
     /**
+     * External source video ID of this segment's episode (YouTube video ID)
+     */
+    externalVideoId: string;
+    /**
      * Public ID of the media this segment belongs to (nanoid)
      */
     mediaPublicId: string;
@@ -321,6 +325,10 @@ export type ExternalId = {
      * TMDB ID
      */
     tmdb: string;
+    /**
+     * YouTube channel ID
+     */
+    youtube: string;
 };
 
 /**
@@ -351,7 +359,7 @@ export type Media = {
     /**
      * Format of the media release
      */
-    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
+    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL' | 'YOUTUBE';
     /**
      * Current airing status
      */
@@ -392,7 +400,7 @@ export type Media = {
     /**
      * Airing season label for the media
      */
-    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
+    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | 'NONE';
     /**
      * Airing year for the media
      */
@@ -1017,7 +1025,7 @@ export type MediaCreateRequest = {
     /**
      * Format of the media release
      */
-    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
+    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL' | 'YOUTUBE';
     /**
      * Current airing status
      */
@@ -1054,7 +1062,7 @@ export type MediaCreateRequest = {
     /**
      * Airing season label for the media
      */
-    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
+    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | 'NONE';
     /**
      * Airing year for the media
      */
@@ -1295,7 +1303,7 @@ export type MediaUpdateRequest = {
     /**
      * Format of the media release
      */
-    airingFormat?: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
+    airingFormat?: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL' | 'YOUTUBE';
     /**
      * Current airing status
      */
@@ -1332,7 +1340,7 @@ export type MediaUpdateRequest = {
     /**
      * Airing season label for the media
      */
-    seasonName?: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
+    seasonName?: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | 'NONE';
     /**
      * Airing year for the media
      */
@@ -1388,6 +1396,10 @@ export type Episode = {
      */
     thumbnailUrl: string;
     /**
+     * External source video identifier for this episode
+     */
+    externalVideoId: string;
+    /**
      * Number of segments in this episode
      */
     segmentCount: number;
@@ -1428,6 +1440,10 @@ export type EpisodeCreateRequest = {
      */
     thumbnailUrl?: string;
     /**
+     * External source video identifier (YouTube video ID for YOUTUBE media)
+     */
+    externalVideoId?: string;
+    /**
      * Episode number within the media (must be unique for this media; 0 for movies/specials)
      */
     episodeNumber: number;
@@ -1465,6 +1481,10 @@ export type EpisodeUpdateRequest = {
      * URL to episode thumbnail image
      */
     thumbnailUrl?: string;
+    /**
+     * External source video identifier (YouTube video ID for YOUTUBE media)
+     */
+    externalVideoId?: string;
 };
 
 export type SegmentListResponse = {
@@ -2565,7 +2585,7 @@ export type ListMediaData = {
         /**
          * Filter by media category
          */
-        category?: 'ANIME' | 'JDRAMA';
+        category?: 'ANIME' | 'JDRAMA' | 'YOUTUBE';
         /**
          * Search term to match against media names (English, Japanese, romaji)
          */
