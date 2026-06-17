@@ -23,10 +23,10 @@ export interface NadeshikoConfig {
    * Defaults to reading the `nadeshiko.session_token` cookie from `document.cookie`.
    */
   sessionToken?: () => string | undefined | Promise<string | undefined>;
-  /** Base URL of the Nadeshiko API. Accepts `'LOCAL'`, `'DEVELOPMENT'`, `'PRODUCTION'`, or a custom URL string. */
-  baseURL?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+  /** Base URL of the Nadeshiko API. Accepts `'LOCAL'`, `'DEVELOPMENT'`, `'STAGING'`, `'PRODUCTION'`, or a custom URL string. */
+  baseURL?: 'LOCAL' | 'DEVELOPMENT' | 'STAGING' | 'PRODUCTION' | string;
   /** @deprecated Use `baseURL` instead */
-  baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | string;
+  baseUrl?: 'LOCAL' | 'DEVELOPMENT' | 'STAGING' | 'PRODUCTION' | string;
   /** Retry configuration for failed requests. Retries on network errors and 408/429/5xx responses. */
   retryOptions?: RetryOptions;
   /** Default headers sent with every request (e.g. User-Agent, tracing headers). */
@@ -35,7 +35,8 @@ export interface NadeshikoConfig {
 
 const environments = {
   LOCAL: 'http://localhost:5000/api',
-  DEVELOPMENT: 'https://api-dev.nadeshiko.co',
+  DEVELOPMENT: 'https://api-stg.nadeshiko.co',
+  STAGING: 'https://api-stg.nadeshiko.co',
   PRODUCTION: 'https://api.nadeshiko.co',
   PROXY: '',
 } as const;

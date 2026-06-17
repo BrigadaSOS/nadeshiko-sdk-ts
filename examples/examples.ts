@@ -14,7 +14,7 @@ import {
 
 const client = createNadeshikoClient({
   apiKey: process.env.NADESHIKO_API_KEY!,
-  baseURL: 'PRODUCTION', // 'LOCAL' | 'DEVELOPMENT' | 'PRODUCTION' | custom URL
+  baseURL: 'PRODUCTION', // 'LOCAL' | 'DEVELOPMENT' | 'STAGING' | 'PRODUCTION' | custom URL
 });
 
 // With retry + timeout + custom headers
