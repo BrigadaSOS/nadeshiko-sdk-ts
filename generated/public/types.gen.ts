@@ -54,7 +54,7 @@ export type MediaFilterItem = {
 /**
  * Media category type
  */
-export type Category = 'ANIME' | 'JDRAMA';
+export type Category = 'ANIME' | 'JDRAMA' | 'YOUTUBE';
 
 /**
  * Content rating level for the segment
@@ -237,6 +237,10 @@ export type Segment = {
      */
     episode: number;
     /**
+     * External source video ID of this segment's episode (YouTube video ID)
+     */
+    externalVideoId: string;
+    /**
      * Public ID of the media this segment belongs to (nanoid)
      */
     mediaPublicId: string;
@@ -321,6 +325,10 @@ export type ExternalId = {
      * TMDB ID
      */
     tmdb: string;
+    /**
+     * YouTube channel ID
+     */
+    youtube: string;
 };
 
 /**
@@ -351,7 +359,7 @@ export type Media = {
     /**
      * Format of the media release
      */
-    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
+    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL' | 'YOUTUBE';
     /**
      * Current airing status
      */
@@ -392,7 +400,7 @@ export type Media = {
     /**
      * Airing season label for the media
      */
-    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
+    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | 'NONE';
     /**
      * Airing year for the media
      */
@@ -666,9 +674,13 @@ export type MediaSearchStats = {
 export type CategoryCount = {
     category: Category;
     /**
-     * Number of entries in this category
+     * Number of entries in this category under the current request filters (including any hidden-media exclusion).
      */
     count: number;
+    /**
+     * Number of entries in this category when the hidden-media exclusion filter is ignored. Equal to `count` when no hidden-media exclusion is in effect.
+     */
+    realCount: number;
 };
 
 export type SearchStatsResponse = {
@@ -737,9 +749,13 @@ export type WordMatch = {
      */
     isMatch: boolean;
     /**
-     * Total number of times this word appears across all media
+     * Number of times this word appears across media matching the current request filters (including any hidden-media exclusion).
      */
     matchCount: number;
+    /**
+     * Total occurrences across all media, ignoring the hidden-media exclusion filter. Equal to `matchCount` when no media exclusion is in effect.
+     */
+    realMatchCount: number;
     /**
      * List of media containing this word
      */
@@ -1009,7 +1025,7 @@ export type MediaCreateRequest = {
     /**
      * Format of the media release
      */
-    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
+    airingFormat: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL' | 'YOUTUBE';
     /**
      * Current airing status
      */
@@ -1046,7 +1062,7 @@ export type MediaCreateRequest = {
     /**
      * Airing season label for the media
      */
-    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
+    seasonName: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | 'NONE';
     /**
      * Airing year for the media
      */
@@ -1287,7 +1303,7 @@ export type MediaUpdateRequest = {
     /**
      * Format of the media release
      */
-    airingFormat?: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
+    airingFormat?: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL' | 'YOUTUBE';
     /**
      * Current airing status
      */
@@ -1324,7 +1340,7 @@ export type MediaUpdateRequest = {
     /**
      * Airing season label for the media
      */
-    seasonName?: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
+    seasonName?: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL' | 'NONE';
     /**
      * Airing year for the media
      */
@@ -1380,6 +1396,10 @@ export type Episode = {
      */
     thumbnailUrl: string;
     /**
+     * External source video identifier for this episode
+     */
+    externalVideoId: string;
+    /**
      * Number of segments in this episode
      */
     segmentCount: number;
@@ -1420,6 +1440,10 @@ export type EpisodeCreateRequest = {
      */
     thumbnailUrl?: string;
     /**
+     * External source video identifier (YouTube video ID for YOUTUBE media)
+     */
+    externalVideoId?: string;
+    /**
      * Episode number within the media (must be unique for this media; 0 for movies/specials)
      */
     episodeNumber: number;
@@ -1457,6 +1481,10 @@ export type EpisodeUpdateRequest = {
      * URL to episode thumbnail image
      */
     thumbnailUrl?: string;
+    /**
+     * External source video identifier (YouTube video ID for YOUTUBE media)
+     */
+    externalVideoId?: string;
 };
 
 export type SegmentListResponse = {
@@ -1744,10 +1772,6 @@ export type UserPreferences = {
          */
         enabled?: boolean;
     };
-    /**
-     * ISO timestamp of when the user last visited the blog page
-     */
-    blogLastVisited?: string;
     ankiProfiles?: Array<{
         id: string;
         name: string;
@@ -2561,7 +2585,7 @@ export type ListMediaData = {
         /**
          * Filter by media category
          */
-        category?: 'ANIME' | 'JDRAMA';
+        category?: 'ANIME' | 'JDRAMA' | 'YOUTUBE';
         /**
          * Search term to match against media names (English, Japanese, romaji)
          */
