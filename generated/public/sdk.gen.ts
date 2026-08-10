@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddExcludedMediaData, AddExcludedMediaErrors, AddExcludedMediaResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, BatchUpdateAdminReportsData, BatchUpdateAdminReportsErrors, BatchUpdateAdminReportsResponses, BulkDeleteAdminReportsData, BulkDeleteAdminReportsErrors, BulkDeleteAdminReportsResponses, BulkUpdateAdminReportsData, BulkUpdateAdminReportsErrors, BulkUpdateAdminReportsResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSegmentsBatchData, CreateSegmentsBatchErrors, CreateSegmentsBatchResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReportData, DeleteAdminReportErrors, DeleteAdminReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, EnrollUserLabData, EnrollUserLabErrors, EnrollUserLabResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminMediaAuditRunData, GetAdminMediaAuditRunErrors, GetAdminMediaAuditRunResponses, GetAnnouncementData, GetAnnouncementErrors, GetAnnouncementResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetCoveredWordsData, GetCoveredWordsErrors, GetCoveredWordsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMeData, GetMediaData, GetMediaErrors, GetMediaResponses, GetMeErrors, GetMeResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetStatsOverviewData, GetStatsOverviewErrors, GetStatsOverviewResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, ListAdminMediaAuditRunsData, ListAdminMediaAuditRunsErrors, ListAdminMediaAuditRunsResponses, ListAdminMediaAuditsData, ListAdminMediaAuditsErrors, ListAdminMediaAuditsResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListExcludedMediaData, ListExcludedMediaErrors, ListExcludedMediaResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentRevisionsData, ListSegmentRevisionsErrors, ListSegmentRevisionsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ListUserLabsData, ListUserLabsErrors, ListUserLabsResponses, RemoveExcludedMediaData, RemoveExcludedMediaErrors, RemoveExcludedMediaResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RunAdminMediaAuditData, RunAdminMediaAuditErrors, RunAdminMediaAuditResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchMediaData, SearchMediaErrors, SearchMediaResponses, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerCoveredWordsUpdateData, TriggerCoveredWordsUpdateErrors, TriggerCoveredWordsUpdateResponses, UnenrollUserLabData, UnenrollUserLabErrors, UnenrollUserLabResponses, UpdateAdminMediaAuditData, UpdateAdminMediaAuditErrors, UpdateAdminMediaAuditResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAnnouncementData, UpdateAnnouncementErrors, UpdateAnnouncementResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
+import type { AddExcludedMediaData, AddExcludedMediaErrors, AddExcludedMediaResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, BatchUpdateAdminReportsData, BatchUpdateAdminReportsErrors, BatchUpdateAdminReportsResponses, BulkDeleteAdminReportsData, BulkDeleteAdminReportsErrors, BulkDeleteAdminReportsResponses, BulkUpdateAdminReportsData, BulkUpdateAdminReportsErrors, BulkUpdateAdminReportsResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSegmentsBatchData, CreateSegmentsBatchErrors, CreateSegmentsBatchResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReportData, DeleteAdminReportErrors, DeleteAdminReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminUsersWithProvidersData, GetAdminUsersWithProvidersErrors, GetAdminUsersWithProvidersResponses, GetAnnouncementData, GetAnnouncementErrors, GetAnnouncementResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetCoveredWordsData, GetCoveredWordsErrors, GetCoveredWordsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMeData, GetMediaData, GetMediaErrors, GetMediaResponses, GetMeErrors, GetMeResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetStatsOverviewData, GetStatsOverviewErrors, GetStatsOverviewResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAgentActivityData, ListAgentActivityErrors, ListAgentActivityResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListExcludedMediaData, ListExcludedMediaErrors, ListExcludedMediaResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentRevisionsData, ListSegmentRevisionsErrors, ListSegmentRevisionsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ModerateEpisodeSegmentsData, ModerateEpisodeSegmentsErrors, ModerateEpisodeSegmentsResponses, RemoveExcludedMediaData, RemoveExcludedMediaErrors, RemoveExcludedMediaResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RestoreSegmentRevisionData, RestoreSegmentRevisionErrors, RestoreSegmentRevisionResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchMediaData, SearchMediaErrors, SearchMediaResponses, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerCoveredWordsUpdateData, TriggerCoveredWordsUpdateErrors, TriggerCoveredWordsUpdateResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAnnouncementData, UpdateAnnouncementErrors, UpdateAnnouncementResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -192,6 +192,21 @@ export const getSegmentContext = <ThrowOnError extends boolean = false>(options:
  *
  */
 /**
+ * Restore a segment revision
+ *
+ * Writes the values captured in the given revision's snapshot back onto the
+ * segment, undoing every edit made since.
+ *
+ * The restore is itself an edit: it writes a new revision snapshotting the state
+ * it replaced, so restoring is reversible by restoring again. Revision numbers
+ * are never rewound — a segment at revision 7 restored to revision 3 lands at
+ * revision 8, whose snapshot holds what revision 7 left behind.
+ *
+ * This is the undo path for a bad moderation edit, whether a person or the agent
+ * made it.
+ *
+ */
+/**
  * Delete media
  *
  * Soft-deletes a media entry by setting the `deletedAt` timestamp. The media remains in the database but is excluded from query results.
@@ -274,6 +289,32 @@ export const getEpisode = <ThrowOnError extends boolean = false>(options: Option
  *
  * Creates multiple segments for a specific episode in a single request.
  * Duplicate segments are silently skipped.
+ *
+ */
+/**
+ * Apply a moderation action to every segment in an episode
+ *
+ * Applies one action across a whole episode. This exists for defects that are
+ * properties of the episode rather than of any single line — a subtitle file
+ * offset against the audio, or a bad rip that makes every clip unusable.
+ *
+ * Two actions are supported:
+ *
+ * - `shiftTimings` moves every segment's start and end by `offsetMs`, which may
+ * be negative. Segments whose start would go below zero are clamped to zero
+ * rather than skipped, so the episode stays contiguous.
+ * - `setStatus` sets every segment's status, which is how an episode is hidden
+ * from search without deleting anything.
+ *
+ * Every affected segment gets its own revision, so this is revertible one segment
+ * at a time through the restore endpoint, and shows up per segment in the agent
+ * activity feed.
+ *
+ * **Bounded by `maxAffected`.** If the episode has more segments than that, the
+ * request is rejected with 400 and nothing is written — no partial application.
+ * The cap is what keeps an automated caller's mistake to a size a person can
+ * review, so callers are expected to set it deliberately rather than to the
+ * largest value they can.
  *
  */
 /**
@@ -419,26 +460,9 @@ export const getUserActivityStats = <ThrowOnError extends boolean = false>(optio
  * Returns a full JSON export of all user-related data for GDPR data portability.
  * Includes profile, preferences, activity history, collections, and reports.
  *
- */
-/**
- * List lab features with user opt-in status
- *
- * Returns all available lab features merged with the authenticated user's
- * opt-in status. Features gated by role are excluded if the user lacks
- * the required role.
- *
- */
-/**
- * Unenroll from a lab feature
- *
- * Opts the authenticated user out of a lab feature.
- *
- */
-/**
- * Enroll in a lab feature
- *
- * Opts the authenticated user into a lab feature. The user must be eligible
- * for the lab (correct role, in allowlist or rollout percentage).
+ * The whole export is one JSON body, so each section is capped: 50000 activity entries,
+ * 5000 reports, 1000 collections, and 50000 collection segment references. The `truncated`
+ * object reports which sections, if any, hit their ceiling.
  *
  */
 /**
@@ -527,6 +551,9 @@ export const addSegmentToCollection = <ThrowOnError extends boolean = false>(opt
  * expansions behave the same as `/v1/search`, with one additional constraint:
  * results are limited to segments already present in the target collection.
  *
+ * Restricting the result set means every segment id in the collection is part of the
+ * query, so collections larger than 20000 segments cannot be searched and return `400`.
+ *
  */
 export const searchCollectionSegments = <ThrowOnError extends boolean = false>(options: Options<SearchCollectionSegmentsData, ThrowOnError>) => (options.client ?? client).post<SearchCollectionSegmentsResponses, SearchCollectionSegmentsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -560,7 +587,8 @@ export const removeSegmentFromCollection = <ThrowOnError extends boolean = false
  * Get collection statistics
  *
  * Returns per-media segment counts and per-category counts for all segments in a collection.
- * Pages through all collection segments internally to compute statistics.
+ * Counts are aggregated in the database, so the response size follows the number of media
+ * and episodes the collection touches rather than its segment count.
  *
  */
 /**
@@ -603,33 +631,19 @@ export const removeSegmentFromCollection = <ThrowOnError extends boolean = false
  *
  */
 /**
- * List all media audits
+ * List edits made by the moderation agent
  *
- * Returns all audit definitions with current config, threshold schema, and latest run info.
+ * Returns segment revisions written under a service credential, newest first,
+ * joined to the segment they changed and the report they answered.
  *
- */
-/**
- * Update media audit config
+ * This is the independent record of what the agent actually did. The agent's own
+ * Discord digest reports what it believes it did; this reports what landed in the
+ * database. Reading both is how a run that half-failed, or an action the agent
+ * did not mention, becomes visible.
  *
- * Updates the threshold values or enabled status of an audit.
- *
- */
-/**
- * Run media audit
- *
- * Triggers all enabled audits (or a specific one). Creates MediaAuditRun records and AUTO reports for any findings.
- *
- */
-/**
- * List past audit runs
- *
- * Returns past media audit runs with summary stats. Supports filtering by audit name and cursor pagination.
- *
- */
-/**
- * Get audit run details
- *
- * Returns a specific media audit run record with its linked reports.
+ * Each entry carries the pre-edit `snapshot`, so a bad edit can be reverted
+ * straight from here through the revision restore endpoint without going hunting
+ * for the revision number.
  *
  */
 /**
@@ -642,5 +656,12 @@ export const removeSegmentFromCollection = <ThrowOnError extends boolean = false
  * Create or update announcement
  *
  * Upserts the site-wide announcement. Only one announcement exists at a time.
+ *
+ */
+/**
+ * List users with linked auth providers
+ *
+ * Returns active accounts together with the authentication providers linked to each one, for the admin dashboard.
+ * Uses offset pagination because the dashboard exposes page-back navigation.
  *
  */

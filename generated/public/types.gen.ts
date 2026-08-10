@@ -75,11 +75,17 @@ export type SearchFilters = {
      */
     media?: {
         /**
-         * Include only segments from these media (with optional episode filter)
+         * Include only segments from these media (with optional episode filter).
+         * A `mediaPublicId` that matches no media is rejected with `400`: dropping it would
+         * turn a deliberately narrow request into an unfiltered one.
+         *
          */
         include?: Array<MediaFilterItem>;
         /**
-         * Exclude segments from these media (with optional episode filter)
+         * Exclude segments from these media (with optional episode filter).
+         * A `mediaPublicId` that matches no media is ignored, since excluding a media that
+         * does not exist excludes nothing.
+         *
          */
         exclude?: Array<MediaFilterItem>;
     };
@@ -193,21 +199,45 @@ export type Token = {
      */
     p: string;
     /**
-     * POS subtype 1 (UniDic pos[1])
+     * The part of speech in words, so a client needs no UniDic table.
      */
-    p1: string;
+    posLabel?: string;
     /**
-     * POS subtype 2 (UniDic pos[2])
+     * How this token was grouped: a plain word, a compound, an inflected form, a counter, a function word, a merged grammatical expression, or a symbol.
+     *
      */
-    p2: string;
+    kind?: 'word' | 'compound' | 'inflected' | 'counter' | 'function' | 'expression' | 'symbol';
     /**
-     * Conjugation type (UniDic pos[4])
+     * Ruby, aligned to this surface: 食べました is 食(た) + べました, over the kanji and not the okurigana. Absent when there is none to show.
+     *
      */
-    p4: string;
+    f?: Array<{
+        /**
+         * The run of text.
+         */
+        t: string;
+        /**
+         * Its reading. Absent when it needs none.
+         */
+        r?: string;
+    }>;
     /**
-     * Conjugation form (UniDic pos[5])
+     * What this surface does to its dictionary form, outermost step first. Japanese stacks, so it is a chain rather than one name, and a step that is genuinely ambiguous says so ("potential / passive") instead of picking a side. Absent for anything that is not an inflected verb or adjective.
+     *
      */
-    cf: string;
+    inflection?: {
+        labels: Array<string>;
+        base: string;
+    };
+    /**
+     * The finer morphemes inside a grouped token, positioned like their parent. Elasticsearch highlights with its own analyzer, so a match can land inside one of these tokens; these are the boundaries that let it render as a partial highlight. Absent when the token is already atomic.
+     *
+     */
+    parts?: Array<{
+        s: string;
+        b: number;
+        e: number;
+    }>;
 };
 
 /**
@@ -1196,12 +1226,6 @@ export type SegmentUpdateRequest = {
         [key: string]: unknown;
     };
     /**
-     * POS tokenization results keyed by engine (sudachi, unidic)
-     */
-    posAnalysis?: {
-        [key: string]: unknown;
-    };
-    /**
      * Storage backend for segment assets
      */
     storage?: 'LOCAL' | 'R2';
@@ -1209,6 +1233,15 @@ export type SegmentUpdateRequest = {
      * Hash identifier for the segment (from segment JSON)
      */
     hashedId?: string;
+    /**
+     * The report this edit answers, recorded on the resulting revision.
+     *
+     * Optional, and only meaningful for moderation traffic — it is what lets the
+     * agent activity feed show which reported problem an edit was made for. Edits
+     * that did not come from a report leave it unset.
+     *
+     */
+    reportId?: number;
 };
 
 /**
@@ -1233,12 +1266,6 @@ export type SegmentInternal = Segment & {
      * Raw WD Tagger v3 classifier output used to derive content rating
      */
     ratingAnalysis?: {
-        [key: string]: unknown;
-    };
-    /**
-     * POS tokenization results keyed by engine (sudachi, unidic)
-     */
-    posAnalysis?: {
         [key: string]: unknown;
     };
 };
@@ -1268,13 +1295,25 @@ export type SegmentRevision = {
      */
     revisionNumber: number;
     /**
-     * Snapshot of editable fields at the time of the revision
+     * The segment's editable fields as they were *before* this revision's edit.
+     * Restoring a revision writes these values back.
+     *
      */
     snapshot: {
         [key: string]: unknown;
     };
     /**
-     * Name of the user who made the change
+     * Whether a person or the moderation agent made the change. Derived from the
+     * credential at write time — a service API key is the agent.
+     *
+     */
+    actor: 'HUMAN' | 'AGENT';
+    /**
+     * The report this edit answered, when it answered one
+     */
+    reportId: number;
+    /**
+     * Name of the account the change was made under
      */
     userName?: string;
     /**
@@ -1540,12 +1579,6 @@ export type SegmentCreateRequest = {
         [key: string]: unknown;
     };
     /**
-     * POS tokenization results keyed by engine (sudachi, unidic)
-     */
-    posAnalysis?: {
-        [key: string]: unknown;
-    };
-    /**
      * Storage backend for segment assets
      */
     storage: 'LOCAL' | 'R2';
@@ -1557,6 +1590,44 @@ export type SegmentCreateRequest = {
 
 export type SegmentBatchCreateRequest = {
     segments: Array<SegmentCreateRequest>;
+};
+
+export type ModerateEpisodeSegmentsRequest = {
+    /**
+     * Which bulk action to apply
+     */
+    action: 'shiftTimings' | 'setStatus';
+    /**
+     * Milliseconds to shift every segment by; negative moves clips earlier.
+     * Required for `shiftTimings`, ignored otherwise.
+     *
+     */
+    offsetMs?: number;
+    status?: SegmentStatus;
+    /**
+     * Refuse the request if the episode has more segments than this.
+     *
+     * There is no safe default, so it is required: the right ceiling depends on
+     * whether a person is about to review the result. The request is rejected
+     * whole — a cap smaller than the episode changes nothing rather than applying
+     * to the first N segments.
+     *
+     */
+    maxAffected: number;
+    /**
+     * The report this action answers, recorded on every revision it writes
+     */
+    reportId?: number;
+};
+
+/**
+ * Number of records affected by a bulk operation
+ */
+export type AffectedCountResponse = {
+    /**
+     * Number of records affected
+     */
+    count: number;
 };
 
 export type UserMe = {
@@ -1714,10 +1785,6 @@ export type Report = {
     id: number;
     source: ReportSource;
     target: ReportTarget;
-    /**
-     * ID of the audit run that created this report (AUTO only)
-     */
-    auditRunId: number;
     reason: ReportReason;
     /**
      * Optional description with additional details
@@ -1827,16 +1894,6 @@ export type UserActivityRequest = {
 };
 
 /**
- * Number of records affected by a bulk operation
- */
-export type AffectedCountResponse = {
-    /**
-     * Number of records affected
-     */
-    count: number;
-};
-
-/**
  * Activity counts for a single day, broken down by type. Only types with at least 1 event are present.
  */
 export type HeatmapDayCounts = {
@@ -1909,6 +1966,19 @@ export type UserExportCollection = Collection & {
  * User data export payload (identifier-oriented references)
  */
 export type UserExportResponse = {
+    /**
+     * Which sections were cut short. The export is assembled and returned as a single JSON
+     * body, so each section has a ceiling: 50000 activity entries, 5000 reports, 1000
+     * collections, and 50000 collection segment references in total. A `true` here means more
+     * data exists than the response carries.
+     *
+     */
+    truncated: {
+        activity: boolean;
+        collections: boolean;
+        collectionSegments: boolean;
+        reports: boolean;
+    };
     profile: {
         id: number;
         username: string;
@@ -1919,25 +1989,6 @@ export type UserExportResponse = {
     activity: Array<UserActivity>;
     collections: Array<UserExportCollection>;
     reports: Array<Report>;
-};
-
-export type UserLabFeature = {
-    /**
-     * Unique identifier for the feature
-     */
-    key: string;
-    /**
-     * Human-readable feature name
-     */
-    name?: string;
-    /**
-     * Description of what the feature does
-     */
-    description?: string;
-    /**
-     * Whether this feature is currently active for the user
-     */
-    active: boolean;
 };
 
 /**
@@ -1969,10 +2020,6 @@ export type AddSegmentToCollectionRequest = {
      * Segment public ID
      */
     segmentPublicId: string;
-    /**
-     * Optional annotation
-     */
-    note?: string;
 };
 
 export type UpdateCollectionSegmentRequest = {
@@ -1980,10 +2027,6 @@ export type UpdateCollectionSegmentRequest = {
      * New position in the collection
      */
     position?: number;
-    /**
-     * Updated annotation
-     */
-    note?: string;
 };
 
 /**
@@ -2087,10 +2130,6 @@ export type BulkDeleteReportsRequest = {
          */
         targetSegmentId?: number;
         /**
-         * Filter by audit run ID
-         */
-        auditRunId?: number;
-        /**
          * Only delete reports whose target media no longer exists
          */
         orphaned?: boolean;
@@ -2127,10 +2166,6 @@ export type BulkUpdateReportsRequest = {
          */
         targetSegmentId?: number;
         /**
-         * Filter by audit run ID
-         */
-        auditRunId?: number;
-        /**
          * Only update reports whose target media no longer exists
          */
         orphaned?: boolean;
@@ -2145,116 +2180,55 @@ export type UpdateReportRequest = {
     adminNotes?: string;
 };
 
-export type MediaAudit = {
-    /**
-     * Audit ID
-     */
-    id: number;
-    /**
-     * Unique audit identifier
-     */
-    name: string;
-    /**
-     * Human-readable label
-     */
-    label: string;
-    /**
-     * What this audit does
-     */
-    description: string;
-    /**
-     * What level this audit operates on
-     */
-    targetType: 'MEDIA' | 'EPISODE';
-    /**
-     * Current threshold configuration
-     */
-    threshold: {
-        [key: string]: unknown;
-    };
-    /**
-     * Whether this audit is active
-     */
-    enabled: boolean;
-    /**
-     * Schema for threshold fields (from registry)
-     */
-    thresholdSchema: Array<{
-        key: string;
-        label: string;
-        type: 'number' | 'boolean';
-        default: number | boolean;
-        min?: number;
-        max?: number;
-    }>;
-    /**
-     * Latest run info for this audit
-     */
-    latestRun: {
-        id: number;
-        resultCount: number;
+export type AgentActivityResponse = {
+    entries: Array<{
+        /**
+         * Revision ID
+         */
+        revisionId: number;
+        /**
+         * The revision number to pass to the restore endpoint to undo this edit
+         */
+        revisionNumber: number;
+        /**
+         * Public ID of the segment that was changed
+         */
+        segmentPublicId: string;
+        /**
+         * Public ID of the media the segment belongs to
+         */
+        mediaPublicId: string;
+        /**
+         * Episode the segment belongs to
+         */
+        episodeNumber: number;
+        /**
+         * The segment's editable fields as they were before this edit
+         */
+        snapshot: {
+            [key: string]: unknown;
+        };
+        /**
+         * The same fields as they are now. Paired with `snapshot` this is the
+         * diff, without the caller having to fetch the segment separately.
+         *
+         */
+        current: {
+            [key: string]: unknown;
+        };
+        /**
+         * The report this edit answered, when it answered one
+         */
+        reportId: number;
+        /**
+         * Account the service credential belongs to
+         */
+        actedBy: string;
+        /**
+         * When the edit was made
+         */
         createdAt: string;
-    };
-    createdAt: string;
-    updatedAt: string;
-};
-
-export type RunAuditResponse = {
-    /**
-     * Category filter used
-     */
-    category: string;
-    checksRun: Array<{
-        /**
-         * Audit identifier
-         */
-        auditName: string;
-        /**
-         * Human-readable audit name
-         */
-        label: string;
-        /**
-         * Number of reports created
-         */
-        resultCount: number;
-        /**
-         * ID of the created run record
-         */
-        runId: number;
     }>;
-    /**
-     * Total reports created across all audits
-     */
-    totalReports: number;
-};
-
-export type MediaAuditRun = {
-    /**
-     * Run ID
-     */
-    id: number;
-    /**
-     * Name of the audit that was run
-     */
-    auditName: string;
-    /**
-     * Category filter used (ANIME/JDRAMA) or null for all
-     */
-    category?: string;
-    /**
-     * Number of reports created in this run
-     */
-    resultCount: number;
-    /**
-     * Snapshot of threshold at run time
-     */
-    thresholdUsed: {
-        [key: string]: unknown;
-    };
-    /**
-     * When this run was executed
-     */
-    createdAt: string;
 };
 
 /**
@@ -2264,6 +2238,49 @@ export type Announcement = {
     message: string;
     type: 'INFO' | 'WARNING' | 'MAINTENANCE';
     active: boolean;
+};
+
+export type AdminUserWithProviders = {
+    /**
+     * Internal user ID.
+     */
+    id: number;
+    /**
+     * The user's display name.
+     */
+    name: string;
+    /**
+     * The user's email address.
+     */
+    email: string;
+    /**
+     * The user's account tier or role.
+     */
+    role: 'ADMIN' | 'MOD' | 'USER' | 'PATREON';
+    /**
+     * Whether the account's email address has been verified.
+     */
+    emailVerified: boolean;
+    /**
+     * Whether the account is currently banned.
+     */
+    banned: boolean;
+    /**
+     * Reason recorded when the account was banned, if any.
+     */
+    banReason: string;
+    /**
+     * When the account was created.
+     */
+    createdAt: string;
+    /**
+     * When the account was last modified.
+     */
+    updatedAt: string;
+    /**
+     * Linked authentication providers (empty when the account has none).
+     */
+    providers: Array<string>;
 };
 
 export type SearchData = {
@@ -2888,6 +2905,60 @@ export type ListSegmentRevisionsResponses = {
 
 export type ListSegmentRevisionsResponse = ListSegmentRevisionsResponses[keyof ListSegmentRevisionsResponses];
 
+export type RestoreSegmentRevisionData = {
+    body?: never;
+    path: {
+        /**
+         * Segment public ID
+         */
+        segmentPublicId: string;
+        /**
+         * The revision number to restore this segment to
+         */
+        revisionNumber: number;
+    };
+    query?: never;
+    url: '/v1/media/segments/{segmentPublicId}/revisions/{revisionNumber}/restore';
+};
+
+export type RestoreSegmentRevisionErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type RestoreSegmentRevisionError = RestoreSegmentRevisionErrors[keyof RestoreSegmentRevisionErrors];
+
+export type RestoreSegmentRevisionResponses = {
+    /**
+     * OK
+     */
+    200: SegmentInternal;
+};
+
+export type RestoreSegmentRevisionResponse = RestoreSegmentRevisionResponses[keyof RestoreSegmentRevisionResponses];
+
 export type DeleteMediaData = {
     body?: never;
     path: {
@@ -3496,6 +3567,60 @@ export type CreateSegmentsBatchResponses = {
 };
 
 export type CreateSegmentsBatchResponse = CreateSegmentsBatchResponses[keyof CreateSegmentsBatchResponses];
+
+export type ModerateEpisodeSegmentsData = {
+    body: ModerateEpisodeSegmentsRequest;
+    path: {
+        /**
+         * Media public ID
+         */
+        mediaPublicId: string;
+        /**
+         * Episode number
+         */
+        episodeNumber: number;
+    };
+    query?: never;
+    url: '/v1/media/{mediaPublicId}/episodes/{episodeNumber}/segments/moderate';
+};
+
+export type ModerateEpisodeSegmentsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ModerateEpisodeSegmentsError = ModerateEpisodeSegmentsErrors[keyof ModerateEpisodeSegmentsErrors];
+
+export type ModerateEpisodeSegmentsResponses = {
+    /**
+     * OK
+     */
+    200: AffectedCountResponse;
+};
+
+export type ModerateEpisodeSegmentsResponse = ModerateEpisodeSegmentsResponses[keyof ModerateEpisodeSegmentsResponses];
 
 export type GetMeData = {
     body?: never;
@@ -4144,135 +4269,6 @@ export type ExportUserDataResponses = {
 
 export type ExportUserDataResponse = ExportUserDataResponses[keyof ExportUserDataResponses];
 
-export type ListUserLabsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/user/labs';
-};
-
-export type ListUserLabsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListUserLabsError = ListUserLabsErrors[keyof ListUserLabsErrors];
-
-export type ListUserLabsResponses = {
-    /**
-     * OK
-     */
-    200: Array<UserLabFeature>;
-};
-
-export type ListUserLabsResponse = ListUserLabsResponses[keyof ListUserLabsResponses];
-
-export type UnenrollUserLabData = {
-    body?: never;
-    path: {
-        /**
-         * Lab feature key
-         */
-        key: string;
-    };
-    query?: never;
-    url: '/v1/user/labs/{key}';
-};
-
-export type UnenrollUserLabErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type UnenrollUserLabError = UnenrollUserLabErrors[keyof UnenrollUserLabErrors];
-
-export type UnenrollUserLabResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type UnenrollUserLabResponse = UnenrollUserLabResponses[keyof UnenrollUserLabResponses];
-
-export type EnrollUserLabData = {
-    body?: never;
-    path: {
-        /**
-         * Lab feature key
-         */
-        key: string;
-    };
-    query?: never;
-    url: '/v1/user/labs/{key}';
-};
-
-export type EnrollUserLabErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type EnrollUserLabError = EnrollUserLabErrors[keyof EnrollUserLabErrors];
-
-export type EnrollUserLabResponses = {
-    /**
-     * No Content
-     */
-    204: void;
-};
-
-export type EnrollUserLabResponse = EnrollUserLabResponses[keyof EnrollUserLabResponses];
-
 export type ListCollectionsData = {
     body?: never;
     path?: never;
@@ -4814,10 +4810,6 @@ export type ListAdminReportsData = {
          */
         'target.segmentId'?: number;
         /**
-         * Filter by audit run ID
-         */
-        auditRunId?: number;
-        /**
          * When true, only return reports whose target media has been deleted
          */
         orphaned?: boolean;
@@ -5074,67 +5066,27 @@ export type UpdateAdminReportResponses = {
 
 export type UpdateAdminReportResponse = UpdateAdminReportResponses[keyof UpdateAdminReportResponses];
 
-export type ListAdminMediaAuditsData = {
+export type ListAgentActivityData = {
     body?: never;
     path?: never;
-    query?: never;
-    url: '/v1/admin/media/audits';
-};
-
-export type ListAdminMediaAuditsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListAdminMediaAuditsError = ListAdminMediaAuditsErrors[keyof ListAdminMediaAuditsErrors];
-
-export type ListAdminMediaAuditsResponses = {
-    /**
-     * OK
-     */
-    200: Array<MediaAudit>;
-};
-
-export type ListAdminMediaAuditsResponse = ListAdminMediaAuditsResponses[keyof ListAdminMediaAuditsResponses];
-
-export type UpdateAdminMediaAuditData = {
-    body: {
+    query?: {
         /**
-         * New threshold values
+         * Only return activity at or after this timestamp. Defaults to 24 hours ago.
          */
-        threshold?: {
-            [key: string]: unknown;
-        };
+        since?: string;
         /**
-         * Enable or disable this audit
+         * Only return edits made in answer to this report
          */
-        enabled?: boolean;
+        reportId?: number;
+        /**
+         * Maximum entries to return
+         */
+        take?: number;
     };
-    path: {
-        /**
-         * Audit name identifier
-         */
-        name: string;
-    };
-    query?: never;
-    url: '/v1/admin/media/audits/{name}';
+    url: '/v1/admin/agent-activity';
 };
 
-export type UpdateAdminMediaAuditErrors = {
+export type ListAgentActivityErrors = {
     /**
      * Bad Request
      */
@@ -5148,10 +5100,6 @@ export type UpdateAdminMediaAuditErrors = {
      */
     403: Error403;
     /**
-     * Not Found
-     */
-    404: Error404;
-    /**
      * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
      */
     429: Error429;
@@ -5161,169 +5109,16 @@ export type UpdateAdminMediaAuditErrors = {
     500: Error500;
 };
 
-export type UpdateAdminMediaAuditError = UpdateAdminMediaAuditErrors[keyof UpdateAdminMediaAuditErrors];
+export type ListAgentActivityError = ListAgentActivityErrors[keyof ListAgentActivityErrors];
 
-export type UpdateAdminMediaAuditResponses = {
+export type ListAgentActivityResponses = {
     /**
      * OK
      */
-    200: MediaAudit;
+    200: AgentActivityResponse;
 };
 
-export type UpdateAdminMediaAuditResponse = UpdateAdminMediaAuditResponses[keyof UpdateAdminMediaAuditResponses];
-
-export type RunAdminMediaAuditData = {
-    body?: never;
-    path: {
-        /**
-         * Audit name to run, or "all" to run all enabled audits
-         */
-        name: string;
-    };
-    query?: {
-        /**
-         * Optional category filter
-         */
-        category?: 'ANIME' | 'JDRAMA';
-    };
-    url: '/v1/admin/media/audits/{name}/run';
-};
-
-export type RunAdminMediaAuditErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type RunAdminMediaAuditError = RunAdminMediaAuditErrors[keyof RunAdminMediaAuditErrors];
-
-export type RunAdminMediaAuditResponses = {
-    /**
-     * OK
-     */
-    200: RunAuditResponse;
-};
-
-export type RunAdminMediaAuditResponse = RunAdminMediaAuditResponses[keyof RunAdminMediaAuditResponses];
-
-export type ListAdminMediaAuditRunsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Filter by audit name
-         */
-        auditName?: string;
-        /**
-         * Opaque pagination cursor token
-         */
-        cursor?: string;
-        /**
-         * Number of results per page
-         */
-        take?: number;
-    };
-    url: '/v1/admin/media/audits/runs';
-};
-
-export type ListAdminMediaAuditRunsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type ListAdminMediaAuditRunsError = ListAdminMediaAuditRunsErrors[keyof ListAdminMediaAuditRunsErrors];
-
-export type ListAdminMediaAuditRunsResponses = {
-    /**
-     * OK
-     */
-    200: {
-        runs: Array<MediaAuditRun>;
-        pagination: CursorPagination;
-    };
-};
-
-export type ListAdminMediaAuditRunsResponse = ListAdminMediaAuditRunsResponses[keyof ListAdminMediaAuditRunsResponses];
-
-export type GetAdminMediaAuditRunData = {
-    body?: never;
-    path: {
-        /**
-         * Run ID
-         */
-        auditRunId: number;
-    };
-    query?: never;
-    url: '/v1/admin/media/audits/runs/{auditRunId}';
-};
-
-export type GetAdminMediaAuditRunErrors = {
-    /**
-     * Unauthorized
-     */
-    401: Error401;
-    /**
-     * Forbidden
-     */
-    403: Error403;
-    /**
-     * Not Found
-     */
-    404: Error404;
-    /**
-     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
-     */
-    429: Error429;
-    /**
-     * Internal Server Error
-     */
-    500: Error500;
-};
-
-export type GetAdminMediaAuditRunError = GetAdminMediaAuditRunErrors[keyof GetAdminMediaAuditRunErrors];
-
-export type GetAdminMediaAuditRunResponses = {
-    /**
-     * OK
-     */
-    200: {
-        run: MediaAuditRun;
-        reports: Array<Report>;
-    };
-};
-
-export type GetAdminMediaAuditRunResponse = GetAdminMediaAuditRunResponses[keyof GetAdminMediaAuditRunResponses];
+export type ListAgentActivityResponse = ListAgentActivityResponses[keyof ListAgentActivityResponses];
 
 export type GetAnnouncementData = {
     body?: never;
@@ -5398,3 +5193,59 @@ export type UpdateAnnouncementResponses = {
 };
 
 export type UpdateAnnouncementResponse = UpdateAnnouncementResponses[keyof UpdateAnnouncementResponses];
+
+export type GetAdminUsersWithProvidersData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Number of results per page
+         */
+        limit?: number;
+        /**
+         * Number of results to skip
+         */
+        offset?: number;
+        /**
+         * Case-insensitive substring match against email and username
+         */
+        search?: string;
+    };
+    url: '/v1/admin/users-with-providers';
+};
+
+export type GetAdminUsersWithProvidersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminUsersWithProvidersError = GetAdminUsersWithProvidersErrors[keyof GetAdminUsersWithProvidersErrors];
+
+export type GetAdminUsersWithProvidersResponses = {
+    /**
+     * OK
+     */
+    200: {
+        users: Array<AdminUserWithProviders>;
+        /**
+         * Total number of active accounts matching the search
+         */
+        total: number;
+    };
+};
+
+export type GetAdminUsersWithProvidersResponse = GetAdminUsersWithProvidersResponses[keyof GetAdminUsersWithProvidersResponses];
