@@ -86,6 +86,11 @@ export type SearchFilters = {
          * A `mediaPublicId` that matches no media is ignored, since excluding a media that
          * does not exist excludes nothing.
          *
+         * The ceiling is far above `include`'s because the two grow differently: `include`
+         * is a caller narrowing a request by hand, while `exclude` carries the reader's
+         * whole hidden-media list, which grows with use. At 100 a reader who had hidden
+         * more than that got a `400` on every search they made.
+         *
          */
         exclude?: Array<MediaFilterItem>;
     };
