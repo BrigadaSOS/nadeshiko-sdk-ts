@@ -1,6 +1,6 @@
 {
   "name": "@brigadasos/nadeshiko-sdk-build",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "TypeScript SDK for Nadeshiko API",
   "private": true,
   "license": "MIT",
