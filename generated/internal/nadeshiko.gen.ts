@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, restoreSegmentRevision, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, moderateEpisodeSegments, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, updateCollection, updateCollectionSegment, getCollectionStats, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAgentActivity, getAnnouncement, updateAnnouncement, getAdminUsersWithProviders, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, createUserApiKey, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listFavoriteMedia, addFavoriteMedia, removeFavoriteMedia, listFamiliarMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, restoreSegmentRevision, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, moderateEpisodeSegments, getShirabeConnection, startShirabeLink, unlinkShirabe, completeShirabeLink, getShirabeCredential, resyncShirabeStack, reportShirabeRefusal, clearFamiliarMedia, forgetFamiliarMedia, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, createFeedback, getFeedbackFormToken, updateCollection, updateCollectionSegment, getCollectionStats, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAgentActivity, getAnnouncement, updateAnnouncement, getAdminUsersWithProviders, listTiers, getAdminUserQuota, updateAdminUserQuota, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 import { flatPaginate } from './paginate';
@@ -98,6 +98,10 @@ export type NadeshikoClient = {
       (params: { throwOnError: false }): Promise<{ data: Types.GetMeResponse; response: Response; request: Request } | { error: Types.GetMeErrors; response: Response; request: Request }>;
       (): Promise<Types.GetMeResponse>;
     };
+    createUserApiKey: {
+      (params: NonNullable<Types.CreateUserApiKeyData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateUserApiKeyResponse; response: Response; request: Request } | { error: Types.CreateUserApiKeyErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateUserApiKeyData['body']>): Promise<Types.CreateUserApiKeyResponse>;
+    };
     listExcludedMedia: {
       (params: { throwOnError: false }): Promise<{ data: Types.ListExcludedMediaResponse; response: Response; request: Request } | { error: Types.ListExcludedMediaErrors; response: Response; request: Request }>;
       (): Promise<Types.ListExcludedMediaResponse>;
@@ -110,6 +114,23 @@ export type NadeshikoClient = {
       (id: string): Promise<Types.RemoveExcludedMediaResponse>;
       (params: Types.RemoveExcludedMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request } | { error: Types.RemoveExcludedMediaErrors; response: Response; request: Request }>;
       (params: Types.RemoveExcludedMediaData['path']): Promise<Types.RemoveExcludedMediaResponse>;
+    };
+    listFavoriteMedia: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListFavoriteMediaResponse; response: Response; request: Request } | { error: Types.ListFavoriteMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListFavoriteMediaResponse>;
+    };
+    addFavoriteMedia: {
+      (params: NonNullable<Types.AddFavoriteMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.AddFavoriteMediaResponse; response: Response; request: Request } | { error: Types.AddFavoriteMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.AddFavoriteMediaData['body']>): Promise<Types.AddFavoriteMediaResponse>;
+    };
+    removeFavoriteMedia: {
+      (id: string): Promise<Types.RemoveFavoriteMediaResponse>;
+      (params: Types.RemoveFavoriteMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveFavoriteMediaResponse; response: Response; request: Request } | { error: Types.RemoveFavoriteMediaErrors; response: Response; request: Request }>;
+      (params: Types.RemoveFavoriteMediaData['path']): Promise<Types.RemoveFavoriteMediaResponse>;
+    };
+    listFamiliarMedia: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListFamiliarMediaResponse; response: Response; request: Request } | { error: Types.ListFamiliarMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListFamiliarMediaResponse>;
     };
     listUserActivity: {
       (params: NonNullable<Types.ListUserActivityData['query']> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
@@ -223,6 +244,43 @@ export type NadeshikoClient = {
       (params: Types.ModerateEpisodeSegmentsData['path'] & NonNullable<Types.ModerateEpisodeSegmentsData['body']> & { throwOnError: false }): Promise<{ data: Types.ModerateEpisodeSegmentsResponse; response: Response; request: Request } | { error: Types.ModerateEpisodeSegmentsErrors; response: Response; request: Request }>;
       (params: Types.ModerateEpisodeSegmentsData['path'] & NonNullable<Types.ModerateEpisodeSegmentsData['body']>): Promise<Types.ModerateEpisodeSegmentsResponse>;
     };
+    getShirabeConnection: {
+      (params: { throwOnError: false }): Promise<{ data: Types.GetShirabeConnectionResponse; response: Response; request: Request } | { error: Types.GetShirabeConnectionErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetShirabeConnectionResponse>;
+    };
+    startShirabeLink: {
+      (params: { throwOnError: false }): Promise<{ data: Types.StartShirabeLinkResponse; response: Response; request: Request } | { error: Types.StartShirabeLinkErrors; response: Response; request: Request }>;
+      (): Promise<Types.StartShirabeLinkResponse>;
+    };
+    unlinkShirabe: {
+      (params: { throwOnError: false }): Promise<{ data: Types.UnlinkShirabeResponse; response: Response; request: Request } | { error: Types.UnlinkShirabeErrors; response: Response; request: Request }>;
+      (): Promise<Types.UnlinkShirabeResponse>;
+    };
+    completeShirabeLink: {
+      (params: NonNullable<Types.CompleteShirabeLinkData['body']> & { throwOnError: false }): Promise<{ data: Types.CompleteShirabeLinkResponse; response: Response; request: Request } | { error: Types.CompleteShirabeLinkErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CompleteShirabeLinkData['body']>): Promise<Types.CompleteShirabeLinkResponse>;
+    };
+    getShirabeCredential: {
+      (params: { throwOnError: false }): Promise<{ data: Types.GetShirabeCredentialResponse; response: Response; request: Request } | { error: Types.GetShirabeCredentialErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetShirabeCredentialResponse>;
+    };
+    resyncShirabeStack: {
+      (params: NonNullable<Types.ResyncShirabeStackData['body']> & { throwOnError: false }): Promise<{ data: Types.ResyncShirabeStackResponse; response: Response; request: Request } | { error: Types.ResyncShirabeStackErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.ResyncShirabeStackData['body']>): Promise<Types.ResyncShirabeStackResponse>;
+    };
+    reportShirabeRefusal: {
+      (params: NonNullable<Types.ReportShirabeRefusalData['body']> & { throwOnError: false }): Promise<{ data: Types.ReportShirabeRefusalResponse; response: Response; request: Request } | { error: Types.ReportShirabeRefusalErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.ReportShirabeRefusalData['body']>): Promise<Types.ReportShirabeRefusalResponse>;
+    };
+    clearFamiliarMedia: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ClearFamiliarMediaResponse; response: Response; request: Request } | { error: Types.ClearFamiliarMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ClearFamiliarMediaResponse>;
+    };
+    forgetFamiliarMedia: {
+      (id: string): Promise<Types.ForgetFamiliarMediaResponse>;
+      (params: Types.ForgetFamiliarMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.ForgetFamiliarMediaResponse; response: Response; request: Request } | { error: Types.ForgetFamiliarMediaErrors; response: Response; request: Request }>;
+      (params: Types.ForgetFamiliarMediaData['path']): Promise<Types.ForgetFamiliarMediaResponse>;
+    };
     createUserReport: {
       (params: NonNullable<Types.CreateUserReportData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateUserReportResponse; response: Response; request: Request } | { error: Types.CreateUserReportErrors; response: Response; request: Request }>;
       (params: NonNullable<Types.CreateUserReportData['body']>): Promise<Types.CreateUserReportResponse>;
@@ -256,6 +314,14 @@ export type NadeshikoClient = {
     exportUserData: {
       (params: { throwOnError: false }): Promise<{ data: Types.ExportUserDataResponse; response: Response; request: Request } | { error: Types.ExportUserDataErrors; response: Response; request: Request }>;
       (): Promise<Types.ExportUserDataResponse>;
+    };
+    createFeedback: {
+      (params: NonNullable<Types.CreateFeedbackData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateFeedbackResponse; response: Response; request: Request } | { error: Types.CreateFeedbackErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateFeedbackData['body']>): Promise<Types.CreateFeedbackResponse>;
+    };
+    getFeedbackFormToken: {
+      (params: { throwOnError: false }): Promise<{ data: Types.GetFeedbackFormTokenResponse; response: Response; request: Request } | { error: Types.GetFeedbackFormTokenErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetFeedbackFormTokenResponse>;
     };
     updateCollection: {
       (id: string): Promise<Types.UpdateCollectionResponse>;
@@ -314,6 +380,20 @@ export type NadeshikoClient = {
       (params: NonNullable<Types.GetAdminUsersWithProvidersData['query']> & { throwOnError: false }): Promise<{ data: Types.GetAdminUsersWithProvidersResponse; response: Response; request: Request } | { error: Types.GetAdminUsersWithProvidersErrors; response: Response; request: Request }>;
       (params?: NonNullable<Types.GetAdminUsersWithProvidersData['query']>): Promise<Types.GetAdminUsersWithProvidersResponse>;
     };
+    listTiers: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListTiersResponse; response: Response; request: Request } | { error: Types.ListTiersErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListTiersResponse>;
+    };
+    getAdminUserQuota: {
+      (id: number): Promise<Types.GetAdminUserQuotaResponse>;
+      (params: Types.GetAdminUserQuotaData['path'] & { throwOnError: false }): Promise<{ data: Types.GetAdminUserQuotaResponse; response: Response; request: Request } | { error: Types.GetAdminUserQuotaErrors; response: Response; request: Request }>;
+      (params: Types.GetAdminUserQuotaData['path']): Promise<Types.GetAdminUserQuotaResponse>;
+    };
+    updateAdminUserQuota: {
+      (id: number): Promise<Types.UpdateAdminUserQuotaResponse>;
+      (params: Types.UpdateAdminUserQuotaData['path'] & NonNullable<Types.UpdateAdminUserQuotaData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminUserQuotaResponse; response: Response; request: Request } | { error: Types.UpdateAdminUserQuotaErrors; response: Response; request: Request }>;
+      (params: Types.UpdateAdminUserQuotaData['path'] & NonNullable<Types.UpdateAdminUserQuotaData['body']>): Promise<Types.UpdateAdminUserQuotaResponse>;
+    };
   };
 
 const defaultSessionTokenGetter = (): string | undefined => {
@@ -342,7 +422,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
-    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.3.6', ...config.headers },
+    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.3.7', ...config.headers },
     fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
     auth: (auth: Auth) => {
       if (auth.in === 'cookie') {
@@ -477,6 +557,12 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
+  const _createUserApiKey = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createUserApiKey({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   const _listExcludedMedia = (params?: any) => {
     const tOE = params?.throwOnError;
     const p = listExcludedMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
@@ -496,6 +582,34 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     const params = paramsOrId;
     const { throwOnError: tOE, mediaPublicId } = params ?? {};
     const p = removeExcludedMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listFavoriteMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listFavoriteMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _addFavoriteMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = addFavoriteMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _removeFavoriteMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return removeFavoriteMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = removeFavoriteMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listFamiliarMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listFamiliarMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
@@ -714,6 +828,64 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
+  const _getShirabeConnection = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getShirabeConnection({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _startShirabeLink = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = startShirabeLink({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _unlinkShirabe = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = unlinkShirabe({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _completeShirabeLink = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = completeShirabeLink({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getShirabeCredential = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getShirabeCredential({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _resyncShirabeStack = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = resyncShirabeStack({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _reportShirabeRefusal = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = reportShirabeRefusal({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _clearFamiliarMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = clearFamiliarMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _forgetFamiliarMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return forgetFamiliarMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = forgetFamiliarMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   const _createUserReport = (params?: any) => {
     const { throwOnError: tOE, ...body } = params ?? {};
     const p = createUserReport({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
@@ -767,6 +939,18 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
   const _exportUserData = (params?: any) => {
     const tOE = params?.throwOnError;
     const p = exportUserData({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createFeedback = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createFeedback({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getFeedbackFormToken = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getFeedbackFormToken({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
@@ -871,6 +1055,32 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
+  const _listTiers = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listTiers({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getAdminUserQuota = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'number') {
+      return getAdminUserQuota({ throwOnError: true, path: { userId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, userId } = params ?? {};
+    const p = getAdminUserQuota({ path: { userId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateAdminUserQuota = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'number') {
+      return updateAdminUserQuota({ throwOnError: true, path: { userId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, userId, ...body } = params ?? {};
+    const p = updateAdminUserQuota({ path: { userId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   return {
     client: clientInstance,
     search: _search,
@@ -885,9 +1095,14 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listEpisodes: _listEpisodes,
     getEpisode: _getEpisode,
     getMe: _getMe,
+    createUserApiKey: _createUserApiKey,
     listExcludedMedia: _listExcludedMedia,
     addExcludedMedia: _addExcludedMedia,
     removeExcludedMedia: _removeExcludedMedia,
+    listFavoriteMedia: _listFavoriteMedia,
+    addFavoriteMedia: _addFavoriteMedia,
+    removeFavoriteMedia: _removeFavoriteMedia,
+    listFamiliarMedia: _listFamiliarMedia,
     listUserActivity: _listUserActivity,
     getUserActivityHeatmap: _getUserActivityHeatmap,
     getUserActivityStats: _getUserActivityStats,
@@ -913,6 +1128,15 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     createSegment: _createSegment,
     createSegmentsBatch: _createSegmentsBatch,
     moderateEpisodeSegments: _moderateEpisodeSegments,
+    getShirabeConnection: _getShirabeConnection,
+    startShirabeLink: _startShirabeLink,
+    unlinkShirabe: _unlinkShirabe,
+    completeShirabeLink: _completeShirabeLink,
+    getShirabeCredential: _getShirabeCredential,
+    resyncShirabeStack: _resyncShirabeStack,
+    reportShirabeRefusal: _reportShirabeRefusal,
+    clearFamiliarMedia: _clearFamiliarMedia,
+    forgetFamiliarMedia: _forgetFamiliarMedia,
     createUserReport: _createUserReport,
     getUserPreferences: _getUserPreferences,
     updateUserPreferences: _updateUserPreferences,
@@ -921,6 +1145,8 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     deleteUserActivityByDate: _deleteUserActivityByDate,
     deleteUserActivityById: _deleteUserActivityById,
     exportUserData: _exportUserData,
+    createFeedback: _createFeedback,
+    getFeedbackFormToken: _getFeedbackFormToken,
     updateCollection: _updateCollection,
     updateCollectionSegment: _updateCollectionSegment,
     getCollectionStats: _getCollectionStats,
@@ -934,6 +1160,9 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getAnnouncement: _getAnnouncement,
     updateAnnouncement: _updateAnnouncement,
     getAdminUsersWithProviders: _getAdminUsersWithProviders,
+    listTiers: _listTiers,
+    getAdminUserQuota: _getAdminUserQuota,
+    updateAdminUserQuota: _updateAdminUserQuota,
   } as NadeshikoClient;
 }
 

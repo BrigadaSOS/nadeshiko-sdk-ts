@@ -3,7 +3,7 @@
 import { createClient as createApiClient, createConfig, type Client } from './client';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listFavoriteMedia, addFavoriteMedia, removeFavoriteMedia, listFamiliarMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 import { flatPaginate } from './paginate';
@@ -100,6 +100,23 @@ export type NadeshikoClient = {
       (params: Types.RemoveExcludedMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveExcludedMediaResponse; response: Response; request: Request } | { error: Types.RemoveExcludedMediaErrors; response: Response; request: Request }>;
       (params: Types.RemoveExcludedMediaData['path']): Promise<Types.RemoveExcludedMediaResponse>;
     };
+    listFavoriteMedia: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListFavoriteMediaResponse; response: Response; request: Request } | { error: Types.ListFavoriteMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListFavoriteMediaResponse>;
+    };
+    addFavoriteMedia: {
+      (params: NonNullable<Types.AddFavoriteMediaData['body']> & { throwOnError: false }): Promise<{ data: Types.AddFavoriteMediaResponse; response: Response; request: Request } | { error: Types.AddFavoriteMediaErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.AddFavoriteMediaData['body']>): Promise<Types.AddFavoriteMediaResponse>;
+    };
+    removeFavoriteMedia: {
+      (id: string): Promise<Types.RemoveFavoriteMediaResponse>;
+      (params: Types.RemoveFavoriteMediaData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveFavoriteMediaResponse; response: Response; request: Request } | { error: Types.RemoveFavoriteMediaErrors; response: Response; request: Request }>;
+      (params: Types.RemoveFavoriteMediaData['path']): Promise<Types.RemoveFavoriteMediaResponse>;
+    };
+    listFamiliarMedia: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListFamiliarMediaResponse; response: Response; request: Request } | { error: Types.ListFamiliarMediaErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListFamiliarMediaResponse>;
+    };
     listUserActivity: {
       (params: NonNullable<Types.ListUserActivityData['query']> & { throwOnError: false }): Promise<{ data: Types.ListUserActivityResponse; response: Response; request: Request } | { error: Types.ListUserActivityErrors; response: Response; request: Request }>;
       (params?: NonNullable<Types.ListUserActivityData['query']>): Promise<Types.ListUserActivityResponse>;
@@ -162,7 +179,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
-    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.3.6', ...config.headers },
+    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.3.7', ...config.headers },
     fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
     auth: () => config.apiKey,
   }));
@@ -314,6 +331,34 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
+  const _listFavoriteMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listFavoriteMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _addFavoriteMedia = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = addFavoriteMedia({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _removeFavoriteMedia = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return removeFavoriteMedia({ throwOnError: true, path: { mediaPublicId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, mediaPublicId } = params ?? {};
+    const p = removeFavoriteMedia({ path: { mediaPublicId }, client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _listFamiliarMedia = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listFamiliarMedia({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   const _listUserActivity = (params?: any) => {
     const { throwOnError: tOE, ...query } = params ?? {};
     const p = listUserActivity({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
@@ -425,6 +470,10 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listExcludedMedia: _listExcludedMedia,
     addExcludedMedia: _addExcludedMedia,
     removeExcludedMedia: _removeExcludedMedia,
+    listFavoriteMedia: _listFavoriteMedia,
+    addFavoriteMedia: _addFavoriteMedia,
+    removeFavoriteMedia: _removeFavoriteMedia,
+    listFamiliarMedia: _listFamiliarMedia,
     listUserActivity: _listUserActivity,
     getUserActivityHeatmap: _getUserActivityHeatmap,
     getUserActivityStats: _getUserActivityStats,

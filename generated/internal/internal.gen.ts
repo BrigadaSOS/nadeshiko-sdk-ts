@@ -4,5 +4,6 @@
 export * as stats from './internal/stats.gen';
 export * as media from './internal/media.gen';
 export * as user from './internal/user.gen';
+export * as feedback from './internal/feedback.gen';
 export * as collections from './internal/collections.gen';
 export * as admin from './internal/admin.gen';

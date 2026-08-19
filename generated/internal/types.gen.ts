@@ -168,6 +168,22 @@ export type SearchRequest = {
      */
     cursor?: string;
     sort?: SearchSort;
+    /**
+     * Public IDs of titles the caller wants first, used **only** to break ties.
+     *
+     * Segments Elasticsearch ranked equally are reordered so the ones from these
+     * titles come first; nothing crosses a rank boundary. Which segments land on
+     * a page, how many there are and the cursor that walks to the next one are
+     * all exactly what they would have been without this field — only the order
+     * within an already-tied run changes.
+     *
+     * Sent by the web client for a signed-in reader, from the titles they have
+     * favourited and the ones their activity says they know. Ignored unless
+     * `sort.mode` is `RELEVANCE`, since every other mode sorts on a key the
+     * caller asked for by name. Unknown IDs are ignored rather than rejected.
+     *
+     */
+    preferMedia?: Array<string>;
     filters?: SearchFilters;
     /**
      * Optional resources to expand in the response `includes` block
@@ -419,6 +435,14 @@ export type Media = {
      * End date of the media (last airing/release)
      */
     endDate: string;
+    /**
+     * When this entry was last modified. Distinct from the airing dates above,
+     * which describe the work; this describes the record, and is what the sitemap
+     * publishes as `lastmod` so crawlers can tell a changed title from an
+     * untouched one. Null for a row never updated since the column was added.
+     *
+     */
+    updatedAt?: string;
     category: Category;
     /**
      * Total number of subtitle segments available
@@ -1675,7 +1699,94 @@ export type UserMe = {
          * End of the current month (UTC).
          */
         periodEnd: string;
+        /**
+         * The quota tier this account sits on. Null when the account is on none,
+         * or when an override is in force and the tier no longer describes the
+         * limit.
+         *
+         */
+        tier: {
+            id: string;
+            displayName: string;
+        };
+        /**
+         * The OTHER limit. Separate from the monthly allowance and enforced per
+         * API key over a short window, so a caller can exhaust it with plenty of
+         * month left -- which is why both are surfaced together, and why the two
+         * 429s carry an `X-RateLimit-Reason` telling them apart.
+         *
+         */
+        burst: {
+            /**
+             * Requests allowed per key within `windowMs`.
+             */
+            max: number;
+            /**
+             * Length of the burst window, in milliseconds.
+             */
+            windowMs: number;
+        };
     };
+};
+
+/**
+ * A capability an API key may carry. A key-authenticated request is checked
+ * against this list and nothing else, so a key's scopes are the whole of what it
+ * can do — a reader's role is not consulted again at request time.
+ *
+ * The corpus-write scopes (`ADD_MEDIA`, `UPDATE_MEDIA`, `REMOVE_MEDIA`) may only
+ * be granted by an admin; asking for one without the role is refused with `403`.
+ *
+ */
+export type ApiKeyScope = 'ADD_MEDIA' | 'READ_MEDIA' | 'UPDATE_MEDIA' | 'REMOVE_MEDIA' | 'READ_PROFILE' | 'WRITE_PROFILE' | 'READ_ACTIVITY' | 'WRITE_ACTIVITY' | 'READ_COLLECTIONS' | 'CREATE_COLLECTIONS' | 'UPDATE_COLLECTIONS' | 'DELETE_COLLECTIONS';
+
+/**
+ * A reader's linked Shirabe account, as the reader is shown it.
+ *
+ * Never carries the stored tokens: nothing here can be used to act on their
+ * Shirabe account.
+ *
+ */
+export type ShirabeConnection = {
+    /**
+     * True when the link works but is missing a permission a newer feature needs -- granted before that feature existed. A re-consent, not a repair: what the account was linked for keeps working the whole time, and only the newer feature is unavailable.
+     */
+    needsUpgrade: boolean;
+    /**
+     * The permissions a re-consent would add. Empty unless `needsUpgrade`.
+     */
+    missingScopes: Array<string>;
+    /**
+     * True when Shirabe refused this key outright -- the reader revoked it from their Shirabe access list, or it was swept for being idle. The link is over until they make a new one, and their own dictionaries are not being used until they do. Distinct from `needsUpgrade`, which is a link that still works: this one is a repair.
+     */
+    disconnected: boolean;
+    linkedAt: string;
+    /**
+     * Who they are on Shirabe, for the settings page to name the link.
+     */
+    shirabeName?: string;
+    /**
+     * What the reader granted. Today that is READ_ACCOUNT and nothing else.
+     */
+    scopes: Array<string>;
+    /**
+     * Their Shirabe dictionary stack: ordered `slug:lang` refs naming which dictionaries resolve, in which languages, in what order. This is what makes a word lookup here answer the way it does over there.
+     */
+    dictionaries: Array<string>;
+    /**
+     * What each dictionary above is CALLED, keyed by slug, as Shirabe names it. A reader's own uploads are filed under content hashes, so a client printing the stack without this prints a list of hashes. Empty for a link made before Shirabe published the names; fall back to the slug.
+     */
+    dictionaryNames?: {
+        [key: string]: string;
+    };
+    /**
+     * True when their stack names one of their own uploads, which makes its answers theirs alone and stops a lookup being cached for anyone else.
+     */
+    stackIsPrivate: boolean;
+    /**
+     * When the stack was last re-read from Shirabe.
+     */
+    syncedAt?: string;
 };
 
 export type ReportTargetMedia = {
@@ -1838,6 +1949,22 @@ export type UserPreferences = {
         EN?: 'show' | 'spoiler' | 'hidden';
         ES?: 'show' | 'spoiler' | 'hidden';
     };
+    /**
+     * Translation languages the reader wants in dictionary content, in display order. This is the global preference; translationVisibilityPreferences is a search-surface override for showing, spoiling, or hiding a language.
+     *
+     */
+    translationLanguages?: Array<'EN' | 'ES'>;
+    /**
+     * How the word card behaves when a reader taps a word in a sentence. A group rather than a loose key so the settings that follow it have somewhere to live.
+     *
+     */
+    wordPopup?: {
+        /**
+         * How large the definitions themselves are printed. The card holds a reader's own monolingual dictionaries now, which is Japanese prose rather than a three-word English gloss, and a size that suited "to die; to pass away" is small for a paragraph of 大辞林. MEDIUM is the default; SMALL is what the card printed before this existed.
+         *
+         */
+        definitionSize?: 'SMALL' | 'MEDIUM' | 'LARGE';
+    };
     searchHistory?: {
         /**
          * Whether activity tracking is enabled (default true)
@@ -1855,7 +1982,32 @@ export type UserPreferences = {
         }>;
         key?: string;
         serverAddress: string;
+        /**
+         * Whether exporting a card brings Anki's card browser to the front.
+         *
+         * Absent means true, which is what it did before the setting existed.
+         * Undeclared until now: the settings page has offered the switch all
+         * along, but a profile saved with it off came back from the server
+         * without the field at all, so turning it off appeared to save and then
+         * did nothing.
+         *
+         */
+        openBrowserOnExport?: boolean;
     }>;
+    /**
+     * Category tab a search opens on when the URL names none. `ALL` -- the value
+     * assumed when unset -- searches every category the user still has visible.
+     *
+     * Spelled out as its own enum rather than a nullable `Category` so that
+     * "search everything" is a value the client can send, not a field it has to
+     * clear. It mirrors `Category` plus `ALL`.
+     *
+     * A value the user has since hidden (see `hiddenCategories`) is ignored and
+     * the search falls back to `ALL`. It is stored rather than rejected, so
+     * unhiding the category brings the choice back.
+     *
+     */
+    defaultSearchCategory?: 'ALL' | 'ANIME' | 'JDRAMA' | 'YOUTUBE';
     /**
      * Whole media categories hidden from search results by the user.
      *
@@ -1877,6 +2029,51 @@ export type UserPreferences = {
         nameJa?: string;
         nameRomaji?: string;
     }>;
+    /**
+     * Media the reader has starred. Starred titles sort to the top of the search
+     * media filter; they change the ORDER of that list, never its contents, so a
+     * starred title the current query does not match simply is not there.
+     *
+     * Capped at 100 entries, refused with `400` beyond that. The cap is not
+     * cosmetic: the whole preferences column is rewritten on every change (see
+     * `mutateUserPreferences`), so an unbounded list would make every unrelated
+     * preference write more expensive for the rest of the account's life.
+     *
+     * `favoritedAt` is declared here and written by the server, unlike
+     * `hiddenMedia`'s `hiddenAt` -- which the client invents and this schema has
+     * never described.
+     *
+     */
+    favoriteMedia?: Array<{
+        /**
+         * Public ID of the starred media
+         */
+        mediaPublicId: string;
+        nameEn?: string;
+        nameJa?: string;
+        nameRomaji?: string;
+        /**
+         * When the reader starred it, set by the server.
+         */
+        favoritedAt: string;
+    }>;
+    /**
+     * Whether to keep a monthly tally of which titles the reader studies, used to
+     * sort those titles up the search media filter.
+     *
+     * Deliberately NOT `searchHistory`: that preference governs the activity log
+     * (queries, timestamps, per-row deletion), this one governs an aggregate
+     * count per title per month. A reader can reasonably want the tally without
+     * the diary, so the two are stored apart, cleared apart, and expire apart.
+     * Existing readers who had `searchHistory` off were seeded to `false` here.
+     *
+     */
+    familiarMedia?: {
+        /**
+         * Whether familiar-media tallying is enabled (default true)
+         */
+        enabled?: boolean;
+    };
 };
 
 /**
@@ -1905,6 +2102,13 @@ export type UserActivityRequest = {
     mediaName?: string;
     japaneseText?: string;
     searchQuery?: string;
+    /**
+     * Whether this `SEGMENT_PLAY` was started by autoplay rather than by the
+     * reader. Recorded as activity either way; excluded from the familiar-media
+     * tally, where a playlist running on its own is not evidence of studying.
+     *
+     */
+    autoplay?: boolean;
 };
 
 /**
@@ -1983,8 +2187,8 @@ export type UserExportResponse = {
     /**
      * Which sections were cut short. The export is assembled and returned as a single JSON
      * body, so each section has a ceiling: 50000 activity entries, 5000 reports, 1000
-     * collections, and 50000 collection segment references in total. A `true` here means more
-     * data exists than the response carries.
+     * collections, 50000 collection segment references in total, and 50000 media affinity
+     * rows. A `true` here means more data exists than the response carries.
      *
      */
     truncated: {
@@ -1992,6 +2196,7 @@ export type UserExportResponse = {
         collections: boolean;
         collectionSegments: boolean;
         reports: boolean;
+        mediaAffinity: boolean;
     };
     profile: {
         id: number;
@@ -2003,6 +2208,96 @@ export type UserExportResponse = {
     activity: Array<UserActivity>;
     collections: Array<UserExportCollection>;
     reports: Array<Report>;
+    /**
+     * The monthly per-title tally behind familiar-media sorting. Stored apart
+     * from `activity` and governed by its own preference, so it is exported as
+     * its own section rather than folded into the activity log.
+     *
+     */
+    mediaAffinity: Array<{
+        mediaPublicId: string;
+        /**
+         * Year and month of the tally, as YYYYMM in UTC.
+         */
+        periodYyyymm: number;
+        ankiCount: number;
+        playCount: number;
+        shareCount: number;
+    }>;
+};
+
+export type CreateFeedbackRequest = {
+    /**
+     * The message. Free text — no category, no target.
+     */
+    body: string;
+    /**
+     * Optional reply address for anonymous senders. Ignored when the request
+     * carries a session: the account's own address is used instead, so a signed-in
+     * sender cannot attribute a message to somebody else's inbox.
+     *
+     */
+    email?: string;
+    /**
+     * Opaque token from `GET /v1/feedback/token`, issued when the panel opened.
+     * It carries the issue time, so a submission that arrives implausibly fast
+     * after the form appeared can be told from a person typing.
+     *
+     */
+    formToken: string;
+    /**
+     * Honeypot. Not rendered to people; anything in it marks the submission as
+     * automated. Present in the contract because it has to be accepted to be
+     * ignored.
+     *
+     */
+    nickname?: string;
+    /**
+     * Same-origin path (and query) the sender was on, e.g. `/search?q=彼女`.
+     * Anything that is not a rooted path is dropped rather than rejected.
+     *
+     */
+    pagePath?: string;
+    /**
+     * The locale the page rendered in, which is not the same question as
+     * `Accept-Language`: the site's locale comes from the URL prefix and a stored
+     * preference, so a reader on `/es/search` with an English browser is reading
+     * Spanish. Falls back to the request header when absent.
+     *
+     */
+    locale?: string;
+    /**
+     * The frontend build the sender was running. Client-supplied because it is the
+     * only side that knows: the browser can be holding a bundle several deploys
+     * old, and the API's own version says nothing about it.
+     *
+     */
+    appVersion?: string;
+    /**
+     * PostHog session id, so a report links to its session replay. Blank where posthog is not loaded.
+     */
+    posthogSessionId?: string;
+    /**
+     * PostHog person id.
+     */
+    posthogDistinctId?: string;
+};
+
+export type FeedbackReceipt = {
+    /**
+     * Always `true`. The response is deliberately uniform: a submission dropped
+     * as automated answers exactly like one that was stored, so a bot learns
+     * nothing from the reply about what tripped it.
+     *
+     */
+    received: boolean;
+};
+
+export type FeedbackFormToken = {
+    /**
+     * Opaque, short-lived. Pass back as `formToken` when submitting.
+     */
+    token: string;
 };
 
 /**
@@ -2249,6 +2544,10 @@ export type AgentActivityResponse = {
  * Site-wide announcement banner
  */
 export type Announcement = {
+    /**
+     * The banner text. Stored and returned verbatim; the web client renders a small inline markdown subset from it -- links, bold, italic, code spans and line breaks -- so `maxLength` counts the markup as well as the words. Anything outside that subset, raw HTML included, is shown as the characters it is made of rather than interpreted. Other clients are free to print it as plain text.
+     *
+     */
     message: string;
     type: 'INFO' | 'WARNING' | 'MAINTENANCE';
     active: boolean;
@@ -2295,6 +2594,87 @@ export type AdminUserWithProviders = {
      * Linked authentication providers (empty when the account has none).
      */
     providers: Array<string>;
+};
+
+export type Tier = {
+    /**
+     * Stable slug referenced by an account's `tierId`
+     */
+    id: string;
+    displayName: string;
+    /**
+     * API calls allowed per calendar month on this tier
+     */
+    monthlyQuotaLimit: number;
+    /**
+     * Per-key burst allowance stamped onto keys created while on this tier.
+     * Null inherits the deployment-wide default.
+     *
+     */
+    rateLimitMax?: number;
+    /**
+     * Window for `rateLimitMax`, in milliseconds. Null inherits the default.
+     */
+    rateLimitWindowMs?: number;
+    /**
+     * Display order; the id is a slug, not a rank
+     */
+    sortOrder: number;
+};
+
+export type AccountQuotaState = {
+    userId: number;
+    /**
+     * The tier this account sits on, or null if it has none
+     */
+    tierId: string;
+    /**
+     * Per-account limit that wins over the tier when set
+     */
+    quotaOverride: number;
+    /**
+     * The limit actually in force, after applying the resolution order
+     */
+    monthlyQuotaLimit: number;
+    /**
+     * Which step of the resolution order produced `monthlyQuotaLimit`.
+     * `legacy_column` and `default` mean the tier did not resolve, and are worth
+     * investigating rather than displaying.
+     *
+     */
+    quotaSource: 'override' | 'tier' | 'legacy_column' | 'default';
+    /**
+     * Calls billed to this account in the current period
+     */
+    quotaUsed: number;
+    /**
+     * The billing period, as YYYYMM in UTC
+     */
+    periodYyyymm: number;
+};
+
+/**
+ * At least one property must be present. Send `quotaOverride: null` to clear an
+ * override and fall back to the tier.
+ *
+ */
+export type UpdateAccountQuotaRequest = {
+    /**
+     * Slug of an existing tier
+     */
+    tierId?: string;
+    /**
+     * Per-account monthly limit, taking precedence over the tier. Null clears it.
+     *
+     */
+    quotaOverride?: number;
+    /**
+     * Why the change is being made. Recorded on the audit log line so the number
+     * is reviewable later; the old model's whole problem was that a raised limit
+     * carried no record of the decision behind it.
+     *
+     */
+    reason?: string;
 };
 
 export type SearchData = {
@@ -3673,6 +4053,373 @@ export type GetMeResponses = {
 
 export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
 
+export type CreateUserApiKeyData = {
+    body: {
+        /**
+         * Label shown in the reader's key list. Not secret.
+         */
+        name: string;
+        /**
+         * Capabilities to grant. Must be non-empty and free of duplicates.
+         *
+         */
+        scopes: Array<ApiKeyScope>;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/user/api-keys';
+};
+
+export type CreateUserApiKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CreateUserApiKeyError = CreateUserApiKeyErrors[keyof CreateUserApiKeyErrors];
+
+export type CreateUserApiKeyResponses = {
+    /**
+     * Created
+     */
+    201: {
+        /**
+         * Identifier for the key, for renaming or revoking it later
+         */
+        id: string;
+        /**
+         * The label supplied at creation
+         */
+        name: string;
+        /**
+         * The secret, returned **only here and never again**. It is
+         * stored hashed, so a reader who loses it must create another.
+         *
+         */
+        key: string;
+        /**
+         * The scopes actually granted
+         */
+        scopes: Array<ApiKeyScope>;
+        createdAt: string;
+    };
+};
+
+export type CreateUserApiKeyResponse = CreateUserApiKeyResponses[keyof CreateUserApiKeyResponses];
+
+export type UnlinkShirabeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe';
+};
+
+export type UnlinkShirabeErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UnlinkShirabeError = UnlinkShirabeErrors[keyof UnlinkShirabeErrors];
+
+export type UnlinkShirabeResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type UnlinkShirabeResponse = UnlinkShirabeResponses[keyof UnlinkShirabeResponses];
+
+export type GetShirabeConnectionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe';
+};
+
+export type GetShirabeConnectionErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetShirabeConnectionError = GetShirabeConnectionErrors[keyof GetShirabeConnectionErrors];
+
+export type GetShirabeConnectionResponses = {
+    /**
+     * OK
+     */
+    200: {
+        connection: ShirabeConnection;
+    };
+};
+
+export type GetShirabeConnectionResponse = GetShirabeConnectionResponses[keyof GetShirabeConnectionResponses];
+
+export type StartShirabeLinkData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe';
+};
+
+export type StartShirabeLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type StartShirabeLinkError = StartShirabeLinkErrors[keyof StartShirabeLinkErrors];
+
+export type StartShirabeLinkResponses = {
+    /**
+     * Created
+     */
+    201: {
+        /**
+         * Send the reader here. Shirabe asks them to approve, then redirects back.
+         */
+        authorizeUrl: string;
+        /**
+         * Opaque. Comes back on the redirect and must be handed to the callback unchanged.
+         */
+        state: string;
+    };
+};
+
+export type StartShirabeLinkResponse = StartShirabeLinkResponses[keyof StartShirabeLinkResponses];
+
+export type CompleteShirabeLinkData = {
+    body: {
+        /**
+         * The one-time authorization code from the redirect.
+         */
+        code: string;
+        /**
+         * The sealed state from the redirect, unchanged.
+         */
+        state: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe/callback';
+};
+
+export type CompleteShirabeLinkErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CompleteShirabeLinkError = CompleteShirabeLinkErrors[keyof CompleteShirabeLinkErrors];
+
+export type CompleteShirabeLinkResponses = {
+    /**
+     * OK
+     */
+    200: {
+        connection: ShirabeConnection;
+    };
+};
+
+export type CompleteShirabeLinkResponse = CompleteShirabeLinkResponses[keyof CompleteShirabeLinkResponses];
+
+export type GetShirabeCredentialData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe/credential';
+};
+
+export type GetShirabeCredentialErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetShirabeCredentialError = GetShirabeCredentialErrors[keyof GetShirabeCredentialErrors];
+
+export type GetShirabeCredentialResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The reader's Shirabe API key.
+         */
+        token: string;
+    };
+};
+
+export type GetShirabeCredentialResponse = GetShirabeCredentialResponses[keyof GetShirabeCredentialResponses];
+
+export type ResyncShirabeStackData = {
+    body: {
+        /**
+         * The fingerprint Shirabe returned on the lookup.
+         */
+        stackFingerprint: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe/resync';
+};
+
+export type ResyncShirabeStackErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ResyncShirabeStackError = ResyncShirabeStackErrors[keyof ResyncShirabeStackErrors];
+
+export type ResyncShirabeStackResponses = {
+    /**
+     * Reconciled, or nothing to reconcile.
+     */
+    204: void;
+};
+
+export type ResyncShirabeStackResponse = ResyncShirabeStackResponses[keyof ResyncShirabeStackResponses];
+
+export type ReportShirabeRefusalData = {
+    body: {
+        /**
+         * The HTTP status Shirabe answered the lookup with.
+         */
+        status: number;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/user/connections/shirabe/refused';
+};
+
+export type ReportShirabeRefusalErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ReportShirabeRefusalError = ReportShirabeRefusalErrors[keyof ReportShirabeRefusalErrors];
+
+export type ReportShirabeRefusalResponses = {
+    /**
+     * Recorded, or nothing worth recording.
+     */
+    204: void;
+};
+
+export type ReportShirabeRefusalResponse = ReportShirabeRefusalResponses[keyof ReportShirabeRefusalResponses];
+
 export type ListExcludedMediaData = {
     body?: never;
     path?: never;
@@ -3807,6 +4554,268 @@ export type RemoveExcludedMediaResponses = {
 };
 
 export type RemoveExcludedMediaResponse = RemoveExcludedMediaResponses[keyof RemoveExcludedMediaResponses];
+
+export type ListFavoriteMediaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/favorite-media';
+};
+
+export type ListFavoriteMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ListFavoriteMediaError = ListFavoriteMediaErrors[keyof ListFavoriteMediaErrors];
+
+export type ListFavoriteMediaResponses = {
+    /**
+     * OK
+     */
+    200: {
+        favoriteMedia: Array<MediaSummary>;
+    };
+};
+
+export type ListFavoriteMediaResponse = ListFavoriteMediaResponses[keyof ListFavoriteMediaResponses];
+
+export type AddFavoriteMediaData = {
+    body: {
+        /**
+         * Public ID of the media to star
+         */
+        mediaPublicId: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/user/favorite-media';
+};
+
+export type AddFavoriteMediaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type AddFavoriteMediaError = AddFavoriteMediaErrors[keyof AddFavoriteMediaErrors];
+
+export type AddFavoriteMediaResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type AddFavoriteMediaResponse = AddFavoriteMediaResponses[keyof AddFavoriteMediaResponses];
+
+export type RemoveFavoriteMediaData = {
+    body?: never;
+    path: {
+        /**
+         * Public ID of the media to unstar
+         */
+        mediaPublicId: string;
+    };
+    query?: never;
+    url: '/v1/user/favorite-media/{mediaPublicId}';
+};
+
+export type RemoveFavoriteMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type RemoveFavoriteMediaError = RemoveFavoriteMediaErrors[keyof RemoveFavoriteMediaErrors];
+
+export type RemoveFavoriteMediaResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type RemoveFavoriteMediaResponse = RemoveFavoriteMediaResponses[keyof RemoveFavoriteMediaResponses];
+
+export type ClearFamiliarMediaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/familiar-media';
+};
+
+export type ClearFamiliarMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ClearFamiliarMediaError = ClearFamiliarMediaErrors[keyof ClearFamiliarMediaErrors];
+
+export type ClearFamiliarMediaResponses = {
+    /**
+     * OK
+     */
+    200: AffectedCountResponse;
+};
+
+export type ClearFamiliarMediaResponse = ClearFamiliarMediaResponses[keyof ClearFamiliarMediaResponses];
+
+export type ListFamiliarMediaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/user/familiar-media';
+};
+
+export type ListFamiliarMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ListFamiliarMediaError = ListFamiliarMediaErrors[keyof ListFamiliarMediaErrors];
+
+export type ListFamiliarMediaResponses = {
+    /**
+     * OK
+     */
+    200: {
+        familiarMedia: Array<{
+            media: MediaSummary;
+            /**
+             * Weighted engagement score; ordering key, not a display value.
+             */
+            score: number;
+            ankiCount: number;
+            playCount: number;
+            shareCount: number;
+        }>;
+    };
+};
+
+export type ListFamiliarMediaResponse = ListFamiliarMediaResponses[keyof ListFamiliarMediaResponses];
+
+export type ForgetFamiliarMediaData = {
+    body?: never;
+    path: {
+        /**
+         * Public ID of the title to forget
+         */
+        mediaPublicId: string;
+    };
+    query?: never;
+    url: '/v1/user/familiar-media/{mediaPublicId}';
+};
+
+export type ForgetFamiliarMediaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ForgetFamiliarMediaError = ForgetFamiliarMediaErrors[keyof ForgetFamiliarMediaErrors];
+
+export type ForgetFamiliarMediaResponses = {
+    /**
+     * OK
+     */
+    200: AffectedCountResponse;
+};
+
+export type ForgetFamiliarMediaResponse = ForgetFamiliarMediaResponses[keyof ForgetFamiliarMediaResponses];
 
 export type CreateUserReportData = {
     body: CreateReportRequest;
@@ -4282,6 +5291,68 @@ export type ExportUserDataResponses = {
 };
 
 export type ExportUserDataResponse = ExportUserDataResponses[keyof ExportUserDataResponses];
+
+export type CreateFeedbackData = {
+    body: CreateFeedbackRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/feedback';
+};
+
+export type CreateFeedbackErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type CreateFeedbackError = CreateFeedbackErrors[keyof CreateFeedbackErrors];
+
+export type CreateFeedbackResponses = {
+    /**
+     * Created
+     */
+    201: FeedbackReceipt;
+};
+
+export type CreateFeedbackResponse = CreateFeedbackResponses[keyof CreateFeedbackResponses];
+
+export type GetFeedbackFormTokenData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/feedback/token';
+};
+
+export type GetFeedbackFormTokenErrors = {
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetFeedbackFormTokenError = GetFeedbackFormTokenErrors[keyof GetFeedbackFormTokenErrors];
+
+export type GetFeedbackFormTokenResponses = {
+    /**
+     * OK
+     */
+    200: FeedbackFormToken;
+};
+
+export type GetFeedbackFormTokenResponse = GetFeedbackFormTokenResponses[keyof GetFeedbackFormTokenResponses];
 
 export type ListCollectionsData = {
     body?: never;
@@ -5263,3 +6334,138 @@ export type GetAdminUsersWithProvidersResponses = {
 };
 
 export type GetAdminUsersWithProvidersResponse = GetAdminUsersWithProvidersResponses[keyof GetAdminUsersWithProvidersResponses];
+
+export type ListTiersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/admin/tiers';
+};
+
+export type ListTiersErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type ListTiersError = ListTiersErrors[keyof ListTiersErrors];
+
+export type ListTiersResponses = {
+    /**
+     * OK
+     */
+    200: {
+        tiers: Array<Tier>;
+    };
+};
+
+export type ListTiersResponse = ListTiersResponses[keyof ListTiersResponses];
+
+export type GetAdminUserQuotaData = {
+    body?: never;
+    path: {
+        /**
+         * Account id
+         */
+        userId: number;
+    };
+    query?: never;
+    url: '/v1/admin/users/{userId}/quota';
+};
+
+export type GetAdminUserQuotaErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type GetAdminUserQuotaError = GetAdminUserQuotaErrors[keyof GetAdminUserQuotaErrors];
+
+export type GetAdminUserQuotaResponses = {
+    /**
+     * OK
+     */
+    200: AccountQuotaState;
+};
+
+export type GetAdminUserQuotaResponse = GetAdminUserQuotaResponses[keyof GetAdminUserQuotaResponses];
+
+export type UpdateAdminUserQuotaData = {
+    body: UpdateAccountQuotaRequest;
+    path: {
+        /**
+         * Account id
+         */
+        userId: number;
+    };
+    query?: never;
+    url: '/v1/admin/users/{userId}/quota';
+};
+
+export type UpdateAdminUserQuotaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Unauthorized
+     */
+    401: Error401;
+    /**
+     * Forbidden
+     */
+    403: Error403;
+    /**
+     * Not Found
+     */
+    404: Error404;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UpdateAdminUserQuotaError = UpdateAdminUserQuotaErrors[keyof UpdateAdminUserQuotaErrors];
+
+export type UpdateAdminUserQuotaResponses = {
+    /**
+     * OK
+     */
+    200: AccountQuotaState;
+};
+
+export type UpdateAdminUserQuotaResponse = UpdateAdminUserQuotaResponses[keyof UpdateAdminUserQuotaResponses];

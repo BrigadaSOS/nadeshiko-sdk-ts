@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddExcludedMediaData, AddExcludedMediaErrors, AddExcludedMediaResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, BatchUpdateAdminReportsData, BatchUpdateAdminReportsErrors, BatchUpdateAdminReportsResponses, BulkDeleteAdminReportsData, BulkDeleteAdminReportsErrors, BulkDeleteAdminReportsResponses, BulkUpdateAdminReportsData, BulkUpdateAdminReportsErrors, BulkUpdateAdminReportsResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSegmentsBatchData, CreateSegmentsBatchErrors, CreateSegmentsBatchResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReportData, DeleteAdminReportErrors, DeleteAdminReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, GetAdminUsersWithProvidersData, GetAdminUsersWithProvidersErrors, GetAdminUsersWithProvidersResponses, GetAnnouncementData, GetAnnouncementErrors, GetAnnouncementResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetCoveredWordsData, GetCoveredWordsErrors, GetCoveredWordsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetMeData, GetMediaData, GetMediaErrors, GetMediaResponses, GetMeErrors, GetMeResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetStatsOverviewData, GetStatsOverviewErrors, GetStatsOverviewResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAgentActivityData, ListAgentActivityErrors, ListAgentActivityResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListExcludedMediaData, ListExcludedMediaErrors, ListExcludedMediaResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentRevisionsData, ListSegmentRevisionsErrors, ListSegmentRevisionsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ModerateEpisodeSegmentsData, ModerateEpisodeSegmentsErrors, ModerateEpisodeSegmentsResponses, RemoveExcludedMediaData, RemoveExcludedMediaErrors, RemoveExcludedMediaResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, RestoreSegmentRevisionData, RestoreSegmentRevisionErrors, RestoreSegmentRevisionResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchMediaData, SearchMediaErrors, SearchMediaResponses, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerCoveredWordsUpdateData, TriggerCoveredWordsUpdateErrors, TriggerCoveredWordsUpdateResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAnnouncementData, UpdateAnnouncementErrors, UpdateAnnouncementResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
+import type { AddExcludedMediaData, AddExcludedMediaErrors, AddExcludedMediaResponses, AddFavoriteMediaData, AddFavoriteMediaErrors, AddFavoriteMediaResponses, AddSegmentToCollectionData, AddSegmentToCollectionErrors, AddSegmentToCollectionResponses, BatchUpdateAdminReportsData, BatchUpdateAdminReportsErrors, BatchUpdateAdminReportsResponses, BulkDeleteAdminReportsData, BulkDeleteAdminReportsErrors, BulkDeleteAdminReportsResponses, BulkUpdateAdminReportsData, BulkUpdateAdminReportsErrors, BulkUpdateAdminReportsResponses, ClearFamiliarMediaData, ClearFamiliarMediaErrors, ClearFamiliarMediaResponses, CompleteShirabeLinkData, CompleteShirabeLinkErrors, CompleteShirabeLinkResponses, CreateCollectionData, CreateCollectionErrors, CreateCollectionResponses, CreateEpisodeData, CreateEpisodeErrors, CreateEpisodeResponses, CreateFeedbackData, CreateFeedbackErrors, CreateFeedbackResponses, CreateMediaData, CreateMediaErrors, CreateMediaResponses, CreateSegmentData, CreateSegmentErrors, CreateSegmentResponses, CreateSegmentsBatchData, CreateSegmentsBatchErrors, CreateSegmentsBatchResponses, CreateUserApiKeyData, CreateUserApiKeyErrors, CreateUserApiKeyResponses, CreateUserReportData, CreateUserReportErrors, CreateUserReportResponses, DeleteAdminReportData, DeleteAdminReportErrors, DeleteAdminReportResponses, DeleteCollectionData, DeleteCollectionErrors, DeleteCollectionResponses, DeleteEpisodeData, DeleteEpisodeErrors, DeleteEpisodeResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteUserActivityByDateData, DeleteUserActivityByDateErrors, DeleteUserActivityByDateResponses, DeleteUserActivityByIdData, DeleteUserActivityByIdErrors, DeleteUserActivityByIdResponses, DeleteUserActivityData, DeleteUserActivityErrors, DeleteUserActivityResponses, ExportUserDataData, ExportUserDataErrors, ExportUserDataResponses, ForgetFamiliarMediaData, ForgetFamiliarMediaErrors, ForgetFamiliarMediaResponses, GetAdminUserQuotaData, GetAdminUserQuotaErrors, GetAdminUserQuotaResponses, GetAdminUsersWithProvidersData, GetAdminUsersWithProvidersErrors, GetAdminUsersWithProvidersResponses, GetAnnouncementData, GetAnnouncementErrors, GetAnnouncementResponses, GetCollectionData, GetCollectionErrors, GetCollectionResponses, GetCollectionStatsData, GetCollectionStatsErrors, GetCollectionStatsResponses, GetCoveredWordsData, GetCoveredWordsErrors, GetCoveredWordsResponses, GetEpisodeData, GetEpisodeErrors, GetEpisodeResponses, GetFeedbackFormTokenData, GetFeedbackFormTokenErrors, GetFeedbackFormTokenResponses, GetMeData, GetMediaData, GetMediaErrors, GetMediaResponses, GetMeErrors, GetMeResponses, GetSearchStatsData, GetSearchStatsErrors, GetSearchStatsResponses, GetSegmentContextData, GetSegmentContextErrors, GetSegmentContextResponses, GetSegmentData, GetSegmentErrors, GetSegmentResponses, GetShirabeConnectionData, GetShirabeConnectionErrors, GetShirabeConnectionResponses, GetShirabeCredentialData, GetShirabeCredentialErrors, GetShirabeCredentialResponses, GetStatsOverviewData, GetStatsOverviewErrors, GetStatsOverviewResponses, GetUserActivityHeatmapData, GetUserActivityHeatmapErrors, GetUserActivityHeatmapResponses, GetUserActivityStatsData, GetUserActivityStatsErrors, GetUserActivityStatsResponses, GetUserPreferencesData, GetUserPreferencesErrors, GetUserPreferencesResponses, ListAdminReportsData, ListAdminReportsErrors, ListAdminReportsResponses, ListAgentActivityData, ListAgentActivityErrors, ListAgentActivityResponses, ListCollectionsData, ListCollectionsErrors, ListCollectionsResponses, ListEpisodesData, ListEpisodesErrors, ListEpisodesResponses, ListExcludedMediaData, ListExcludedMediaErrors, ListExcludedMediaResponses, ListFamiliarMediaData, ListFamiliarMediaErrors, ListFamiliarMediaResponses, ListFavoriteMediaData, ListFavoriteMediaErrors, ListFavoriteMediaResponses, ListMediaData, ListMediaErrors, ListMediaResponses, ListSegmentRevisionsData, ListSegmentRevisionsErrors, ListSegmentRevisionsResponses, ListSegmentsData, ListSegmentsErrors, ListSegmentsResponses, ListTiersData, ListTiersErrors, ListTiersResponses, ListUserActivityData, ListUserActivityErrors, ListUserActivityResponses, ModerateEpisodeSegmentsData, ModerateEpisodeSegmentsErrors, ModerateEpisodeSegmentsResponses, RemoveExcludedMediaData, RemoveExcludedMediaErrors, RemoveExcludedMediaResponses, RemoveFavoriteMediaData, RemoveFavoriteMediaErrors, RemoveFavoriteMediaResponses, RemoveSegmentFromCollectionData, RemoveSegmentFromCollectionErrors, RemoveSegmentFromCollectionResponses, ReportShirabeRefusalData, ReportShirabeRefusalErrors, ReportShirabeRefusalResponses, RestoreSegmentRevisionData, RestoreSegmentRevisionErrors, RestoreSegmentRevisionResponses, ResyncShirabeStackData, ResyncShirabeStackErrors, ResyncShirabeStackResponses, SearchCollectionSegmentsData, SearchCollectionSegmentsErrors, SearchCollectionSegmentsResponses, SearchData, SearchErrors, SearchMediaData, SearchMediaErrors, SearchMediaResponses, SearchResponses, SearchWordsData, SearchWordsErrors, SearchWordsResponses, StartShirabeLinkData, StartShirabeLinkErrors, StartShirabeLinkResponses, TrackUserActivityData, TrackUserActivityErrors, TrackUserActivityResponses, TriggerCoveredWordsUpdateData, TriggerCoveredWordsUpdateErrors, TriggerCoveredWordsUpdateResponses, UnlinkShirabeData, UnlinkShirabeErrors, UnlinkShirabeResponses, UpdateAdminReportData, UpdateAdminReportErrors, UpdateAdminReportResponses, UpdateAdminUserQuotaData, UpdateAdminUserQuotaErrors, UpdateAdminUserQuotaResponses, UpdateAnnouncementData, UpdateAnnouncementErrors, UpdateAnnouncementResponses, UpdateCollectionData, UpdateCollectionErrors, UpdateCollectionResponses, UpdateCollectionSegmentData, UpdateCollectionSegmentErrors, UpdateCollectionSegmentResponses, UpdateEpisodeData, UpdateEpisodeErrors, UpdateEpisodeResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateSegmentData, UpdateSegmentErrors, UpdateSegmentResponses, UpdateUserPreferencesData, UpdateUserPreferencesErrors, UpdateUserPreferencesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -332,6 +332,127 @@ export const getMe = <ThrowOnError extends boolean = false>(options?: Options<Ge
 });
 
 /**
+ * Create an API key with chosen scopes
+ *
+ * Creates an API key for the signed-in reader, carrying exactly the scopes
+ * asked for.
+ *
+ * Use this rather than the better-auth `/v1/auth/api-key/create` endpoint
+ * whenever the key is going anywhere but your own code. That endpoint cannot
+ * take a scope list — the underlying plugin treats `permissions` as a
+ * server-only field and rejects any request that carries one — so keys made
+ * through it get the read-only default instead.
+ *
+ * **Scopes are the whole of a key's authority.** Nothing re-checks the owner's
+ * role when the key is used, so a key with `WRITE_PROFILE` can rewrite that
+ * account's profile from anywhere it ends up. Grant the narrowest set the
+ * consumer needs: a third-party search or dictionary tool wants
+ * `["READ_MEDIA"]` and nothing else.
+ *
+ * Session-authenticated only. A key cannot be used to mint another key.
+ *
+ */
+/**
+ * Unlink the Shirabe account
+ *
+ * Forgets the stored key AND asks Shirabe to revoke it, so the reader is not
+ * left with a live credential on their Shirabe access list that nothing here
+ * can reach again.
+ *
+ * The local link goes either way. If Shirabe cannot be reached, the reader
+ * still gets what they asked for here and can revoke the key themselves at
+ * `/account/settings#access`.
+ *
+ */
+/**
+ * Read the linked Shirabe account
+ *
+ * Whether the signed-in reader has linked a Shirabe account, and what it is
+ * shaped like: who they are over there, which dictionaries their stack names,
+ * and when we last re-read it.
+ *
+ * Never returns the stored key. Nothing the browser is shown can be used to
+ * act on their Shirabe account.
+ *
+ */
+/**
+ * Begin linking a Shirabe account
+ *
+ * Starts an OAuth 2.0 authorization-code flow (PKCE) against Shirabe and
+ * returns where to send the reader. Nothing is stored until they approve.
+ *
+ * The `state` is the pending flow itself, sealed with a server-side key rather
+ * than a handle into server memory: the request that starts the link and the
+ * one that finishes it are minutes apart and nothing routes them to the same
+ * process.
+ *
+ */
+/**
+ * Finish linking a Shirabe account
+ *
+ * Exchanges the one-time code Shirabe redirected back with for a scoped key,
+ * reads the reader's dictionary stack, and stores the link.
+ *
+ * The `state` must be the one this session started the flow with. It carries
+ * the account it belongs to, and a mismatch is refused: otherwise somebody who
+ * completed their own authorization at Shirabe could hand the callback URL to a
+ * signed-in victim and attach their account to the victim's.
+ *
+ */
+/**
+ * The reader's Shirabe key, for our own server only
+ *
+ * Hands the stored Shirabe key to our frontend server so a word lookup can be
+ * made AS the reader, which is the entire point of linking an account.
+ *
+ * Refused unless the request came through our own Nitro proxy (the shared
+ * internal secret). A session alone is not enough, even the reader's own: a key
+ * that reaches a browser is a key that has been given away, and this one is a
+ * live credential on somebody else's service. The reader has no need for it
+ * here — it is already listed, and revocable, on their Shirabe account.
+ *
+ */
+/**
+ * Reconcile the stored Shirabe stack against a fingerprint a lookup saw
+ *
+ * Shirabe echoes the calling key's current stack fingerprint on every word
+ * lookup. Our frontend server hands it back here, so a reader who switches a
+ * dictionary off over there stops being served their cached definitions for it.
+ *
+ * Cheap by design. When the fingerprint matches what we hold, this only records
+ * that the copy was confirmed; only a mismatch costs a round trip to Shirabe.
+ *
+ * Refused unless the request came through our own Nitro proxy (the shared
+ * internal secret), like the credential route beside it. Nothing here is a
+ * reader-facing action: the browser never sees a fingerprint, and one supplied
+ * by a client would be a client choosing when our copy looks stale.
+ *
+ */
+/**
+ * Report that Shirabe refused a reader's key on a lookup
+ *
+ * A word lookup is where a dead link is actually discovered: the reader's key
+ * is sent, Shirabe refuses it, and the lookup quietly answers from the default
+ * dictionaries instead. Without this, that refusal was a log line and nothing
+ * else -- the settings page went on naming the account, and every later lookup
+ * repeated the same doomed round trip.
+ *
+ * What the status means is Shirabe's own distinction, and the three outcomes
+ * are different repairs:
+ *
+ * * `401` - the key is invalid, expired or revoked. The link is over until the
+ * reader makes a new one, and it is marked so the settings page can say so.
+ * * `403` - the key works but is missing a permission. The stack is re-read so
+ * the stored scopes catch up, which surfaces as a re-consent rather than a
+ * repair.
+ * * anything else - not an answer about the key. Ignored.
+ *
+ * Refused unless the request came through our own Nitro proxy (the shared
+ * internal secret), like the credential and resync routes beside it. A client
+ * that could post here could disconnect its own reader's link at will.
+ *
+ */
+/**
  * List excluded media
  *
  * Returns the list of media entries the authenticated user has excluded from search results.
@@ -373,6 +494,97 @@ export const removeExcludedMedia = <ThrowOnError extends boolean = false>(option
     ...options
 });
 
+/**
+ * List starred media
+ *
+ * Returns the media the authenticated reader has starred, newest first.
+ *
+ */
+export const listFavoriteMedia = <ThrowOnError extends boolean = false>(options?: Options<ListFavoriteMediaData, ThrowOnError>) => (options?.client ?? client).get<ListFavoriteMediaResponses, ListFavoriteMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/user/favorite-media',
+    ...options
+});
+
+/**
+ * Star media
+ *
+ * Stars a media title for the authenticated reader. Starred titles sort to the
+ * top of the search media filter.
+ *
+ * Refused with `400` past 100 entries: the whole preferences column is
+ * rewritten on every change, so the list is deliberately bounded.
+ *
+ */
+export const addFavoriteMedia = <ThrowOnError extends boolean = false>(options: Options<AddFavoriteMediaData, ThrowOnError>) => (options.client ?? client).post<AddFavoriteMediaResponses, AddFavoriteMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/user/favorite-media',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Unstar media
+ *
+ * Removes a media title from the authenticated reader's starred list. The title
+ * keeps appearing in the search media filter; it simply stops sorting first.
+ *
+ */
+export const removeFavoriteMedia = <ThrowOnError extends boolean = false>(options: Options<RemoveFavoriteMediaData, ThrowOnError>) => (options.client ?? client).delete<RemoveFavoriteMediaResponses, RemoveFavoriteMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/user/favorite-media/{mediaPublicId}',
+    ...options
+});
+
+/**
+ * Forget which titles the reader studies
+ *
+ * Deletes the authenticated reader's whole media tally.
+ *
+ * Separate from clearing activity history on purpose: the two are stored apart
+ * and consented to apart, so neither clear touches the other's rows.
+ *
+ */
+/**
+ * List the titles the reader studies most
+ *
+ * Returns the titles the authenticated reader engages with most, highest score
+ * first, for sorting the search media filter and for showing the reader what
+ * the tally holds.
+ *
+ * Scored from a monthly per-title tally of Anki exports, plays and shares --
+ * NOT from the activity log, which `searchHistory` governs and a nightly job
+ * prunes at 90 days. Anki exports weigh heaviest (deliberate mining); plays are
+ * scaled logarithmically so one long autoplay session cannot outrank a month of
+ * study. Empty when the reader has `familiarMedia.enabled` off.
+ *
+ */
+export const listFamiliarMedia = <ThrowOnError extends boolean = false>(options?: Options<ListFamiliarMediaData, ThrowOnError>) => (options?.client ?? client).get<ListFamiliarMediaResponses, ListFamiliarMediaErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/user/familiar-media',
+    ...options
+});
+
+/**
+ * Forget one title from the reader's tally
+ *
+ * Deletes the authenticated reader's tally for a single title, across every
+ * month it was counted in.
+ *
+ * The whole-tally clear is the blunt instrument; this is the one a reader
+ * reaches for when a single show is wrong -- a title they watched once for
+ * somebody else, or one the tally over-read. Forgetting a title does not stop
+ * it being counted again: the next export or share against it starts a fresh
+ * tally, which is the honest behaviour for a running count rather than a
+ * blocklist.
+ *
+ * Separate from the activity history, like the whole-tally clear: the two are
+ * stored apart and consented to apart, so neither touches the other's rows.
+ *
+ */
 /**
  * Create report
  *
@@ -463,6 +675,32 @@ export const getUserActivityStats = <ThrowOnError extends boolean = false>(optio
  * The whole export is one JSON body, so each section is capped: 50000 activity entries,
  * 5000 reports, 1000 collections, and 50000 collection segment references. The `truncated`
  * object reports which sections, if any, hit their ceiling.
+ *
+ */
+/**
+ * Send feedback
+ *
+ * Records a free-text message about the product and notifies the team.
+ *
+ * Open to anonymous visitors on purpose — the person best placed to report a
+ * broken sign-up or a confusing empty state is the one who is not signed in.
+ * A session, when there is one, attaches the account and overrides `email`.
+ *
+ * Automated submissions are dropped silently rather than rejected: they get the
+ * same `201` as everyone else, and nothing is stored.
+ *
+ */
+/**
+ * Issue a feedback form token
+ *
+ * Called when the feedback panel opens. The token it returns carries the moment
+ * it was issued, sealed so the client cannot edit it, and `POST /v1/feedback`
+ * requires one: a submission that arrives faster than a person could have typed
+ * it, or with no token at all, is treated as automated.
+ *
+ * Deliberately a separate call rather than something embedded in the page: the
+ * site's HTML is cached at the edge, so anything baked into it would be shared
+ * by every visitor who got that copy and would be stale by an unbounded amount.
  *
  */
 /**
@@ -663,5 +901,27 @@ export const removeSegmentFromCollection = <ThrowOnError extends boolean = false
  *
  * Returns active accounts together with the authentication providers linked to each one, for the admin dashboard.
  * Uses offset pagination because the dashboard exposes page-back navigation.
+ *
+ */
+/**
+ * List quota tiers
+ *
+ * Returns every quota tier, in display order. The admin surface needs this to
+ * offer a picker; without it a tier change is a slug typed from memory.
+ *
+ */
+/**
+ * Read an account's quota state
+ *
+ * The tier, the override, the limit those resolve to, and how much of the
+ * current period the account has used.
+ *
+ */
+/**
+ * Move an account to a tier, or give it an override
+ *
+ * Replaces the hand-edit against production that raising a quota used to
+ * require. Writes an audit log line naming the actor, the account, the before
+ * and after values, and the reason given.
  *
  */
