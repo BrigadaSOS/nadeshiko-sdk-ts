@@ -2074,6 +2074,23 @@ export type UserPreferences = {
          */
         enabled?: boolean;
     };
+    /**
+     * Whether we may send this account the lifecycle mail — the day-7 note, the
+     * feedback ask, the monthly recap. Absent means yes: these are service
+     * messages about the functionality the reader uses, so the default is on and
+     * the reader turns it off, here or from the link in any of them.
+     *
+     * Does NOT govern transactional mail. Sign-in links and address verification
+     * are the account working rather than news about it, and honouring this flag
+     * for them would let somebody lock themselves out by unsubscribing.
+     *
+     */
+    productEmails?: {
+        /**
+         * Whether lifecycle emails are enabled (default true)
+         */
+        enabled?: boolean;
+    };
 };
 
 /**
@@ -2298,6 +2315,16 @@ export type FeedbackFormToken = {
      * Opaque, short-lived. Pass back as `formToken` when submitting.
      */
     token: string;
+};
+
+export type UnsubscribeReceipt = {
+    /**
+     * Always `true` when the token was readable. A token for an account that has
+     * since been deleted also answers `true`: the end state the caller asked for
+     * already holds, and there is nothing for them to act on.
+     *
+     */
+    unsubscribed: boolean;
 };
 
 /**
@@ -5353,6 +5380,49 @@ export type GetFeedbackFormTokenResponses = {
 };
 
 export type GetFeedbackFormTokenResponse = GetFeedbackFormTokenResponses[keyof GetFeedbackFormTokenResponses];
+
+export type UnsubscribeFromEmailData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Opaque token from the unsubscribe link in the email. Carries the account
+         * it was issued for, sealed, so it cannot be edited into a token for
+         * somebody else. Does not expire — a recap is read when the reader gets
+         * round to it, and a link that answers "this expired, sign in instead" is
+         * how an opt-out becomes a spam complaint.
+         *
+         */
+        token: string;
+    };
+    url: '/v1/email/unsubscribe';
+};
+
+export type UnsubscribeFromEmailErrors = {
+    /**
+     * Bad Request
+     */
+    400: Error400;
+    /**
+     * Too Many Requests. The response body indicates whether the request was rejected due to per-minute rate limiting or monthly quota exhaustion.
+     */
+    429: Error429;
+    /**
+     * Internal Server Error
+     */
+    500: Error500;
+};
+
+export type UnsubscribeFromEmailError = UnsubscribeFromEmailErrors[keyof UnsubscribeFromEmailErrors];
+
+export type UnsubscribeFromEmailResponses = {
+    /**
+     * OK
+     */
+    200: UnsubscribeReceipt;
+};
+
+export type UnsubscribeFromEmailResponse = UnsubscribeFromEmailResponses[keyof UnsubscribeFromEmailResponses];
 
 export type ListCollectionsData = {
     body?: never;
