@@ -4,7 +4,7 @@ import { createClient as createApiClient, createConfig, type Client } from './cl
 import type { Auth } from './core/auth.gen';
 import type { ClientOptions } from './types.gen';
 import type * as Types from './types.gen';
-import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, createUserApiKey, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listFavoriteMedia, addFavoriteMedia, removeFavoriteMedia, listFamiliarMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, restoreSegmentRevision, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, moderateEpisodeSegments, getShirabeConnection, startShirabeLink, unlinkShirabe, completeShirabeLink, getShirabeCredential, resyncShirabeStack, reportShirabeRefusal, clearFamiliarMedia, forgetFamiliarMedia, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, createFeedback, getFeedbackFormToken, unsubscribeFromEmail, getEmailPreferencesByToken, updateEmailPreferencesByToken, updateCollection, updateCollectionSegment, getCollectionStats, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAgentActivity, getAnnouncement, updateAnnouncement, getAdminUsersWithProviders, listTiers, getAdminUserQuota, updateAdminUserQuota, type Options } from './sdk.gen';
+import { search, getSearchStats, searchWords, searchMedia, getStatsOverview, listMedia, getSegment, getSegmentContext, getMedia, listEpisodes, getEpisode, getMe, createUserApiKey, listExcludedMedia, addExcludedMedia, removeExcludedMedia, listFavoriteMedia, addFavoriteMedia, removeFavoriteMedia, listFamiliarMedia, listUserActivity, getUserActivityHeatmap, getUserActivityStats, listCollections, createCollection, getCollection, deleteCollection, addSegmentToCollection, searchCollectionSegments, removeSegmentFromCollection, listRoadmap, createRoadmapProposal, getCoveredWords, triggerCoveredWordsUpdate, createMedia, updateSegment, listSegmentRevisions, restoreSegmentRevision, updateMedia, deleteMedia, createEpisode, updateEpisode, deleteEpisode, listSegments, createSegment, createSegmentsBatch, moderateEpisodeSegments, getShirabeConnection, startShirabeLink, unlinkShirabe, completeShirabeLink, getShirabeCredential, resyncShirabeStack, reportShirabeRefusal, getPatreonConnection, startPatreonLink, unlinkPatreon, completePatreonLink, clearFamiliarMedia, forgetFamiliarMedia, createUserReport, getUserPreferences, updateUserPreferences, trackUserActivity, deleteUserActivity, deleteUserActivityByDate, deleteUserActivityById, exportUserData, createFeedback, getFeedbackFormToken, unsubscribeFromEmail, getEmailPreferencesByToken, updateEmailPreferencesByToken, updateCollection, updateCollectionSegment, getCollectionStats, listAdminReports, batchUpdateAdminReports, bulkUpdateAdminReports, bulkDeleteAdminReports, updateAdminReport, deleteAdminReport, listAgentActivity, getAnnouncement, updateAnnouncement, getAdminUsersWithProviders, listTiers, getAdminUserQuota, updateAdminUserQuota, listAdminRoadmap, createAdminRoadmapItem, updateAdminRoadmapItem, type Options } from './sdk.gen';
 import { withRetry, type RetryOptions } from './retry';
 import { NadeshikoError, type NadeshikoProblemDetails } from './errors';
 import { flatPaginate } from './paginate';
@@ -178,6 +178,14 @@ export type NadeshikoClient = {
       (params: Types.RemoveSegmentFromCollectionData['path'] & { throwOnError: false }): Promise<{ data: Types.RemoveSegmentFromCollectionResponse; response: Response; request: Request } | { error: Types.RemoveSegmentFromCollectionErrors; response: Response; request: Request }>;
       (params: Types.RemoveSegmentFromCollectionData['path']): Promise<Types.RemoveSegmentFromCollectionResponse>;
     };
+    listRoadmap: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListRoadmapResponse; response: Response; request: Request } | { error: Types.ListRoadmapErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListRoadmapResponse>;
+    };
+    createRoadmapProposal: {
+      (params: NonNullable<Types.CreateRoadmapProposalData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateRoadmapProposalResponse; response: Response; request: Request } | { error: Types.CreateRoadmapProposalErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateRoadmapProposalData['body']>): Promise<Types.CreateRoadmapProposalResponse>;
+    };
     getCoveredWords: {
       (params: NonNullable<Types.GetCoveredWordsData['query']> & { throwOnError: false }): Promise<{ data: Types.GetCoveredWordsResponse; response: Response; request: Request } | { error: Types.GetCoveredWordsErrors; response: Response; request: Request }>;
       (params?: NonNullable<Types.GetCoveredWordsData['query']>): Promise<Types.GetCoveredWordsResponse>;
@@ -271,6 +279,22 @@ export type NadeshikoClient = {
     reportShirabeRefusal: {
       (params: NonNullable<Types.ReportShirabeRefusalData['body']> & { throwOnError: false }): Promise<{ data: Types.ReportShirabeRefusalResponse; response: Response; request: Request } | { error: Types.ReportShirabeRefusalErrors; response: Response; request: Request }>;
       (params: NonNullable<Types.ReportShirabeRefusalData['body']>): Promise<Types.ReportShirabeRefusalResponse>;
+    };
+    getPatreonConnection: {
+      (params: { throwOnError: false }): Promise<{ data: Types.GetPatreonConnectionResponse; response: Response; request: Request } | { error: Types.GetPatreonConnectionErrors; response: Response; request: Request }>;
+      (): Promise<Types.GetPatreonConnectionResponse>;
+    };
+    startPatreonLink: {
+      (params: { throwOnError: false }): Promise<{ data: Types.StartPatreonLinkResponse; response: Response; request: Request } | { error: Types.StartPatreonLinkErrors; response: Response; request: Request }>;
+      (): Promise<Types.StartPatreonLinkResponse>;
+    };
+    unlinkPatreon: {
+      (params: { throwOnError: false }): Promise<{ data: Types.UnlinkPatreonResponse; response: Response; request: Request } | { error: Types.UnlinkPatreonErrors; response: Response; request: Request }>;
+      (): Promise<Types.UnlinkPatreonResponse>;
+    };
+    completePatreonLink: {
+      (params: NonNullable<Types.CompletePatreonLinkData['body']> & { throwOnError: false }): Promise<{ data: Types.CompletePatreonLinkResponse; response: Response; request: Request } | { error: Types.CompletePatreonLinkErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CompletePatreonLinkData['body']>): Promise<Types.CompletePatreonLinkResponse>;
     };
     clearFamiliarMedia: {
       (params: { throwOnError: false }): Promise<{ data: Types.ClearFamiliarMediaResponse; response: Response; request: Request } | { error: Types.ClearFamiliarMediaErrors; response: Response; request: Request }>;
@@ -406,6 +430,19 @@ export type NadeshikoClient = {
       (params: Types.UpdateAdminUserQuotaData['path'] & NonNullable<Types.UpdateAdminUserQuotaData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminUserQuotaResponse; response: Response; request: Request } | { error: Types.UpdateAdminUserQuotaErrors; response: Response; request: Request }>;
       (params: Types.UpdateAdminUserQuotaData['path'] & NonNullable<Types.UpdateAdminUserQuotaData['body']>): Promise<Types.UpdateAdminUserQuotaResponse>;
     };
+    listAdminRoadmap: {
+      (params: { throwOnError: false }): Promise<{ data: Types.ListAdminRoadmapResponse; response: Response; request: Request } | { error: Types.ListAdminRoadmapErrors; response: Response; request: Request }>;
+      (): Promise<Types.ListAdminRoadmapResponse>;
+    };
+    createAdminRoadmapItem: {
+      (params: NonNullable<Types.CreateAdminRoadmapItemData['body']> & { throwOnError: false }): Promise<{ data: Types.CreateAdminRoadmapItemResponse; response: Response; request: Request } | { error: Types.CreateAdminRoadmapItemErrors; response: Response; request: Request }>;
+      (params: NonNullable<Types.CreateAdminRoadmapItemData['body']>): Promise<Types.CreateAdminRoadmapItemResponse>;
+    };
+    updateAdminRoadmapItem: {
+      (id: string): Promise<Types.UpdateAdminRoadmapItemResponse>;
+      (params: Types.UpdateAdminRoadmapItemData['path'] & NonNullable<Types.UpdateAdminRoadmapItemData['body']> & { throwOnError: false }): Promise<{ data: Types.UpdateAdminRoadmapItemResponse; response: Response; request: Request } | { error: Types.UpdateAdminRoadmapItemErrors; response: Response; request: Request }>;
+      (params: Types.UpdateAdminRoadmapItemData['path'] & NonNullable<Types.UpdateAdminRoadmapItemData['body']>): Promise<Types.UpdateAdminRoadmapItemResponse>;
+    };
   };
 
 const defaultSessionTokenGetter = (): string | undefined => {
@@ -434,7 +471,7 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
 
   const clientInstance = createApiClient(createConfig<ClientOptions>({
     baseUrl,
-    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.4.17', ...config.headers },
+    headers: { 'User-Agent': 'nadeshiko-sdk-ts/2.4.19', ...config.headers },
     fetch: withRetry(globalThis.fetch, config.retryOptions) as typeof fetch,
     auth: (auth: Auth) => {
       if (auth.in === 'cookie') {
@@ -719,6 +756,18 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
+  const _listRoadmap = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listRoadmap({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createRoadmapProposal = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createRoadmapProposal({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   const _getCoveredWords = (params?: any) => {
     const { throwOnError: tOE, ...query } = params ?? {};
     const p = getCoveredWords({ ...(Object.keys(query).length > 0 ? { query } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
@@ -879,6 +928,30 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
   const _reportShirabeRefusal = (params?: any) => {
     const { throwOnError: tOE, ...body } = params ?? {};
     const p = reportShirabeRefusal({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _getPatreonConnection = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = getPatreonConnection({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _startPatreonLink = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = startPatreonLink({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _unlinkPatreon = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = unlinkPatreon({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _completePatreonLink = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = completePatreonLink({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
@@ -1111,6 +1184,28 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     return tOE === false ? p : p.then((r: any) => r.data);
   };
 
+  const _listAdminRoadmap = (params?: any) => {
+    const tOE = params?.throwOnError;
+    const p = listAdminRoadmap({ client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _createAdminRoadmapItem = (params?: any) => {
+    const { throwOnError: tOE, ...body } = params ?? {};
+    const p = createAdminRoadmapItem({ ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
+  const _updateAdminRoadmapItem = (paramsOrId?: any) => {
+    if (typeof paramsOrId === 'string') {
+      return updateAdminRoadmapItem({ throwOnError: true, path: { itemId: paramsOrId }, client: clientInstance } as any).then((r: any) => r.data);
+    }
+    const params = paramsOrId;
+    const { throwOnError: tOE, itemId, ...body } = params ?? {};
+    const p = updateAdminRoadmapItem({ path: { itemId }, ...(Object.keys(body).length > 0 ? { body } : {}), client: clientInstance, throwOnError: tOE === false ? false : true } as any);
+    return tOE === false ? p : p.then((r: any) => r.data);
+  };
+
   return {
     client: clientInstance,
     search: _search,
@@ -1143,6 +1238,8 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     addSegmentToCollection: _addSegmentToCollection,
     searchCollectionSegments: _searchCollectionSegments,
     removeSegmentFromCollection: _removeSegmentFromCollection,
+    listRoadmap: _listRoadmap,
+    createRoadmapProposal: _createRoadmapProposal,
     getCoveredWords: _getCoveredWords,
     triggerCoveredWordsUpdate: _triggerCoveredWordsUpdate,
     createMedia: _createMedia,
@@ -1165,6 +1262,10 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     getShirabeCredential: _getShirabeCredential,
     resyncShirabeStack: _resyncShirabeStack,
     reportShirabeRefusal: _reportShirabeRefusal,
+    getPatreonConnection: _getPatreonConnection,
+    startPatreonLink: _startPatreonLink,
+    unlinkPatreon: _unlinkPatreon,
+    completePatreonLink: _completePatreonLink,
     clearFamiliarMedia: _clearFamiliarMedia,
     forgetFamiliarMedia: _forgetFamiliarMedia,
     createUserReport: _createUserReport,
@@ -1196,6 +1297,9 @@ export function createNadeshikoClient(config: NadeshikoConfig): NadeshikoClient 
     listTiers: _listTiers,
     getAdminUserQuota: _getAdminUserQuota,
     updateAdminUserQuota: _updateAdminUserQuota,
+    listAdminRoadmap: _listAdminRoadmap,
+    createAdminRoadmapItem: _createAdminRoadmapItem,
+    updateAdminRoadmapItem: _updateAdminRoadmapItem,
   } as NadeshikoClient;
 }
 
